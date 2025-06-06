@@ -32,9 +32,7 @@ async def process_next_message(message: Message, state: FSMContext):
     user_email = message.text
     if user_email in email_bd:
         keyboard = ReplyKeyboardMarkup(
-            keyboard=[
-                [KeyboardButton(text="Submit work"), KeyboardButton(text="Пойти нахуй")]
-            ],
+            keyboard=[[KeyboardButton(text="Submit work"), KeyboardButton(text="Пойти нахуй")]],
             resize_keyboard=True
         )
         await message.answer(
@@ -45,5 +43,9 @@ async def process_next_message(message: Message, state: FSMContext):
         await message.answer("You are not allowed to send messages", reply_markup=ReplyKeyboardMarkup(keyboard=[]))
     await state.clear()
 
+@dp.message()
+async def handle_my_request(message: Message):
+    if message.text == "Пойти нахуй":
+        await message.answer("иди нахуй")
 if __name__ == "__main__":
     dp.run_polling(bot)
