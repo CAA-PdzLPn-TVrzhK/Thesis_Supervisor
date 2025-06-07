@@ -21,32 +21,46 @@ bot = Bot(token=API_TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
 
 class Form(StatesGroup):
-    waiting_for_text = State()
+    waiting_for_email = State()
+    waiting_for_password = State()
 
 @dp.message(Command(commands=["start"]))
 async def cmd_start(message: Message, state: FSMContext):
     await message.answer("Send your email for authorization")
-    await state.set_state(Form.waiting_for_text)
+    await state.set_state(Form.waiting_for_email)
 
-@dp.message(Form.waiting_for_text)
+@dp.message(Form.waiting_for_email)
 async def process_next_message(message: Message, state: FSMContext):
     user_email = message.text
-    if user_email in email_bd:
-        keyboard = ReplyKeyboardMarkup(
-            keyboard=[[KeyboardButton(text="Submit work"), KeyboardButton(text="Пойти нахуй")]],
-            resize_keyboard=True
-        )
-        await message.answer(
-            "You are logged in",
-            reply_markup=keyboard
-        )
+    await bot.send_message(message.chat.id, text=f"{message.chat.id}")
+    user = await UserService.get_profile(message.chat.id)
+    if user is None:
+        await bot.send_message(message.chat.id, text="Пашол нахуй ноунейм")
+        await state.clear()
+    elif user.email == user_email:
+        await state.clear()
+        await bot.send_message(message.chat.id, text="Send password")
+        await state.set_state(Form.waiting_for_password)
     else:
-        await message.answer("You are not allowed to send messages", reply_markup=ReplyKeyboardMarkup(keyboard=[]))
-    await state.clear()
+        await state.clear()
+        await bot.send_message(message.chat.id, text="Wrong email, please try another one")
+        await state.set_state(Form.waiting_for_email)
 
-@dp.message()
-async def handle_my_request(message: Message):
-    if message.text == "Пойти нахуй":
-        await message.answer("иди нахуй")
+
+@dp.message(Form.waiting_for_password)
+async def process_next_message(message: Message, state: FSMContext):
+    user_password = message.text
+    user = await UserService.get_profile(message.chat.id)
+    if user.password == user_password:
+        await state.clear()
+        keyboard = ReplyKeyboardMarkup(
+               keyboard=[[KeyboardButton(text="Submit work"), KeyboardButton(text="Пойти нахуй")]],
+                 resize_keyboard=True)
+        await message.answer("You are logged in",reply_markup=keyboard)
+    else:
+        await state.clear()
+        await bot.send_message(message.chat.id, text="Wrong password")
+        await state.set_state(Form.waiting_for_password)
+
 if __name__ == "__main__":
     dp.run_polling(bot)

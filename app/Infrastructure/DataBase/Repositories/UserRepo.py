@@ -2,7 +2,7 @@
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, insert, update, delete
-from Infrastructure.DataBase.Models.user import User
+from app.Infrastructure.DataBase.Models.user import User
 
 class UserRepo:
     def __init__(self, session: AsyncSession):
