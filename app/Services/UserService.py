@@ -1,8 +1,8 @@
 # services/UserService.py
 
-from Infrastructure.DataBase.Repositories.UserRepo import UserRepo
-from Infrastructure.DataBase.session import get_async_session
-from Infrastructure.DataBase.Models.user import User
+from app.Infrastructure.DataBase.Repositories.UserRepo import UserRepo
+from app.Infrastructure.DataBase.session import get_async_session
+from app.Infrastructure.DataBase.Models.user import User
 
 class UserService:
     """
