@@ -28,7 +28,13 @@ class UserService:
             return user
 
     @staticmethod
-    async def get_profile(user_id: int) -> User | None:
+    async def get_profile(id: int) -> User | None:
         async for session in get_async_session():
             repo = UserRepo(session)
-            return await repo.get_by_id(user_id)
+            return await repo.get_by_id(id)
+
+    @staticmethod
+    async def delete_profile(id: int) -> bool:
+        async for session in get_async_session():
+            repo = UserRepo(session)
+            return await repo.delete(id)
