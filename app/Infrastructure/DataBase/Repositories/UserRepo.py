@@ -18,8 +18,8 @@ class UserRepo:
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def create(self,id: int, name: str, email: str, password: str) -> User:
-        new_user = User(id=id, name=name, email=email, password=password)
+    async def create(self,id: int, name: str, email: str, password: str, status: bool) -> User:
+        new_user = User(id=id, name=name, email=email, password=password, status=status)
         self.session.add(new_user)
         await self.session.commit()
         await self.session.refresh(new_user)
@@ -47,3 +47,14 @@ class UserRepo:
         await self.session.delete(user)
         await self.session.commit()
         return True
+
+    async def change_status(self, user_id: int, new_status: bool) -> bool:
+        stmt = select(User).where(User.id == user_id)
+        res = await self.session.execute(stmt)
+        user = res.scalar_one_or_none()
+        if not user:
+            return
+
+        user.status = new_status
+        await self.session.commit()
+        await self.session.refresh(user)
