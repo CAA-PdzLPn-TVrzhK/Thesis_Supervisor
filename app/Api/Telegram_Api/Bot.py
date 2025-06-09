@@ -34,18 +34,18 @@ async def process_email(message: Message, state: FSMContext):
     user_email = message.text.strip()
     user = await UserService.get_profile(message.chat.id)
     if user is None:
-        user = await UserService.register_user(message.chat.id, message.chat.first_name + ' ' + message.chat.last_name, user_email, 0)
+        user = await UserService.register_user(message.chat.id, message.chat.first_name + ' ' + message.chat.last_name, user_email, False)
     code = f"{random.randint(100000, 999999)}"
     pending_codes[message.chat.id] = code
 
     msg = MIMEText(f"Твой код верификации: {code}")
     msg["Subject"] = "Telegram-бот: код верификации"
-    msg["From"] = os.getenv("GMAIL_USER")
+    msg["From"] = "ThesisSupervisorVerificator@gmail.com"
     msg["To"] = user_email
 
     server = smtplib.SMTP("smtp.gmail.com", 587)
     server.starttls()
-    server.login(os.getenv("GMAIL_USER"), os.getenv("GMAIL_APP_PASS"))
+    server.login("ThesisSupervisorVerificator@gmail.com", "iymt gvrr bpko skas")
     server.send_message(msg)
     server.quit()
 
@@ -61,7 +61,7 @@ async def process_verification(message: Message, state: FSMContext):
         pending_codes.pop(chat_id, None)
         await state.clear()
         keyboard = ReplyKeyboardMarkup(
-            keyboard=[[KeyboardButton(text="Submit work"), KeyboardButton(text="Пойти нахуй")]],
+            keyboard=[[KeyboardButton(text="Submit work")]],
             resize_keyboard=True)
         await message.answer("You are logged in", reply_markup=keyboard)
     else:

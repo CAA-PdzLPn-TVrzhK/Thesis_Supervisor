@@ -19,7 +19,7 @@ class UserRepo:
         return result.scalar_one_or_none()
 
     async def create(self,id: int, name: str, email: str, status: bool) -> User:
-        new_user = User(id=id, name=name, email=email, password=password, status=status)
+        new_user = User(id=id, name=name, email=email, status=status)
         self.session.add(new_user)
         await self.session.commit()
         await self.session.refresh(new_user)
