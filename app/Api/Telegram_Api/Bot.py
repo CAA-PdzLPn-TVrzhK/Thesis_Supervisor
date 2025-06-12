@@ -1,5 +1,4 @@
 import os
-
 from aiogram import Bot, Dispatcher
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 from aiogram.filters import Command
@@ -23,6 +22,7 @@ class Form(StatesGroup):
     waiting_for_email = State()
     waiting_for_verification = State()
     waiting_for_password = State()
+    waiting_for_the_work = State()
 
 @dp.message(Command(commands=["start"]))
 async def cmd_start(message: Message, state: FSMContext):
@@ -40,12 +40,12 @@ async def process_email(message: Message, state: FSMContext):
 
     msg = MIMEText(f"Твой код верификации: {code}")
     msg["Subject"] = "Telegram-бот: код верификации"
-    msg["From"] = "ThesisSupervisorVerificator@gmail.com"
+    msg["From"] = "markdajver@gmail.com"
     msg["To"] = user_email
 
     server = smtplib.SMTP("smtp.gmail.com", 587)
     server.starttls()
-    server.login("ThesisSupervisorVerificator@gmail.com", "iymt gvrr bpko skas")
+    server.login("markdajver@gmail.com", "jaaf lawy rtpi glpr")
     server.send_message(msg)
     server.quit()
 
@@ -56,17 +56,28 @@ async def process_email(message: Message, state: FSMContext):
 async def process_verification(message: Message, state: FSMContext):
     chat_id = message.chat.id
     user_code = message.text.strip()
-
+    user = await UserService.get_profile(message.chat.id)
     if pending_codes.get(chat_id) == user_code:
         pending_codes.pop(chat_id, None)
         await state.clear()
-        keyboard = ReplyKeyboardMarkup(
-            keyboard=[[KeyboardButton(text="Submit work")]],
+
+        student_keyboard = ReplyKeyboardMarkup(
+            keyboard=[[KeyboardButton(text="Submit work")], [KeyboardButton(text="View profile")]],
             resize_keyboard=True)
-        await message.answer("You are logged in", reply_markup=keyboard)
+        supervisor_keyboard = ReplyKeyboardMarkup(
+            keyboard=[[KeyboardButton(text="View dashboard")]],
+            resize_keyboard=True
+        )
+        if user.status == 0:
+            await message.answer("You are logged in", reply_markup=student_keyboard)
+        elif user.status == 1:
+            await message.answer("You are logged in", reply_markup=supervisor_keyboard)
     else:
         await message.answer("Неверный код, попробуй ещё раз.")
         await state.set_state(Form.waiting_for_verification)
+
+@dp.message()
+async def work_submission(message: Message):
 
 
 if __name__ == "__main__":
