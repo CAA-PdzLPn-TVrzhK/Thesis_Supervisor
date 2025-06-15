@@ -22,13 +22,13 @@ function MainPage() {
                 // Главное меню с тремя кнопками
                 return (
                     <div>
-                        <button onClick={() => setCurrent('List of students')} className={"mainButton"}>
+                        <button onClick={() => setCurrent('page1')} className={"mainButton"}>
                             Перейти на страницу 1
                         </button>
-                        <button onClick={() => setCurrent('List of supervisors')} className={"mainButton"}>
+                        <button onClick={() => setCurrent('page2')} className={"mainButton"}>
                             Перейти на страницу 2
                         </button>
-                        <button onClick={() => setCurrent('List of groups')} className={"mainButton"}>
+                        <button onClick={() => setCurrent('page3')} className={"mainButton"}>
                             Перейти на страницу 3
                         </button>
                     </div>
