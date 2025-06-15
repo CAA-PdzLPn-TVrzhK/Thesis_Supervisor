@@ -1,4 +1,4 @@
-import MainPage from "./components/main_page"
+import MainPage from "./main_page"
 import student_list from "./components/student_list"
 
 function App() {
