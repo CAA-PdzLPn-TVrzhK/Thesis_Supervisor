@@ -53,7 +53,7 @@ async def process_email(message: Message, state: FSMContext):
     server.send_message(msg)
     server.quit()
 
-    await message.answer("The code has been sent by e-mail, enter it in the reply message.:")
+    await message.answer("The code has been sent by e-mail, enter it in the reply message:")
     await state.set_state(Form.waiting_for_verification)
 
 @dp.message(Form.waiting_for_verification)
