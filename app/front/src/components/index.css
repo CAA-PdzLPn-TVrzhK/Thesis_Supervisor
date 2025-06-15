@@ -1,0 +1,47 @@
+.mainButton {
+  display: block;           /* чтобы каждая кнопка занимала свою строку */
+  width: 200px;             /* задаёт одинаковую ширину */
+  margin: 10px auto;        /* вертикальный отступ 10px, центрирование по горизонтали */
+  padding: 12px 20px;       /* внутренние отступы сверху/снизу и слева/справа */
+  font-size: 16px;          /* размер текста */
+  font-weight: 500;         /* чуть более жирный шрифт */
+  color: #fff;              /* цвет текста */
+  background-color: #007bff;/* синий фон */
+  border: none;             /* без рамки */
+  border-radius: 8px;       /* скруглённые углы радиусом 8px */
+  cursor: pointer;          /* курсор‑рука при наведении */
+  transition: background-color 0.2s ease; /* плавный переход при ховере */
+}
+
+.mainButton:hover {
+  background-color: #0056b3; /* чуть более тёмный синий при наведении */
+}
+
+.table_name {
+    display: flex;
+    padding: 0.09375rem 0.9375rem;
+    align-items: flex-start;
+    gap: 0.625rem;
+    border-radius: 0.3125rem;
+    background-color: #F6005E;
+    color: white;
+}
+.btn {
+    display: inline-block;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    background-color: transparent;
+    border: 1px solid transparent;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    border-radius: .25rem;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
