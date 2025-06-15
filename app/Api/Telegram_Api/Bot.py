@@ -1,22 +1,26 @@
 import os
-from aiogram import Bot, Dispatcher
-from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
+from aiogram import Bot, Dispatcher, types, F
+from aiogram.types import Message, WebAppInfo, ReplyKeyboardMarkup, KeyboardButton, ContentType
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.storage.memory import MemoryStorage
+from dotenv import load_dotenv
 from app.Services.UserService import UserService
 import random
 import smtplib
 from email.mime.text import MIMEText
 
-pending_codes: dict[int, str] = {}
 
+# Load environment variables
+load_dotenv()
 API_TOKEN = "7766131056:AAF70m3Omm0BeaXbRSOm_pzIQCtbPckzBCA"
-
+BASE_WEBAPP_URL = "https://mountain-audience-prospect-saskatchewan.trycloudflare.com"
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
+
+pending_codes: dict[int, str] = {}
 
 class Form(StatesGroup):
     waiting_for_email = State()
@@ -38,8 +42,8 @@ async def process_email(message: Message, state: FSMContext):
     code = f"{random.randint(100000, 999999)}"
     pending_codes[message.chat.id] = code
 
-    msg = MIMEText(f"Твой код верификации: {code}")
-    msg["Subject"] = "Telegram-бот: код верификации"
+    msg = MIMEText(f"Your verification code: {code}")
+    msg["Subject"] = "Telegram bot: verification code"
     msg["From"] = "markdajver@gmail.com"
     msg["To"] = user_email
 
@@ -49,7 +53,7 @@ async def process_email(message: Message, state: FSMContext):
     server.send_message(msg)
     server.quit()
 
-    await message.answer("Код отправлен на e-mail, введи его в ответном сообщении:")
+    await message.answer("The code has been sent by e-mail, enter it in the reply message.:")
     await state.set_state(Form.waiting_for_verification)
 
 @dp.message(Form.waiting_for_verification)
@@ -61,24 +65,33 @@ async def process_verification(message: Message, state: FSMContext):
         pending_codes.pop(chat_id, None)
         await state.clear()
 
-        student_keyboard = ReplyKeyboardMarkup(
-            keyboard=[[KeyboardButton(text="Submit work")], [KeyboardButton(text="View profile")]],
-            resize_keyboard=True)
+        web_app = WebAppInfo(url=BASE_WEBAPP_URL)
+        keyboard = ReplyKeyboardMarkup(
+            keyboard=[
+                [KeyboardButton(text="Open the student's portal", web_app=web_app)]
+            ],
+            resize_keyboard=True,
+            one_time_keyboard=True
+        )
         supervisor_keyboard = ReplyKeyboardMarkup(
             keyboard=[[KeyboardButton(text="View dashboard")]],
             resize_keyboard=True
         )
         if user.status == 0:
-            await message.answer("You are logged in", reply_markup=student_keyboard)
+            await message.answer("🔗 Open the student's mini-app:", reply_markup=keyboard)
         elif user.status == 1:
             await message.answer("You are logged in", reply_markup=supervisor_keyboard)
     else:
-        await message.answer("Неверный код, попробуй ещё раз.")
+        await message.answer("Invalid code, try again..")
         await state.set_state(Form.waiting_for_verification)
 
-@dp.message()
-async def work_submission(message: Message):
 
+
+@dp.message(F.content_type == ContentType.WEB_APP_DATA)
+async def handle_webapp_data(message: types.Message):
+
+    data = message.web_app_data.data
+    await message.answer("✅ Данные получены из мини-приложения")
 
 if __name__ == "__main__":
     dp.run_polling(bot)
