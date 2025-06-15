@@ -38,7 +38,7 @@ async def process_email(message: Message, state: FSMContext):
     user_email = message.text.strip()
     user = await UserService.get_profile(message.chat.id)
     if user is None:
-        user = await UserService.register_user(message.chat.id, message.chat.first_name + ' ' + message.chat.last_name, user_email, False)
+        user = await UserService.register_user(message.chat.id, "@" + message.from_user.username, user_email, False)
     code = f"{random.randint(100000, 999999)}"
     pending_codes[message.chat.id] = code
 
