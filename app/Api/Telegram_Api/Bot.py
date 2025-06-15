@@ -1,6 +1,6 @@
 import os
 from aiogram import Bot, Dispatcher, types, F
-from aiogram.types import Message, WebAppInfo, ReplyKeyboardMarkup, KeyboardButton, ContentType
+from aiogram.types import Message, WebAppInfo, ReplyKeyboardMarkup, KeyboardButton, ContentType, ReplyKeyboardRemove
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
@@ -30,7 +30,7 @@ class Form(StatesGroup):
 
 @dp.message(Command(commands=["start"]))
 async def cmd_start(message: Message, state: FSMContext):
-    await message.answer("Send your email for authorization")
+    await message.answer("Send your email for authorization", reply_markup=ReplyKeyboardRemove())
     await state.set_state(Form.waiting_for_email)
 
 @dp.message(Form.waiting_for_email)
@@ -53,7 +53,7 @@ async def process_email(message: Message, state: FSMContext):
     server.send_message(msg)
     server.quit()
 
-    await message.answer("The code has been sent by e-mail, enter it in the reply message:")
+    await message.answer("The code has been sent by e-mail, enter it in the reply message:", reply_markup=ReplyKeyboardRemove())
     await state.set_state(Form.waiting_for_verification)
 
 @dp.message(Form.waiting_for_verification)
@@ -82,7 +82,7 @@ async def process_verification(message: Message, state: FSMContext):
         elif user.status == 1:
             await message.answer("You are logged in", reply_markup=supervisor_keyboard)
     else:
-        await message.answer("Invalid code, try again..")
+        await message.answer("Invalid code, try again.", reply_markup=ReplyKeyboardRemove())
         await state.set_state(Form.waiting_for_verification)
 
 
@@ -91,7 +91,7 @@ async def process_verification(message: Message, state: FSMContext):
 async def handle_webapp_data(message: types.Message):
 
     data = message.web_app_data.data
-    await message.answer("✅ Данные получены из мини-приложения")
+    await message.answer("✅ Данные получены из мини-приложения", reply_markup=ReplyKeyboardRemove())
 
 if __name__ == "__main__":
     dp.run_polling(bot)
