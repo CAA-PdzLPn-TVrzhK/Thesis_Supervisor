@@ -49,7 +49,7 @@ async def upload_work(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    upload_dir = os.path.join("uploads", str(user_id))
+    upload_dir = os.path.join("C://Users//pc//Desktop//TS_store", str(user_id))
     os.makedirs(upload_dir, exist_ok=True)
 
     file_path = os.path.join(upload_dir, file.filename)
