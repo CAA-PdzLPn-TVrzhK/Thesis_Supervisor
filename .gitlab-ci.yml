@@ -3,10 +3,10 @@ image: alpine:latest
 pages:
   stage: deploy
   script:
-    - mkdir .public
-    - cp index.html .public/
+    - mkdir public
+    - cp index.html public/
   artifacts:
     paths:
-      - .public
+      - public
   only:
     - main
