@@ -15,8 +15,8 @@ from email.mime.text import MIMEText
 # Load environment variables
 load_dotenv()
 API_TOKEN = "7766131056:AAF70m3Omm0BeaXbRSOm_pzIQCtbPckzBCA"
-BASE_WEBAPP_URL = "https://thesis-supervisor-027f5c.pages.pg.innopolis.university"
-rek = "https://tdzdslippen.github.io/Thes_super/"
+BASE_WEBAPP_URL = "https://tdzdslippen.github.io/Thes_super/"
+rek = "https://thesis-supervisor-027f5c.pages.pg.innopolis.university"
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
