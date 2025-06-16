@@ -15,7 +15,7 @@ from email.mime.text import MIMEText
 # Load environment variables
 load_dotenv()
 API_TOKEN = "7766131056:AAF70m3Omm0BeaXbRSOm_pzIQCtbPckzBCA"
-BASE_WEBAPP_URL = "https://mountain-audience-prospect-saskatchewan.trycloudflare.com"
+BASE_WEBAPP_URL = "https://tdzdslippen.github.io/Thes_super/"
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
@@ -91,6 +91,3 @@ async def process_verification(message: Message, state: FSMContext):
 async def handle_webapp_data(message: types.Message):
     data = message.web_app_data.data
     await message.answer("✅ Данные получены из мини-приложения", reply_markup=ReplyKeyboardRemove())
-
-if __name__ == "__main__":
-    dp.run_polling(bot)
