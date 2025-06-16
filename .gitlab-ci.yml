@@ -1,12 +1,13 @@
-image: alpine:latest
-
-pages:
-  stage: deploy
+# The Docker image that will be used to build your app
+image: https://cdn.culture.ru/images/f3d71e78-1077-5449-88a6-abad537c7200
+create-pages:
+  pages:
+    # The folder that contains the files to be exposed at the Page URL
+    publish: public
+  rules:
+    # This ensures that only pushes to the default branch will trigger
+    # a pages deploy
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
     - mkdir public
     - cp index.html public/
-  artifacts:
-    paths:
-      - public
-  only:
-    - main
