@@ -21,15 +21,15 @@ function MainPage() {
             default:
                 // Главное меню с тремя кнопками
                 return (
-                    <div>
+                    <div className="menuContainer">
                         <button onClick={() => setCurrent('page1')} className={"mainButton"}>
-                            Перейти на страницу 1
+                            Go to the List of Students
                         </button>
                         <button onClick={() => setCurrent('page2')} className={"mainButton"}>
-                            Перейти на страницу 2
+                            Go to the List of Supervisors
                         </button>
                         <button onClick={() => setCurrent('page3')} className={"mainButton"}>
-                            Перейти на страницу 3
+                            Go to the List of Groups
                         </button>
                     </div>
                 );
@@ -41,8 +41,8 @@ function MainPage() {
       {renderContent()}
       {/* Кнопка возврата в меню */}
       {current !== 'menu' && (
-        <button onClick={() => setCurrent('menu')}>
-          ← Назад в меню
+        <button onClick={() => setCurrent('menu')} className="backButton">
+          ← Back to menu
         </button>
       )}
     </div>
