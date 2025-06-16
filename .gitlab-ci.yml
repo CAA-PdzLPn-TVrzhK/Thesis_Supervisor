@@ -13,4 +13,4 @@ create-pages:
     - echo "No install needed"
   script:
     - mkdir public
-    - cp index.html public/
+    - cp app/Api/Telegram_Api/webapp/static/index.html public/
