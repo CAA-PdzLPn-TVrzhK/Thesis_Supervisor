@@ -89,7 +89,7 @@ async def process_verification(message: Message, state: FSMContext):
 
 @dp.message(F.content_type == ContentType.WEB_APP_DATA)
 async def handle_webapp_data(message: types.Message):
-
+    print("ff")
     data = message.web_app_data.data
     await message.answer("✅ Данные получены из мини-приложения", reply_markup=ReplyKeyboardRemove())
 
