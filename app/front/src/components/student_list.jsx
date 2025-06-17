@@ -48,7 +48,7 @@ class StudentList extends React.Component {
         return <StudentProfile/>;
       default:
         return (
-            <div>
+            <div className="pageContainer">
 
               {this.state.isEditing && (
                 <div className="editPanel">

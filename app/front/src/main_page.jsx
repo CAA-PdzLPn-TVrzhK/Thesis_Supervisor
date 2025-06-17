@@ -22,7 +22,7 @@ function MainPage() {
                 // Главное меню с тремя кнопками
                 return (
                     <div className="menuContainer">
-                        <button onClick={() => setCurrent('page1')} className={"mainButton"}>
+                        <button variant = "outline" onClick={() => setCurrent('page1')} className={"mainButton"}>
                             Go to the List of Students
                         </button>
                         <button onClick={() => setCurrent('page2')} className={"mainButton"}>
