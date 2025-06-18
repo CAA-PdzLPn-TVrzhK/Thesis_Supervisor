@@ -15,7 +15,10 @@ from email.mime.text import MIMEText
 # Load environment variables
 load_dotenv()
 API_TOKEN = "7766131056:AAF70m3Omm0BeaXbRSOm_pzIQCtbPckzBCA"
-BASE_WEBAPP_URL = "https://mountain-audience-prospect-saskatchewan.trycloudflare.com"
+BASE_WEBAPP_URL = "https://tdzdslippen.github.io/Thes_super/"
+rek = "https://thesis-supervisor-027f5c.pages.pg.innopolis.university"
+
+hui =25
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
@@ -32,6 +35,23 @@ class Form(StatesGroup):
 async def cmd_start(message: Message, state: FSMContext):
     await message.answer("Send your email for authorization", reply_markup=ReplyKeyboardRemove())
     await state.set_state(Form.waiting_for_email)
+    # user = await UserService.get_profile(message.chat.id)
+    # web_app = WebAppInfo(url=BASE_WEBAPP_URL)
+    # keyboard = ReplyKeyboardMarkup(
+    #     keyboard=[
+    #         [KeyboardButton(text="Open the student's portal", web_app=web_app)]
+    #     ],
+    #     resize_keyboard=True,
+    #     one_time_keyboard=True
+    # )
+    # supervisor_keyboard = ReplyKeyboardMarkup(
+    #     keyboard=[[KeyboardButton(text="View dashboard")]],
+    #     resize_keyboard=True
+    # )
+    # if user.status == 0:
+    #     await message.answer("🔗 Open the student's mini-app:", reply_markup=keyboard)
+    # elif user.status == 1:
+    #     await message.answer("You are logged in", reply_markup=supervisor_keyboard)
 
 @dp.message(Form.waiting_for_email)
 async def process_email(message: Message, state: FSMContext):
@@ -91,6 +111,6 @@ async def process_verification(message: Message, state: FSMContext):
 async def handle_webapp_data(message: types.Message):
     data = message.web_app_data.data
     await message.answer("✅ Данные получены из мини-приложения", reply_markup=ReplyKeyboardRemove())
-
-if __name__ == "__main__":
-    dp.run_polling(bot)
+#
+# if __name__ == "__main__":
+#     dp.run_polling(bot)
