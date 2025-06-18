@@ -41,19 +41,25 @@ class GroupList extends React.Component {
     }
 
     return (
-      <div>
-        <Table dataSource={data} rowKey="id">
-          <Column
-            title="Name"
-            dataIndex="name"
-            key="name"
-            className="table_name"
-          />
-          <Column title="Email" dataIndex="email" key="email" />
-          <Column title="Phone" dataIndex="phone" key="phone" />
-          <Column title="Username" dataIndex="username" key="username" />
-        </Table>
-      </div>
+        <div>
+          <button
+              className="backButton"
+              onClick={() => this.props.onBackToMenu?.()}
+          >
+            ← Back to menu
+          </button>
+          <Table dataSource={data} rowKey="id">
+            <Column
+                title="Name"
+                dataIndex="name"
+                key="name"
+                className="table_name"
+            />
+            <Column title="Email" dataIndex="email" key="email"/>
+            <Column title="Phone" dataIndex="phone" key="phone"/>
+            <Column title="Username" dataIndex="username" key="username"/>
+          </Table>
+        </div>
     );
   }
 }

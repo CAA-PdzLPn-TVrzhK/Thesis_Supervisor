@@ -23,17 +23,18 @@
   padding: 12px 20px;       /* внутренние отступы сверху/снизу и слева/справа */
   font-size: 22px;          /* размер текста */
   font-weight: 700;         /* чуть более жирный шрифт */
-  color: #1a1a1a;              /* цвет текста */
-  background-color: #747bff;/* синий фон */
-  border: none;             /* без рамки */
+  color: #000;              /* цвет текста */
+  background-color: transparent;/* синий фон */
+  border: 2px solid #000;             /* без рамки */
   border-radius: 8px;       /* скруглённые углы радиусом 8px */
   cursor: pointer;          /* курсор‑рука при наведении */
   transition: background-color 0.5s ease; /* плавный переход при ховере */
+  outline: 0;
 }
 
 .mainButton:hover {
   background-color: #212529; /* чуть более тёмный синий при наведении */
-    color: white;
+  color: white;
 }
 
 body{
@@ -46,12 +47,12 @@ body{
     align-items: flex-start;
     gap: 0.625rem;
     border-radius: 0.3125rem;
-    background-color: #747bff;
-    color: white;
+    background-color: transparent;
+    color: black;
 }
 
 .ant-table-cell {
-  border-color: #1a1a1a;
+  border-color: #000;
 }
 
 .backButton {
@@ -91,4 +92,115 @@ body{
 
 .actionButton:hover {
   background-color: #45a049;
+}
+
+/* Контейнер профиля — карточка по центру */
+.profileContainer {
+  max-width: 480px;
+  margin: 40px auto;
+  padding: 32px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+/* Ссылка “Назад” */
+.backLink {
+  color: #d63384;
+  font-weight: 500;
+  margin-bottom: 24px;
+  display: inline-block;
+}
+
+.backLink:hover {
+  color: #ad1457;
+}
+
+/* Заголовок */
+.profileContainer h2 {
+  font-size: 24px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+/* Форма */
+.profileForm .ant-form-item-label > label {
+  font-weight: 500;
+  color: #555;
+}
+
+/* Поля ввода и селекты */
+.profileForm .ant-input,
+.profileForm .ant-select-selector {
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  transition: border-color 0.2s;
+}
+
+.profileForm .ant-input:focus,
+.profileForm .ant-select-focused .ant-select-selector {
+  border-color: #d63384;
+}
+
+/* Кнопка отправки */
+.profileForm .ant-btn-primary {
+  width: 100%;
+  padding: 12px 0;
+  border-radius: 8px;
+  background: linear-gradient(90deg,#e91e63,#d63384);
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Обертка для загрузки фото */
+.photoUpload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.photoUpload .avatarPreview {
+  width: 120px;
+  height: 120px;
+  background: #f5f5f5;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.photoUpload .avatarPreview img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.photoUpload .uploadButton {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.photoUpload .uploadButton input[type="file"] {
+  font-size: 100px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.photoUpload .uploadButton .btn {
+  background: #f50057;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
 }
