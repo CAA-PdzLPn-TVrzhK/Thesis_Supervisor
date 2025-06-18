@@ -6,7 +6,7 @@ from app.Services.UserService import UserService
 mini_app = FastAPI()
 
 
-@mini_app.get("/profile/{user_id}")
+@mini_app.get("https://caa-pdzlpn-tvrzhk.github.io/Thesis_Supervisor/app/Client/profile/{user_id}")
 async def get_profile(user_id: int):
     user = await UserService.get_profile(user_id)
     if not user:
