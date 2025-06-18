@@ -18,6 +18,8 @@ API_TOKEN = "7766131056:AAF70m3Omm0BeaXbRSOm_pzIQCtbPckzBCA"
 BASE_WEBAPP_URL = "https://tdzdslippen.github.io/Thes_super/"
 rek = "https://thesis-supervisor-027f5c.pages.pg.innopolis.university"
 
+hui =21
+
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
 
