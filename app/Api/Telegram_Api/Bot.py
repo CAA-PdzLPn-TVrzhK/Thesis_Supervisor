@@ -11,7 +11,7 @@ import random
 import smtplib
 from email.mime.text import MIMEText
 
-
+hui=25
 # Load environment variables
 load_dotenv()
 API_TOKEN = "7766131056:AAF70m3Omm0BeaXbRSOm_pzIQCtbPckzBCA"
