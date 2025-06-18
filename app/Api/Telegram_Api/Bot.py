@@ -12,13 +12,9 @@ import smtplib
 from email.mime.text import MIMEText
 
 
-# Load environment variables
 load_dotenv()
 API_TOKEN = "7766131056:AAF70m3Omm0BeaXbRSOm_pzIQCtbPckzBCA"
-BASE_WEBAPP_URL = "https://tdzdslippen.github.io/Thes_super/"
-rek = "https://thesis-supervisor-027f5c.pages.pg.innopolis.university"
-
-hui=25
+BASE_WEBAPP_URL = "https://caa-pdzlpn-tvrzhk.github.io/Thesis_Supervisor/"
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
