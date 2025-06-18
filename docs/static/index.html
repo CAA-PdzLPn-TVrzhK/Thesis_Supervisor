@@ -24,7 +24,9 @@
 
     <div id="profile" class="tab active">
         <h2>Профиль</h2>
-        <div id="profile-info">Загрузка...</div>
+        <div id="profile-info">
+            <!-- Данные профиля будут загружаться сюда -->
+        </div>
     </div>
 
     <div id="leaderboard" class="tab">
@@ -61,11 +63,19 @@
         }
 
         async function loadProfile() {
-            const res = await fetch(`${API_BASE}/profile/${userId}`);
-            const data = await res.json();
-            document.getElementById('profile-info').innerHTML =
-                `<p><strong>Имя:</strong> ${data.name}</p>` +
-                `<p><strong>Email:</strong> ${data.email}</p>`;
+            try {
+                const res = await fetch(`${API_BASE}/profile/${userId}`);
+                if (!res.ok) throw new Error('Ошибка загрузки профиля');
+                const data = await res.json();
+                const roleText = data.status === 0 ? 'Профиль студента' : 'Профиль преподавателя';
+                document.getElementById('profile-info').innerHTML =
+                    `<p><strong>Имя:</strong> ${data.name}</p>` +
+                    `<p><strong>Email:</strong> ${data.email}</p>` +
+                    `<p><strong>Роль:</strong> ${roleText}</p>`;
+            } catch (err) {
+                console.error(err);
+                document.getElementById('profile-info').textContent = 'Не удалось загрузить профиль.';
+            }
         }
 
         async function loadLeaderboard() {
@@ -87,6 +97,8 @@
             document.getElementById('upload-result').textContent =
                 result.success ? '✅ Успешно загружено!' : '❌ Ошибка загрузки.';
         });
+
+        document.addEventListener('DOMContentLoaded', loadProfile);
     </script>
 </body>
 </html>
