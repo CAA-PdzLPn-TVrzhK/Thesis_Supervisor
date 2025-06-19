@@ -1,6 +1,6 @@
 import os
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
-
+import uvicorn
 from app.Services.UserService import UserService
 
 mini_app = FastAPI()
@@ -17,3 +17,6 @@ async def get_profile(user_id: int):
         "email": user.email,
         "status": user.status
     }
+
+if __name__ == "__main__":
+    uvicorn.run(mini_app, host="0.0.0.0", port=8000)
