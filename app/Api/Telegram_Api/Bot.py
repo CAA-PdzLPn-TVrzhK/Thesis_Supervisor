@@ -12,11 +12,9 @@ import smtplib
 from email.mime.text import MIMEText
 
 
-# Load environment variables
 load_dotenv()
 API_TOKEN = "7766131056:AAF70m3Omm0BeaXbRSOm_pzIQCtbPckzBCA"
-BASE_WEBAPP_URL = "https://tdzdslippen.github.io/Thes_super/"
-rek = "https://thesis-supervisor-027f5c.pages.pg.innopolis.university"
+BASE_WEBAPP_URL = "https://caa-pdzlpn-tvrzhk.github.io/Thesis_Supervisor/app/Client/index.html"
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
@@ -102,7 +100,6 @@ async def process_verification(message: Message, state: FSMContext):
     else:
         await message.answer("Invalid code, try again.", reply_markup=ReplyKeyboardRemove())
         await state.set_state(Form.waiting_for_verification)
-
 
 
 @dp.message(F.content_type == ContentType.WEB_APP_DATA)
