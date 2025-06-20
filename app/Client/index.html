@@ -6,54 +6,68 @@
     <title>Портал студента</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: var(--bg-color); color: var(--text-color); }
+        .container { padding: 20px; }
         .tab { display: none; }
         .tab.active { display: block; }
-        button { margin: 5px; padding: 10px; }
+        button { margin: 5px; padding: 10px; cursor: pointer; border: none; border-radius: 5px; background: var(--btn-bg); color: var(--btn-text); }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        #upload-form { margin-top: 10px; }
     </style>
 </head>
 <body>
-    <h1>Мини-приложение студента</h1>
-    <div>
-        <button onclick="showTab('profile')">Профиль</button>
-        <button onclick="showTab('leaderboard')">Лидерборд</button>
-        <button onclick="showTab('upload')">Загрузить работу</button>
-    </div>
+    <div class="container">
+        <h1>Мини-приложение студента</h1>
+        <div>
+            <button onclick="showTab('profile')">Профиль</button>
+            <button onclick="showTab('leaderboard')">Лидерборд</button>
+            <button onclick="showTab('upload')">Загрузить работу</button>
+        </div>
 
-    <div id="profile" class="tab active">
-        <h2>Профиль</h2>
-        <div id="profile-info">
-            <!-- Данные профиля будут загружаться сюда -->
+        <div id="profile" class="tab active">
+            <h2>Профиль</h2>
+            <div id="profile-info">Загрузка...</div>
+        </div>
+
+        <div id="leaderboard" class="tab">
+            <h2>Лидерборд</h2>
+            <table>
+                <thead>
+                    <tr><th>Имя</th><th>Работ загружено</th></tr>
+                </thead>
+                <tbody id="leaderboard-body"><tr><td colspan="2">Загрузка...</td></tr></tbody>
+            </table>
+        </div>
+
+        <div id="upload" class="tab">
+            <h2>Загрузить работу</h2>
+            <form id="upload-form">
+                <input type="file" name="file" accept="*/*" required /><br />
+                <button type="submit">Отправить</button>
+            </form>
+            <div id="upload-result"></div>
         </div>
     </div>
 
-    <div id="leaderboard" class="tab">
-        <h2>Лидерборд</h2>
-        <table>
-            <thead>
-                <tr><th>Имя</th><th>Работ загружено</th></tr>
-            </thead>
-            <tbody id="leaderboard-body"></tbody>
-        </table>
-    </div>
-
-    <div id="upload" class="tab">
-        <h2>Загрузить работу</h2>
-        <form id="upload-form">
-            <input type="file" name="file" required /><br />
-            <button type="submit">Отправить</button>
-        </form>
-        <div id="upload-result"></div>
-    </div>
-
     <script>
+        // Telegram WebApp init
         const tg = window.Telegram.WebApp;
-        tg.expand();
+        tg.ready();
+        tg.MainButton.hide();
+        tg.BackButton.show();
+        tg.onEvent('backButtonClicked', () => tg.close());
+
+        // Theme colors
+        const themeParams = tg.themeParams;
+        document.documentElement.style.setProperty('--bg-color', themeParams.bg_color);
+        document.documentElement.style.setProperty('--text-color', themeParams.text_color);
+        document.documentElement.style.setProperty('--btn-bg', themeParams.button_color);
+        document.documentElement.style.setProperty('--btn-text', themeParams.button_text_color);
+
         const user = tg.initDataUnsafe.user;
-        const userId = user.id;
-        const API_BASE = `${window.location.origin}/api`;
+        const user_id = user.id;
+        const API_BASE = `https://52.87.161.100:8000/api`;
 
         function showTab(id) {
             document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
@@ -63,15 +77,16 @@
         }
 
         async function loadProfile() {
+            document.getElementById('profile-info').textContent = 'Загрузка...';
             try {
-                const res = await fetch(`${API_BASE}/profile/${userId}`);
+                const res = await fetch(`${API_BASE}/users/${user_id}`);
                 if (!res.ok) throw new Error('Ошибка загрузки профиля');
                 const data = await res.json();
-                const roleText = data.status === 0 ? 'Профиль студента' : 'Профиль преподавателя';
                 document.getElementById('profile-info').innerHTML =
-                    `<p><strong>Имя:</strong> ${data.name}</p>` +
+                    `<p><strong>Имя:</strong> ${data.username}</p>` +
                     `<p><strong>Email:</strong> ${data.email}</p>` +
-                    `<p><strong>Роль:</strong> ${roleText}</p>`;
+                    `<p><strong>Роль:</strong> ${data.role}</p>` +
+                    `<p><strong>Всего работ:</strong> ${data.submission_count || 0}</p>`;
             } catch (err) {
                 console.error(err);
                 document.getElementById('profile-info').textContent = 'Не удалось загрузить профиль.';
@@ -79,26 +94,49 @@
         }
 
         async function loadLeaderboard() {
-            const res = await fetch(`${API_BASE}/leaderboard`);
-            const list = await res.json();
             const tbody = document.getElementById('leaderboard-body');
-            tbody.innerHTML = '';
-            list.forEach(item => {
-                tbody.innerHTML += `<tr><td>${item.name}</td><td>${item.submissions}</td></tr>`;
-            });
+            tbody.innerHTML = '<tr><td colspan="2">Загрузка...</td></tr>';
+            try {
+                const res = await fetch(`${API_BASE}/leaderboard`);
+                if (!res.ok) throw new Error('Ошибка загрузки лидерборда');
+                const list = await res.json();
+                tbody.innerHTML = '';
+                list.forEach(item => {
+                    tbody.innerHTML += `<tr><td>${item.name}</td><td>${item.submissions}</td></tr>`;
+                });
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = '<tr><td colspan="2">Не удалось загрузить данные.</td></tr>';
+            }
         }
 
         document.getElementById('upload-form').addEventListener('submit', async e => {
             e.preventDefault();
+            const resultEl = document.getElementById('upload-result');
+            resultEl.textContent = 'Загрузка...';
             const formData = new FormData(e.target);
-            formData.append('user_id', userId);
-            const res = await fetch(`${API_BASE}/upload`, { method: 'POST', body: formData });
-            const result = await res.json();
-            document.getElementById('upload-result').textContent =
-                result.success ? '✅ Успешно загружено!' : '❌ Ошибка загрузки.';
+            formData.append('user_id', user_id);
+            try {
+                const res = await fetch(`${API_BASE}/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.success) {
+                    resultEl.textContent = '✅ Успешно загружено!';
+                    loadProfile();
+                    loadLeaderboard();
+                } else {
+                    throw new Error(data.message || 'Ошибка сервера');
+                }
+            } catch (err) {
+                console.error(err);
+                resultEl.textContent = '❌ Ошибка загрузки.';
+            }
         });
 
-        document.addEventListener('DOMContentLoaded', loadProfile);
+        // Инициалическая загрузка профиля
+        showTab('profile');
     </script>
 </body>
 </html>
