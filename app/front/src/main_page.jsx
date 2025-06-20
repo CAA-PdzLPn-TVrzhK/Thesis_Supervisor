@@ -13,16 +13,16 @@ function MainPage() {
     const renderContent = () => {
         switch (current) {
             case 'page1':
-                return <StudentList/>;
+                return <StudentList onBackToMenu={() => setCurrent('menu')}/>;
             case 'page2':
-                return <SupervisorList/>;
+                return <SupervisorList onBackToMenu={() => setCurrent('menu')}/>;
             case 'page3':
-                return <GroupList/>;
+                return <GroupList onBackToMenu={() => setCurrent('menu')}/>;
             default:
                 // Главное меню с тремя кнопками
                 return (
                     <div className="menuContainer">
-                        <button variant = "outline" onClick={() => setCurrent('page1')} className={"mainButton"}>
+                        <button onClick={() => setCurrent('page1')} className={"mainButton"}>
                             Go to the List of Students
                         </button>
                         <button onClick={() => setCurrent('page2')} className={"mainButton"}>
@@ -39,12 +39,6 @@ function MainPage() {
     return (
     <div>
       {renderContent()}
-      {/* Кнопка возврата в меню */}
-      {current !== 'menu' && (
-        <button onClick={() => setCurrent('menu')} className="backButton">
-          ← Back to menu
-        </button>
-      )}
     </div>
   );
 }

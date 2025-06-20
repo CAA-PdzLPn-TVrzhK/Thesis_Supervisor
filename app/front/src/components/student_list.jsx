@@ -17,7 +17,8 @@ class StudentList extends React.Component {
       loading: true,
       isEditing: false,
       selectedRows: [],
-      current: "studentList"
+      current: "studentList",
+      selectedStudent: null,
     };
 
     // А теперь уже можно дернуть API
@@ -35,7 +36,7 @@ class StudentList extends React.Component {
   }
 
   render() {
-    const { loading, error, data, current } = this.state;
+    const { loading, error, data, current, selectedStudent } = this.state;
 
     if (loading) {
       return <div>Loading…</div>;
@@ -43,57 +44,80 @@ class StudentList extends React.Component {
     if (error) {
       return <div>Error:(</div>;
     }
-    switch (current) {
-      case 'add':
-        return <StudentProfile/>;
-      default:
+    if (current === "add" || current === "profile") {
+      return <StudentProfile
+          student={current === 'profile' ? selectedStudent : null}
+          onBack={() => this.setState({ current: 'list', selectedStudent: null })}
+          onSave={newData => {
+            // тут обрабатываешь newData
+              //NEWDATA для бэка!!!
+            this.setState({ data: [...data, newData], current: 'list', selectedStudent: null });
+          }}
+        />
+    }
         return (
             <div className="pageContainer">
+                <button
+                    className="backButton"
+                    onClick={() => this.props.onBackToMenu?.()}
+                >
+                    ← Back to menu
+                </button>
+                {this.state.isEditing && (
+                    <div className="editPanel">
+                        <button onClick={this.handleDelete}>🗑 Удалить</button>
+                        <button onClick={this.handleMove}>📦 Переместить</button>
+                        <button onClick={() => this.setState({isEditing: false, selectedRows: []})}>❌ Отмена</button>
+                    </div>
+                )}
 
-              {this.state.isEditing && (
-                <div className="editPanel">
-                  <button onClick={this.handleDelete}>🗑 Удалить</button>
-                  <button onClick={this.handleMove}>📦 Переместить</button>
-                  <button onClick={() => this.setState({ isEditing: false, selectedRows: [] })}>❌ Отмена</button>
+                <Table
+                    dataSource={data}
+                    rowKey="id"
+                    rowSelection={
+                        this.state.isEditing
+                            ? {
+                                selectedRowKeys: this.state.selectedRows,
+                                onChange: selectedRowKeys => this.setState({selectedRows: selectedRowKeys}),
+                            }
+                            : null
+                    }
+                    // навигация в профиль по клику на строку
+                    onRow={record => ({
+                        onClick: () => this.setState({
+                            current: 'profile',
+                            selectedStudent: record
+                        })
+                    })}
+                >
+                    <Column
+                        title="Name"
+                        dataIndex="name"
+                        key="name"
+                        className="table_name"
+                        render={(text) => (
+                            <span style={{color: '#1890ff', cursor: 'pointer'}}>
+                        {text}
+                      </span>
+                        )}
+                    />
+                    <Column title="Email" dataIndex="email" key="email"/>
+                    <Column title="Group" dataIndex="group" key="group"/>
+                    <Column title="Supervisor" dataIndex="supervisor" key="supervisor"/>
+                    <Column title="Score" dataIndex="score" key="score"/>
+                </Table>
+
+                <div className="buttonRow bottomButtons">
+                    <button className="addButton" onClick={() => this.setState({current: "add"})}>
+                        ➕ Добавить
+                    </button>
+                    <button className="changeButton" onClick={() => this.setState({isEditing: true})}>
+                        ✏️ Редактировать
+                    </button>
                 </div>
-              )}
-
-              <Table
-                  dataSource={data}
-                  rowKey="id"
-                  rowSelection={
-                  this.state.isEditing
-                    ? {
-                        selectedRowKeys: this.state.selectedRows,
-                        onChange: selectedRowKeys => this.setState({ selectedRows: selectedRowKeys }),
-                      }
-                    : null
-                  }
-              >
-                <Column
-                    title="Name"
-                    dataIndex="name"
-                    key="name"
-                    className="table_name"
-                />
-                <Column title="Email" dataIndex="email" key="email"/>
-                <Column title="Group" dataIndex="group" key="group"/>
-                <Column title="Supervisor" dataIndex="supervisor" key="supervisor"/>
-                <Column title="Score" dataIndex="score" key="score"/>
-              </Table>
-
-              <div className="buttonRow bottomButtons">
-                <button className="addButton" onClick={() => this.setState({current: "add"})}>
-                  ➕ Добавить
-                </button>
-                <button className="changeButton" onClick={() => this.setState({ isEditing: true })}>
-                  ✏️ Редактировать
-                </button>
-              </div>
-          </div>
+            </div>
         );
-    }
-    }
+  }
 }
 
 export default StudentList;

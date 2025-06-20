@@ -102,7 +102,6 @@ async def process_verification(message: Message, state: FSMContext):
         await state.set_state(Form.waiting_for_verification)
 
 
-
 @dp.message(F.content_type == ContentType.WEB_APP_DATA)
 async def handle_webapp_data(message: types.Message):
     data = message.web_app_data.data
