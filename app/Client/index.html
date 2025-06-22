@@ -52,8 +52,6 @@
         Telegram.WebApp.ready();
         const tg = Telegram.WebApp;
         tg.expand();
-
-        // Получаем user_id из параметров URL
         const urlParams = new URLSearchParams(window.location.search);
         window.user_id = urlParams.get('user_id');
 
@@ -69,7 +67,7 @@
 
         // Базовый URL API
         window.API_BASE = "http://52.87.161.100:8000/";
-
+        window.user_id = "1212566690"
         function showTab(id) {
             document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
             document.getElementById(id).classList.add('active');

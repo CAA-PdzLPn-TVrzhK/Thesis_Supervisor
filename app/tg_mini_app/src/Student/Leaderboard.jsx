@@ -5,6 +5,8 @@ import Calendar from "./Calendar"
 import React from "react";
 import './style.css'
 
+const API_BASE = "http://52.87.161.100:8000/"
+
 class Leaderboard extends React.Component {
 
     constructor(props) {
@@ -20,7 +22,7 @@ class Leaderboard extends React.Component {
             loading: true,
         }
 
-        axios.get(`https://jsonplaceholder.typicode.com/users/${this.props.id}`).then(res => {
+        axios.get(`${API_BASE}users/telegram/${this.props.id}`).then(res => {
             this.setState({data: res.data});
         }).catch(() => {
             this.setState({error: true});

@@ -5,6 +5,8 @@ import Leaderboard from "./Leaderboard"
 import React from "react";
 import './style.css'
 
+const API_BASE = "http://52.87.161.100:8000/"
+
 class Profile extends React.Component {
 
     constructor(props) {
@@ -31,7 +33,7 @@ class Profile extends React.Component {
         this.setState({ opened: true });
 
         // Запрос данных
-        axios.get(`https://jsonplaceholder.typicode.com/users/${this.props.id}`)
+        axios.get(`${API_BASE}users/telegram/${this.props.id}`)
             .then(res => {
                 this.setState({ data: res.data });
             })

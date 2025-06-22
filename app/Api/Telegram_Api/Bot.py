@@ -6,14 +6,11 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.storage.memory import MemoryStorage
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
 import requests
-from app.Services.UserService import UserService
 import random
 import smtplib
 from email.mime.text import MIMEText
 
-appl = FastAPI()
 
 load_dotenv()
 API_TOKEN = "7766131056:AAF70m3Omm0BeaXbRSOm_pzIQCtbPckzBCA"
@@ -39,9 +36,9 @@ async def cmd_start(message: Message, state: FSMContext):
 @dp.message(Form.waiting_for_email)
 async def process_email(message: Message, state: FSMContext):
     user_email = message.text.strip()
-    user = await UserService.get_profile(message.chat.id)
-    if user is None:
-        user = await UserService.register_user(message.chat.id, "@" + message.from_user.username, user_email, False)
+    # user = await UserService.get_profile(message.chat.id)
+    # if user is None:
+    #     user = await UserService.register_user(message.chat.id, "@" + message.from_user.username, user_email, False)
     code = f"{random.randint(100000, 999999)}"
     pending_codes[message.chat.id] = code
 
