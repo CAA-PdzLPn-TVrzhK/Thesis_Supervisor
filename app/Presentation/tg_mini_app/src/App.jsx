@@ -39,7 +39,7 @@ class App extends React.Component{
         } else {
             return (
                 <div>
-                    ebal v rot
+                    ${window.TelegramWebApp.userId}
                 </div>
             )
         }
