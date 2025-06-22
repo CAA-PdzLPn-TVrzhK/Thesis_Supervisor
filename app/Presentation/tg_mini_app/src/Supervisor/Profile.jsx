@@ -4,9 +4,7 @@ import Calendar from "./Calendar.jsx"
 import React from "react";
 import './style.css'
 
-const API_BASE = window.TelegramWebApp?.API_BASE || "https://52.87.161.100:8000/";
-
-class StudentProfile extends React.Component {
+class SupervisorProfile extends React.Component {
 
     constructor(props) {
         super(props)
@@ -26,18 +24,16 @@ class StudentProfile extends React.Component {
     }
 
     componentDidMount() {
-        this.setState({ data: this.props.sata });
-
-        // axios.get(`${API_BASE}users/telegram/${this.props.id}`)
-        //     .then(res => {
-        //         this.setState({ data: res.data });
-        //     })
-        //     .catch(() => {
-        //         this.setState({ error: true });
-        //     })
-        //     .finally(() => {
-        //         this.setState({ loading: false });
-        //     });
+        axios.get(`${window.TelegramWebApp.API_BASE}users/telegram/${window.TelegramWebApp.userId}`)
+            .then(res => {
+                this.setState({ data: res.data });
+            })
+            .catch(() => {
+                this.setState({ error: true });
+            })
+            .finally(() => {
+                this.setState({ loading: false });
+            });
     }
 
     goToProfile() {
@@ -131,4 +127,4 @@ class StudentProfile extends React.Component {
     }
 }
 
-export default StudentProfile
+export default SupervisorProfile

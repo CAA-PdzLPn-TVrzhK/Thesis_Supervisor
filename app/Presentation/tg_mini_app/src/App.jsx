@@ -3,8 +3,6 @@ import StudentProfile from "./Student/Profile"
 import SupervisorProfile from "./Supervisor/Profile"
 import React from "react";
 
-const API_BASE = window.TelegramWebApp?.API_BASE || "https://52.87.161.100:8000/";
-
 class App extends React.Component{
     constructor(props) {
         super(props);
@@ -30,16 +28,16 @@ class App extends React.Component{
     }
 
     render() {
-        if (this.state.data.role == "student") {
+        if (this.state.data.role === "student") {
             return (
                 <div>
-                    <StudentProfile data={this.state.data}/>
+                    <StudentProfile id={window.TelegramWebApp.userId}/>
                 </div>
             )
         } else {
             return (
                 <div>
-                    <SupervisorProfile data={this.state.data}/>
+                    <SupervisorProfile id={window.TelegramWebApp.userId}/>
                 </div>
             )
         }
