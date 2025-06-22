@@ -10,7 +10,7 @@ from app.Services.UserService import UserService
 
 
 mini_app = FastAPI()
-# Статика (фронтенд)
+
 mini_app.mount("/static", StaticFiles(directory="C://Users//pc//PycharmProjects//Thesis_Supervisor//app//Api//Telegram_Api//webapp//static"), name="static")
 
 @mini_app.get("/", response_class=HTMLResponse)
