@@ -7,7 +7,33 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="src/index.jsx"></script>
+
+
+  <script src="https://telegram.org/js/telegram-web-app.js?57"></script>
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    window.userId = urlParams.get('user_id');
+
+    if (!user_id && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+      window.user_id = tg.initDataUnsafe.user.id;
+    }
+    console.log("User ID:", window.user_id);
+    console.log("Full initData:", tg.initData);
+    console.log("Unsafe initData:", tg.initDataUnsafe);
+    window.API_BASE = "http://52.87.161.100:8000/";
+
+    window.TelegramWebApp = {
+        initData: tg.initData,
+        initDataUnsafe: tg.initDataUnsafe,
+        userId: window.userId,
+        API_BASE: "http://52.87.161.100:8000/"
+      };
+
+  </script>
+  <script type="module" src="./src/index.jsx"></script>
   </body>
 </html>
 

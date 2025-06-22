@@ -1,0 +1,309 @@
+/* Добавьте этот CSS в ваш файл стилей */
+.profile-container {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  color: #333;
+  background: #f8f9fa;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+}
+
+.nav-bar {
+  display: flex;
+  justify-content: center;
+  padding: 15px 0;
+}
+
+.nav-item {
+  color: white;
+  padding: 12px 25px;
+  margin: 0 10px;
+  cursor: pointer;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 16px;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.profile-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 800px;
+  padding: 40px;
+  margin-bottom: 30px;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 100px;
+}
+
+.profile-photo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.photo-placeholder {
+  width: 180px;
+  height: 180px;
+  border-radius: 30% 30% 0 0;
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  box-shadow: 0 6px 15px rgba(37, 117, 252, 0.3);
+  overflow: hidden;
+}
+
+.photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.info-item {
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+  font-size: 18px;
+  display: flex;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #6a11cb;
+  min-width: 120px;
+}
+
+.info-value {
+  flex: 1;
+  color: #555;
+}
+
+.links-section {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 800px;
+  padding: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.link-card {
+  background: linear-gradient(135deg, #f6f9ff 0%, #eef4ff 100%);
+  border-radius: 12px;
+  padding: 25px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid #e0e7ff;
+}
+
+.link-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(37, 117, 252, 0.15);
+  background: linear-gradient(135deg, #eef4ff 0%, #dde9ff 100%);
+}
+
+.footer {
+  background: linear-gradient(135deg, #2c3e50 0%, #1a2530 100%);
+  color: white;
+  padding: 30px 20px;
+  border-radius: 12px;
+  margin-top: auto;
+  text-align: center;
+}
+
+.footer-content {
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.8;
+  font-size: 16px;
+}
+
+.loading, .error {
+  width: 100%;
+  height: 100vh;
+  background: #f8f9fa;
+  padding: 0;
+  margin: 0;
+  color: #2575fc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loading_image {
+  font-size: 36px;
+}
+
+.error {
+  color: #e74c3c;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .profile-card {
+    grid-template-columns: 1fr;
+    padding: 25px;
+  }
+
+  .nav-bar {
+    flex-wrap: wrap;
+  }
+
+  .nav-item {
+    margin: 5px;
+    padding: 10px 30px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .links-section {
+    grid-template-columns: 1fr;
+  }
+
+  .info-item {
+    flex-direction: column;
+  }
+
+  .info-label {
+    margin-bottom: 5px;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter-active {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+.leaderboard-table {
+  width: 900px;
+  height: 500px;
+  text-align: center;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  overflow: scroll;
+  font-family: 'Segoe UI', 'Roboto', sans-serif;
+  overflow-wrap: break-word;
+}
+
+.leaderboard-table thead {
+  background: linear-gradient(135deg, #64b5f6, #42a5f5);
+  color: white;
+  height: 60px;
+  font-weight: 600;
+  text-align: center;
+  margin: 60px 20px;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+}
+
+.leaderboard-table tbody td {
+  width: 300px;
+  padding: 14px 20px;
+  border-bottom: 1px solid #e0f2ff;
+  color: #37474f;
+  word-wrap: break-word;
+
+}
+
+.leaderboard-table tbody tr:last-child td {
+  margin-top: 120px;
+  border-top: #333333 3px solid;
+}
+
+.leaderboard-table tbody tr td:first-child {
+  max-width: 50px;
+}
+.leaderboard-table thead tr td:first-child {
+  max-width: 50px;
+}
+.dashboard-info {
+  max-width: 800px;
+  border-radius: 30px;
+  background: #ffffff;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+.thesis-info {
+  margin: 30px;
+  background: linear-gradient(135deg, #f6f9ff 0%, #eef4ff 100%);
+  border-radius: 12px;
+  padding: 25px 20px 0 20px;
+  text-align: left;
+  border: 1px solid #e0e7ff;
+}
+
+.dashboard-block-first {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #64b5f6;
+}
+
+.dashboard-block {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.thesis-name-header {
+  font-weight: bold;
+}
