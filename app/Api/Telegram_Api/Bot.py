@@ -31,7 +31,7 @@ class Form(StatesGroup):
 
 @dp.message(Command(commands=["start"]))
 async def cmd_start(message: Message, state: FSMContext):
-    resp = requests.get(EXTERNAL_API_URL + "users/telegram" + str(message.from_user.id))
+    resp = requests.get(f"http://52.87.161.100:8000/users/telegram/{message.from_user.id}")
     if resp.status_code == 200:
         webapp_url = f"{BASE_WEBAPP_URL}?user_id={message.from_user.id}"
         web_app = types.WebAppInfo(url=webapp_url)
@@ -45,19 +45,19 @@ async def cmd_start(message: Message, state: FSMContext):
         )
         await message.answer("You already have an account with our service, and you can either log in to your account or log in with your new email.", reply_markup=keyboard)
     else:
-        await message.answer("Send your email for authorization.", reply_markup=ReplyKeyboardRemove())
+        await message.answer(f"Send your email for authorization", reply_markup=ReplyKeyboardRemove())
         await state.set_state(Form.waiting_for_email)
 
-@dp.message()
+@dp.message(F.text == "Change email")
 async def cmd_email(message: Message, state: FSMContext):
-    if message.test == "Change email":
-        resp = requests.delete(str(requests.get(EXTERNAL_API_URL + "users/telegram" + str(message.from_user.id)).json()["_id"]))
-        if resp.status_code == 204:
-            await message.answer("Send your email for authorization", reply_markup=ReplyKeyboardRemove())
-            await state.set_state(Form.waiting_for_email)
-        else:
-            await message.answer("Nothing was found in the database using your ID, click /start to restart the bot", reply_markup=ReplyKeyboardRemove())
-            await state.clear()
+    resp = requests.delete(
+        EXTERNAL_API_URL + "users/" + str(requests.get(EXTERNAL_API_URL + "users/telegram/" + str(message.from_user.id)).json()["_id"]))
+    if resp.status_code == 204:
+        await message.answer("Send your email for authorization", reply_markup=ReplyKeyboardRemove())
+        await state.set_state(Form.waiting_for_email)
+    else:
+        await message.answer("Nothing was found in the database using your ID, click /start to restart the bot", reply_markup=ReplyKeyboardRemove())
+        await state.clear()
 
 @dp.message(Form.waiting_for_email)
 async def process_email(message: Message, state: FSMContext):
@@ -104,13 +104,13 @@ async def process_verification(message: Message, state: FSMContext):
             headers = {
                 "Content-Type": "application/json"
             }
-            response1 = requests.post(EXTERNAL_API_URL + "users/", json=payload, headers=headers)
-            if response1.status_code == 201:
-                print("Юзер успешно создан!")
-                print("Ответ сервера:", response1.json())
-            else:
-                print(f"Ошибка: статус {response1.status_code}")
-                print("Текст ответа:", response1.text)
+            requests.post(EXTERNAL_API_URL + "users/", json=payload, headers=headers)
+            # if response1.status_code == 201:
+            #     print("Юзер успешно создан!")
+            #     print("Ответ сервера:", response1.json())
+            # else:
+            #     print(f"Ошибка: статус {response1.status_code}")
+            #     print("Текст ответа:", response1.text)
             payload = {
               "user_id": str(message.from_user.id),
               "supervisor_id": "Shilov",
@@ -124,16 +124,16 @@ async def process_verification(message: Message, state: FSMContext):
             headers = {
                 "Content-Type": "application/json"
             }
-            response2 = requests.post(EXTERNAL_API_URL+"students/", json=payload, headers=headers)
-            if response2.status_code == 201:
-                print("Студент успешно создан!")
-                print("Ответ сервера:", response2.json())
-            else:
-                print(f"Ошибка: статус {response2.status_code}")
-                print("Текст ответа:", response2.text)
-        webapp_url = f"{BASE_WEBAPP_URL}?user_id={chat_id}"
-        web_app = types.WebAppInfo(url=webapp_url)
-        keyboard = ReplyKeyboardMarkup(
+            requests.post(EXTERNAL_API_URL+"students/", json=payload, headers=headers)
+            # if response2.status_code == 201:
+            #     print("Студент успешно создан!")
+            #     print("Ответ сервера:", response2.json())
+            # else:
+            #     print(f"Ошибка: статус {response2.status_code}")
+            #     print("Текст ответа:", response2.text)
+            webapp_url = f"{BASE_WEBAPP_URL}?user_id={chat_id}"
+            web_app = types.WebAppInfo(url=webapp_url)
+            keyboard = ReplyKeyboardMarkup(
                 keyboard=[
                     [KeyboardButton(text="Open the student's portal", web_app=web_app)]
                 ],
