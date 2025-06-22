@@ -1,128 +1,147 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Портал студента</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .tab { display: none; }
-        .tab.active { display: block; }
-        button { margin: 5px; padding: 10px; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-        #upload-form { margin-top: 10px; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Портал студента</title>
+  <!-- CORS: если API у вас на другом домене, убедитесь, что back-end разрешает запросы с этого origin -->
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .tab { display: none; }
+    .tab.active { display: block; }
+    button { margin: 5px; padding: 10px; cursor: pointer; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    #upload-form { margin-top: 10px; }
+  </style>
 </head>
 <body>
-    <h1>Мини-приложение студента</h1>
-    <div>
-        <button onclick="showTab('profile')">Профиль</button>
-        <button onclick="showTab('leaderboard')">Лидерборд</button>
-        <button onclick="showTab('upload')">Загрузить работу</button>
-    </div>
+  <h1>Мини-приложение студента</h1>
+  <div>
+    <button id="btn-profile">Профиль</button>
+    <button id="btn-leaderboard">Лидерборд</button>
+    <button id="btn-upload">Загрузить работу</button>
+  </div>
 
-    <div id="profile" class="tab active">
-        <h2>Профиль</h2>
-        <div id="profile-info">Загрузка...</div>
-    </div>
+  <div id="profile" class="tab">
+    <h2>Профиль</h2>
+    <div id="profile-info">Загрузка...</div>
+  </div>
 
-    <div id="leaderboard" class="tab">
-        <h2>Лидерборд</h2>
-        <table>
-            <thead>
-                <tr><th>Имя</th><th>Работ загружено</th></tr>
-            </thead>
-            <tbody id="leaderboard-body"><tr><td colspan="2">Загрузка...</td></tr></tbody>
-        </table>
-    </div>
+  <div id="leaderboard" class="tab">
+    <h2>Лидерборд</h2>
+    <table>
+      <thead>
+        <tr><th>Имя</th><th>Работ загружено</th></tr>
+      </thead>
+      <tbody id="leaderboard-body">
+        <tr><td colspan="2">Загрузка...</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-    <div id="upload" class="tab">
-        <h2>Загрузить работу</h2>
-        <form id="upload-form">
-            <input type="file" name="file" accept="*/*" required /><br />
-            <button type="submit">Отправить</button>
-        </form>
-        <div id="upload-result"></div>
-    </div>
+  <div id="upload" class="tab">
+    <h2>Загрузить работу</h2>
+    <form id="upload-form">
+      <input type="file" name="file" accept="*/*" required /><br />
+      <button type="submit">Отправить</button>
+    </form>
+    <div id="upload-result"></div>
+  </div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        const user = tg.initDataUnsafe.user;
-        const user_id = user.id;
-        // const API_BASE = `http://52.87.161.100:8000/`;
+  <!-- Telegram Web App SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js" defer></script>
+  <script defer>
+    window.API_BASE = "http://52.87.161.100:8000";
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    window.user_id = tg.initDataUnsafe.user.id;
 
-        function showTab(id) {
-            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            if (id === 'profile') loadProfile();
-            if (id === 'leaderboard') loadLeaderboard();
-        }
+    // Функция показа нужной вкладки
+    function showTab(id) {
+      document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      if (id === 'profile') loadProfile();
+      if (id === 'leaderboard') loadLeaderboard();
+    }
 
-        async function loadProfile() {
-            document.getElementById('profile-info').textContent = 'Загрузка...';
-            try {
-                // const res = await fetch(`${API_BASE}/users/telegram/${user_id}`);
-                const res = await fetch(`http://52.87.161.100:8000/users/telegram/${user_id}`);
-                if (!res.ok) throw new Error('Ошибка загрузки профиля');
-                const data = await res.json();
-                document.getElementById('profile-info').innerHTML =
-                    `<p><strong>Имя:</strong> ${data.username}</p>` +
-                    `<p><strong>Email:</strong> ${data.email}</p>` +
-                    `<p><strong>Роль:</strong> ${data.role}</p>`;
-            } catch (err) {
-                console.error(err);
-                document.getElementById('profile-info').textContent = `Не удалось загрузить профиль. ${err}`;
-            }
-        }
+    // Загрузка профиля
+    async function loadProfile() {
+      const info = document.getElementById('profile-info');
+      info.textContent = 'Загрузка...';
+      try {
+        const res = await fetch(`${window.API_BASE}/users/telegram/${window.user_id}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        info.innerHTML =
+          `<p><strong>Имя:</strong> ${data.username}</p>` +
+          `<p><strong>Email:</strong> ${data.email}</p>` +
+          `<p><strong>Роль:</strong> ${data.role}</p>`;
+      } catch (err) {
+        console.error(err);
+        info.textContent = `Не удалось загрузить профиль: ${err.message}`;
+      }
+    }
 
-        async function loadLeaderboard() {
-            const tbody = document.getElementById('leaderboard-body');
-            tbody.innerHTML = '<tr><td colspan="2">Загрузка...</td></tr>';
-            try {
-                const res = await fetch(`${API_BASE}/leaderboard`);
-                if (!res.ok) throw new Error('Ошибка загрузки лидерборда');
-                const list = await res.json();
-                tbody.innerHTML = '';
-                list.forEach(item => {
-                    tbody.innerHTML += `<tr><td>${item.name}</td><td>${item.submissions}</td></tr>`;
-                });
-            } catch (err) {
-                console.error(err);
-                tbody.innerHTML = '<tr><td colspan="2">Не удалось загрузить данные.</td></tr>';
-            }
-        }
-
-        document.getElementById('upload-form').addEventListener('submit', async e => {
-            e.preventDefault();
-            const resultEl = document.getElementById('upload-result');
-            resultEl.textContent = 'Загрузка...';
-            const formData = new FormData(e.target);
-            formData.append('user_id', user_id);
-            try {
-                const res = await fetch(`${API_BASE}/upload`, {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await res.json();
-                if (data.success) {
-                    resultEl.textContent = '✅ Успешно загружено!';
-                    // Обновляем профиль и лидерборд
-                    loadProfile();
-                    loadLeaderboard();
-                } else {
-                    throw new Error(data.message || 'Ошибка сервера');
-                }
-            } catch (err) {
-                console.error(err);
-                resultEl.textContent = '❌ Ошибка загрузки.';
-            }
+    // Загрузка лидерборда
+    async function loadLeaderboard() {
+      const tbody = document.getElementById('leaderboard-body');
+      tbody.innerHTML = '<tr><td colspan="2">Загрузка...</td></tr>';
+      try {
+        const res = await fetch(`${window.API_BASE}/leaderboard`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const list = await res.json();
+        tbody.innerHTML = '';
+        list.forEach(item => {
+          const row = `<tr><td>${item.name}</td><td>${item.submissions}</td></tr>`;
+          tbody.insertAdjacentHTML('beforeend', row);
         });
+      } catch (err) {
+        console.error(err);
+        tbody.innerHTML = '<tr><td colspan="2">Не удалось загрузить данные.</td></tr>';
+      }
+    }
 
-        // При загрузке страницы показываем профиль
-        document.addEventListener('DOMContentLoaded', () => showTab('profile'));
-    </script>
+    // Обработка формы загрузки
+    async function handleUpload(e) {
+      e.preventDefault();
+      const resultEl = document.getElementById('upload-result');
+      resultEl.textContent = 'Загрузка...';
+      const formData = new FormData(e.target);
+      formData.append('user_id', window.user_id);
+      try {
+        const res = await fetch(`${window.API_BASE}/upload`, {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (data.success) {
+          resultEl.textContent = '✅ Успешно загружено!';
+          loadProfile();
+          loadLeaderboard();
+        } else {
+          throw new Error(data.message || 'Ошибка сервера');
+        }
+      } catch (err) {
+        console.error(err);
+        resultEl.textContent = `❌ Ошибка загрузки: ${err.message}`;
+      }
+    }
+
+    // Навешиваем события после загрузки DOM
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('btn-profile')
+              .addEventListener('click', () => showTab('profile'));
+      document.getElementById('btn-leaderboard')
+              .addEventListener('click', () => showTab('leaderboard'));
+      document.getElementById('btn-upload')
+              .addEventListener('click', () => showTab('upload'));
+      document.getElementById('upload-form')
+              .addEventListener('submit', handleUpload);
+
+      // Показываем профиль по умолчанию
+      showTab('profile');
+    });
+  </script>
 </body>
 </html>
