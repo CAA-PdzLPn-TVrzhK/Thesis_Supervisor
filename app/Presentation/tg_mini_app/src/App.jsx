@@ -30,7 +30,7 @@ class App extends React.Component{
     }
 
     render() {
-        if (this.state.data.role === "student") {
+        if (this.state.data.role == "student") {
             return (
                 <div>
                     <StudentProfile data={this.state.data}/>
