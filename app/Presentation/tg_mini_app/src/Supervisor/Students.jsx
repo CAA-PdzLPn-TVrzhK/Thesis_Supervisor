@@ -1,21 +1,20 @@
 import axios from 'axios';
 import Profile from "./Profile.jsx"
 import Calendar from "./Calendar.jsx"
-import Leaderboard from "./Leaderboard.jsx"
 import React from "react";
 import './style.css'
 
 const API_BASE = window.TelegramWebApp?.API_BASE || "https://52.87.161.100:8000/";
 
-class Dashboard extends React.Component {
+class Students extends React.Component {
 
     constructor(props) {
         super(props)
 
         this.state = {
             profile: false,
-            calendar: false,
-            dashboard: true,
+            calendar: true,
+            dashboard: false,
             leaderboard: false,
             data: [],
             error: false,
@@ -73,12 +72,12 @@ class Dashboard extends React.Component {
         if (this.state.profile) {
             return <Profile id={this.props.id}/>
         }
-        if (this.state.calendar) {
-            return <Calendar id={this.props.id}/>
-        }
-        // if (this.state.dashboard) {
-        //     return <Dashboard id={this.props.id}/>
+        // if (this.state.calendar) {
+        //     return <Calendar id={this.props.id}/>
         // }
+        if (this.state.dashboard) {
+            return <Dashboard id={this.props.id}/>
+        }
         if (this.state.leaderboard) {
             return <Leaderboard id={this.props.id}/>
         }
@@ -94,7 +93,7 @@ class Dashboard extends React.Component {
                     </div>
                 </header>
                 <main>
-                    Dashboard
+                    Calendar
                 </main>
                 <futter className={'footer'}>
                     <div className={'footer-content'}>
@@ -113,4 +112,4 @@ class Dashboard extends React.Component {
     }
 }
 
-export default Dashboard
+export default Students

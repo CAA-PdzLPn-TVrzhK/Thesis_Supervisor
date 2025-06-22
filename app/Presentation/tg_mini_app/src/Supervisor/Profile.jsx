@@ -1,7 +1,6 @@
 import axios from 'axios';
-import Dashboard from "./Dashboard.jsx"
+import Students from "./Students.jsx"
 import Calendar from "./Calendar.jsx"
-import Leaderboard from "./Leaderboard.jsx"
 import React from "react";
 import './style.css'
 
@@ -15,8 +14,7 @@ class StudentProfile extends React.Component {
         this.state = {
             profile: true,
             calendar: false,
-            dashboard: false,
-            leaderboard: false,
+            students: false,
             data: [],
             error: false,
             loading: true,
@@ -24,48 +22,38 @@ class StudentProfile extends React.Component {
 
         this.goToCalendar = this.goToCalendar.bind(this);
         this.goToProfile = this.goToProfile.bind(this);
-        this.goToDashboard = this.goToDashboard.bind(this);
-        this.goToLeaderboard = this.goToLeaderboard.bind(this);
+        this.goToStudents = this.goToStudents.bind(this);
     }
 
     componentDidMount() {
-        this.setState({ opened: true });
+        this.setState({ data: this.props.sata });
 
-        axios.get(`${API_BASE}users/telegram/${this.props.id}`)
-            .then(res => {
-                this.setState({ data: res.data });
-            })
-            .catch(() => {
-                this.setState({ error: true });
-            })
-            .finally(() => {
-                this.setState({ loading: false });
-            });
+        // axios.get(`${API_BASE}users/telegram/${this.props.id}`)
+        //     .then(res => {
+        //         this.setState({ data: res.data });
+        //     })
+        //     .catch(() => {
+        //         this.setState({ error: true });
+        //     })
+        //     .finally(() => {
+        //         this.setState({ loading: false });
+        //     });
     }
 
     goToProfile() {
         this.setState({profile: true});
-        this.setState({dashboard: false});
+        this.setState({students: false});
         this.setState({calendar: false});
-        this.setState({leaderboard: false});
     }
     goToCalendar() {
         this.setState({profile: false});
-        this.setState({dashboard: false});
+        this.setState({students: false});
         this.setState({calendar: true});
-        this.setState({leaderboard: false});
     }
-    goToDashboard() {
+    goToStudents() {
         this.setState({profile: false});
-        this.setState({dashboard: true});
+        this.setState({students: true});
         this.setState({calendar: false});
-        this.setState({leaderboard: false});
-    }
-    goToLeaderboard() {
-        this.setState({profile: false});
-        this.setState({dashboard: false});
-        this.setState({calendar: false});
-        this.setState({leaderboard: true});
     }
 
     render() {
@@ -83,11 +71,8 @@ class StudentProfile extends React.Component {
         if (this.state.calendar) {
             return <Calendar id={this.props.id}/>
         }
-        if (this.state.dashboard) {
-            return <Dashboard id={this.props.id}/>
-        }
-        if (this.state.leaderboard) {
-            return <Leaderboard id={this.props.id}/>
+        if (this.state.students) {
+            return <Students id={this.props.id}/>
         }
 
         if(this.state.error) {
@@ -102,8 +87,7 @@ class StudentProfile extends React.Component {
                     <div className={'nav-bar'}>
                         <span onClick={this.goToProfile} className={'nav-item'}> Profile </span>
                         <span onClick={this.goToCalendar} className={'nav-item'}> Calendar </span>
-                        <span onClick={this.goToDashboard} className={'nav-item'}> Dashboard </span>
-                        <span onClick={this.goToLeaderboard} className={'nav-item'}> Leaderboard </span>
+                        <span onClick={this.goToStudents} className={'nav-item'}> Dashboard </span>
                     </div>
                 </header>
                 <main className={'main'}>
@@ -122,25 +106,12 @@ class StudentProfile extends React.Component {
                                 <span className={'info-label'}> Email </span>
                                 <span className={'info-value'}> {this.state.data.email} </span>
                             </div>
-                            <div className={'info-item'}>
-                                <span className={'info-label'}> Group </span>
-                                <span className={'info-value'}> DSAI-05 AA </span>
-                            </div>
-                            <div className={'info-item'}>
-                                <span className={'info-label'}> Supervisor </span>
-                                <span className={'info-value'}> Nikita BB </span>
-                            </div>
-                            <div className={'info-item'}>
-                                <span className={'info-label'}> Score </span>
-                                <span className={'info-value'}> 6941 AA </span>
-                        </div>
                         </div>
                     </div>
 
                     <div className={'links-section'}>
                         <div onClick={this.goToCalendar} className={'link-card'}>Link to calendar</div>
-                        <div onClick={this.goToDashboard} className={'link-card'}>Link to dashboard</div>
-                        <div onClick={this.goToLeaderboard} className={'link-card'}>Link to leaderboard</div>
+                        <div onClick={this.goToStudents} className={'link-card'}>Link to students list</div>
                     </div>
                 </main>
                 <futter  className={'footer'}>
