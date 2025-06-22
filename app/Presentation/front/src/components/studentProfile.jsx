@@ -32,7 +32,7 @@ export default function StudentProfile({ student, onBack, onSave, groupOptions =
 
   return (
       <div className="profileContainer">
-        <Button type="link" onClick={onBack} className="backLink">
+        <Button onClick={onBack} className="backLink">
           ← Back to list
         </Button>
 

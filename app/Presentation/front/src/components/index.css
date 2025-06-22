@@ -4,6 +4,19 @@
   position: relative;   /* чтобы абсолютное позиционирование внутри работало */
   min-height: 100vh;    /* чтобы контейнер занимал всю высоту экрана */
   padding-bottom: 60px; /* чтобы контент не перекрывался кнопками */
+  overflow-x: auto;
+}
+
+.table_name, .table_email{
+  width: 18%;
+}
+
+.tableWrapper .ant-table table {
+  table-layout: auto !important; /* авто-подгонка колонок */
+}
+
+.tableWrapper .ant-table-cell {
+  white-space: nowrap;     /* длинный текст не будет переноситься */
 }
 
 .menuContainer {
@@ -33,7 +46,7 @@
 }
 
 .mainButton:hover {
-  background-color: #212529; /* чуть более тёмный синий при наведении */
+  background-color: #212529;
   color: white;
 }
 
@@ -41,15 +54,6 @@ body{
     background-color: white;
 }
 
-.table_name {
-    display: flex;
-    padding: 0.09375rem 0.9375rem;
-    align-items: flex-start;
-    gap: 0.625rem;
-    border-radius: 0.3125rem;
-    background-color: transparent;
-    color: black;
-}
 
 .ant-table-cell {
   border-color: #000;
@@ -61,10 +65,16 @@ body{
   left: 20px;      /* отступ слева */
   padding: 10px 15px;
   border-radius: 8px;
-  background-color: #535bf2;
-  color: white;
-  border: none;
+  background-color: transparent;
+  border: 2px solid #000;
+  color: black;
+  transition: background-color 0.5s ease;
   cursor: pointer;
+}
+
+.backButton:hover{
+  background-color: #212529;
+  color: white;
 }
 
 .container {
@@ -82,16 +92,17 @@ body{
 .addButton, .changeButton {
   padding: 8px 16px;
   border-radius: 8px;
-  background-color: #4caf50;
-  color: white;
   font-weight: bold;
-  border: none;
+  background-color: transparent;
+  border: 2px solid #000;
+  color: black;
+  transition: background-color 0.5s ease;
   cursor: pointer;
-  transition: 0.2s;
 }
 
-.actionButton:hover {
-  background-color: #45a049;
+.addButton:hover, .changeButton:hover{
+  background-color: #212529;
+  color: white;
 }
 
 /* Контейнер профиля — карточка по центру */
@@ -108,14 +119,18 @@ body{
 
 /* Ссылка “Назад” */
 .backLink {
-  color: #d63384;
+  color: black;
   font-weight: 500;
   margin-bottom: 24px;
   display: inline-block;
+  border-radius: 8px;
+  background-color: transparent;
+  border: 2px solid #000;
 }
 
 .backLink:hover {
-  color: #ad1457;
+  background-color: #212529;
+  color: white;
 }
 
 /* Заголовок */
@@ -148,11 +163,17 @@ body{
 .profileForm .ant-btn-primary {
   width: 100%;
   padding: 12px 0;
-  border-radius: 8px;
-  background: linear-gradient(90deg,#e91e63,#d63384);
-  border: none;
+  background-color: transparent;
+  border: 2px solid #000;
+  color: black;
+  transition: background-color 0.5s ease;
   font-size: 16px;
   font-weight: 600;
+}
+
+.profileForm:hover .ant-btn-primary:hover{
+  background-color: #212529;
+  color: white;
 }
 
 /* Обертка для загрузки фото */
@@ -196,7 +217,7 @@ body{
 }
 
 .photoUpload .uploadButton .btn {
-  background: #f50057;
+  background: #212529;
   color: #fff;
   padding: 8px 16px;
   border-radius: 8px;

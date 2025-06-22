@@ -1,5 +1,5 @@
-import MainPage from "./main_page.jsx"
-import student_list from "./components/student_list.jsx"
+import MainPage from "./main_page"
+import student_list from "./components/student_list"
 
 function App() {
     console.log('🟢 App rendered');

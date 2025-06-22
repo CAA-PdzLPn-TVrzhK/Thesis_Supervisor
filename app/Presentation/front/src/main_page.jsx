@@ -1,6 +1,6 @@
-import StudentList from "./components/student_list.jsx"
-import SupervisorList from "./components/supervisor_list.jsx"
-import GroupList from "./components/group_list.jsx"
+import StudentList from "./components/student_list"
+import SupervisorList from "./components/supervisor_list"
+import GroupList from "./components/group_list"
 import './components/index.css';
 import {useState} from "react";
 
@@ -27,9 +27,6 @@ function MainPage() {
                         </button>
                         <button onClick={() => setCurrent('page2')} className={"mainButton"}>
                             Go to the List of Supervisors
-                        </button>
-                        <button onClick={() => setCurrent('page3')} className={"mainButton"}>
-                            Go to the List of Groups
                         </button>
                     </div>
                 );

@@ -23,7 +23,7 @@ class StudentList extends React.Component {
 
     // А теперь уже можно дернуть API
     axios
-      .get('https://jsonplaceholder.typicode.com/users')
+      .get('http://52.87.161.100:8000/users/')
       .then(res => {
         this.setState({ data: res.data });   // ← используем res.data
       })
@@ -82,6 +82,12 @@ class StudentList extends React.Component {
                             }
                             : null
                     }
+                    pagination={false}
+                    scroll={{ y: 600, x: true}}
+                    style={{
+                        tableLayout: 'fixed',
+                        width: '100%'
+                    }}
                     // навигация в профиль по клику на строку
                     onRow={record => ({
                         onClick: () => this.setState({
@@ -96,23 +102,24 @@ class StudentList extends React.Component {
                         key="name"
                         className="table_name"
                         render={(text) => (
-                            <span style={{color: '#1890ff', cursor: 'pointer'}}>
+                            <span style={{color: 'black', cursor: 'pointer'}}>
                         {text}
                       </span>
                         )}
                     />
-                    <Column title="Email" dataIndex="email" key="email"/>
+                    <Column title="Email" dataIndex="email" key="email" className={"table_email"}/>
                     <Column title="Group" dataIndex="group" key="group"/>
                     <Column title="Supervisor" dataIndex="supervisor" key="supervisor"/>
+                    <Column title="Pass\Fail" dataIndex="P/F" key="P/F"/>
                     <Column title="Score" dataIndex="score" key="score"/>
                 </Table>
 
                 <div className="buttonRow bottomButtons">
                     <button className="addButton" onClick={() => this.setState({current: "add"})}>
-                        ➕ Добавить
+                        Add student
                     </button>
                     <button className="changeButton" onClick={() => this.setState({isEditing: true})}>
-                        ✏️ Редактировать
+                        Edit student
                     </button>
                 </div>
             </div>
