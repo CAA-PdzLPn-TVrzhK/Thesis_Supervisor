@@ -49,11 +49,10 @@
     <script src="https://telegram.org/js/telegram-web-app.js?57"></script>
 
     <script>
-        Telegram.WebApp.ready();
+        // Telegram.WebApp.ready();
         const tg = window.Telegram.WebApp;
         tg.expand();
         const user = tg.initDataUnsafe.user;
-
         window.user_id = user.id;
 
 // window.API_BASE = `http://52.87.161.100:8000/`;
