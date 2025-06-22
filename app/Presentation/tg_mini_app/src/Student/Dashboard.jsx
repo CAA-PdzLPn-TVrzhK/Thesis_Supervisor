@@ -5,8 +5,6 @@ import Leaderboard from "./Leaderboard.jsx"
 import React from "react";
 import './style.css'
 
-const API_BASE = "https://52.87.161.100:8000/"
-
 class Dashboard extends React.Component {
 
     constructor(props) {
@@ -22,7 +20,7 @@ class Dashboard extends React.Component {
             loading: true,
         }
 
-        axios.get(`${API_BASE}users/telegram/${this.props.id}`).then(res => {
+        axios.get(`${window.TelegramWebApp.API_BASE}users/telegram/${window.TelegramWebApp.userId}`).then(res => {
             this.setState({data: res.data});
         }).catch(() => {
             this.setState({error: true});

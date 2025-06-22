@@ -1,13 +1,7 @@
-<<<<<<<<< Temporary merge branch 1:app/Presentation/tg_mini_app/src/App.jsx
-import Profile from "./Student/Profile.jsx"
-=========
 import axios from 'axios';
 import StudentProfile from "./Student/Profile"
 import SupervisorProfile from "./Supervisor/Profile"
 import React from "react";
->>>>>>>>> Temporary merge branch 2:app/tg_mini_app/src/App.jsx
-
-const API_BASE = "https://52.87.161.100:8000/"
 
 class App extends React.Component{
     constructor(props) {
@@ -37,13 +31,13 @@ class App extends React.Component{
         if (this.state.data.role === "student") {
             return (
                 <div>
-                    <StudentProfile data={this.state.data}/>
+                    <StudentProfile id={window.TelegramWebApp.userId}/>
                 </div>
             )
         } else {
             return (
                 <div>
-                    <SupervisorProfile data={this.state.data}/>
+                    <SupervisorProfile id={window.TelegramWebApp.userId}/>
                 </div>
             )
         }
