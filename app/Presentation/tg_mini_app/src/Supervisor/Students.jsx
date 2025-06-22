@@ -1,6 +1,6 @@
 import axios from 'axios';
-import Profile from "./Profile"
-import Calendar from "./Calendar"
+import Profile from "./Profile.jsx"
+import Calendar from "./Calendar.jsx"
 import React from "react";
 import './style.css'
 
