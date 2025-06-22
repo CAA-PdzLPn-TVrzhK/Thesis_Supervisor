@@ -87,7 +87,7 @@
                     `<p><strong>Role:</strong> ${data.role}</p>`;
             } catch (err) {
                 console.error(err);
-                document.getElementById('profile-info').textContent = `Не удалось загрузить профиль. ${err}`;
+                document.getElementById('profile-info').textContent = `Не удалось загрузить профиль.${user_id} ${err}`;
             }
         }
 
