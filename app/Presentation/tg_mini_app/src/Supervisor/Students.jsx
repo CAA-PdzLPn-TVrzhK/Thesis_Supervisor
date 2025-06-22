@@ -4,7 +4,7 @@ import Calendar from "./Calendar.jsx"
 import React from "react";
 import './style.css'
 
-const API_BASE = "https://52.87.161.100:8000/"
+const API_BASE = window.TelegramWebApp?.API_BASE || "https://52.87.161.100:8000/";
 
 class Students extends React.Component {
 
