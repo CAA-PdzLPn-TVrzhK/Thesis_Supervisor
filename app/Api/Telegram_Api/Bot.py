@@ -7,10 +7,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.storage.memory import MemoryStorage
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, EmailStr
-from uuid import uuid4
-from datetime import datetime, timezone
-import httpx
+import requests
 from app.Services.UserService import UserService
 import random
 import smtplib
@@ -21,7 +18,7 @@ appl = FastAPI()
 load_dotenv()
 API_TOKEN = "7766131056:AAF70m3Omm0BeaXbRSOm_pzIQCtbPckzBCA"
 BASE_WEBAPP_URL = "https://caa-pdzlpn-tvrzhk.github.io/Thesis_Supervisor/app/Client/index.html"
-EXTERNAL_API_URL  = "http://52.87.161.100:8000/docs#/"
+EXTERNAL_API_URL  = "http://52.87.161.100:8000/"
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
@@ -58,7 +55,7 @@ async def process_email(message: Message, state: FSMContext):
     server.login("markdajver@gmail.com", "jaaf lawy rtpi glpr")
     server.send_message(msg)
     server.quit()
-
+    await state.update_data(user_email=user_email)
     await message.answer("The code has been sent by e-mail, enter it in the reply message:", reply_markup=ReplyKeyboardRemove())
     await state.set_state(Form.waiting_for_verification)
 
@@ -66,29 +63,32 @@ async def process_email(message: Message, state: FSMContext):
 async def process_verification(message: Message, state: FSMContext):
     chat_id = message.chat.id
     user_code = message.text.strip()
-    user = await UserService.get_profile(message.chat.id)
     if pending_codes.get(chat_id) == user_code:
         pending_codes.pop(chat_id, None)
+        data = await state.get_data()
+        user_email = data.get("user_email")
         await state.clear()
         payload = {
-          "user_id": str(message.from_user.id),
-          "supervisor_id": str(0),
-          "program": "DSAI",
-          "year": 0,
-          "thesis_id": "string",
-          "peer_group_id": "string",
-          "points": 0,
-          "progress": 0
+          "telegram_id": str(chat_id),
+          "username": str(message.from_user.username),
+          "first_name": str(message.from_user.first_name) or " ",
+          "last_name": str(message.from_user.last_name) or " ",
+          "role": "student",
+          "email": str(user_email)
         }
-        UserCreate(**payload)
-        async with httpx.AsyncClient() as client:
-            resp = await client.post(EXTERNAL_API_URL, json=payload)
-            if resp.status_code != 201:
-                await message.answer(
-                    f"❌ Не удалось зарегистрировать профиль: {resp.text}"
-                )
-                return
-
+        headers = {
+            "Content-Type": "application/json"
+        }
+        response = requests.post(EXTERNAL_API_URL+"users/", json=payload, headers=headers)
+        if response.status_code == 201:
+            print("Студент успешно создан!")
+            print("Ответ сервера:", response.json())
+        else:
+            print(f"Ошибка: статус {response.status_code}")
+            print("Текст ответа:", response.text)
+        answer = requests.get(EXTERNAL_API_URL + "users/telegram/" + str(chat_id))
+        print(answer.json())
+        print(EXTERNAL_API_URL + "users/telegram/" + str(chat_id))
         web_app = WebAppInfo(url=BASE_WEBAPP_URL)
         keyboard = ReplyKeyboardMarkup(
             keyboard=[
@@ -97,46 +97,11 @@ async def process_verification(message: Message, state: FSMContext):
             resize_keyboard=True,
             one_time_keyboard=True
         )
-        supervisor_keyboard = ReplyKeyboardMarkup(
-            keyboard=[[KeyboardButton(text="View dashboard")]],
-            resize_keyboard=True
-        )
-        if user.status == 0:
-            await message.answer("🔗 Open the student's mini-app:", reply_markup=keyboard)
-        elif user.status == 1:
-            await message.answer("You are logged in", reply_markup=supervisor_keyboard)
-        else:
-            await message.answer("Invalid code, try again.", reply_markup=ReplyKeyboardRemove())
-            await state.set_state(Form.waiting_for_verification)
+
+        await message.answer("🔗 Open the student's mini-app:", reply_markup=keyboard)
 
 
 @dp.message(F.content_type == ContentType.WEB_APP_DATA)
 async def handle_webapp_data(message: types.Message):
     data = message.web_app_data.data
     await message.answer("✅ Данные получены из мини-приложения", reply_markup=ReplyKeyboardRemove())
-
-class UserCreate(BaseModel):
-    user_id: str
-    supervisor_id: str
-    program: str
-    year: int
-    thesis_id: str
-    peer_group_id: str
-    points: int
-    progress: int
-
-
-
-@appl.post("/students", response_model=UserCreate)
-async def reg_user(user: UserCreate):
-    payload = user
-    async with httpx.AsyncClient() as client:
-        response = await client.post(EXTERNAL_API_URL, json=payload)
-        if response.status_code != 201:
-            raise HTTPException(
-                status_code=502,
-                detail=f"Ошибка при создании пользователя в внешнем API: {response.text}"
-            )
-        created = response.json()
-
-    return created
