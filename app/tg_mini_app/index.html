@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MiniApp</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./src/index.jsx"></script>
+  </body>
+</html>
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="ru">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8" />-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0" />-->
+<!--    <title>Портал студента</title>-->
+<!--    <script src="https://telegram.org/js/telegram-web-app.js"></script>-->
+<!--    <style>-->
+<!--        body { font-family: Arial, sans-serif; margin: 20px; }-->
+<!--        .tab { display: none; }-->
+<!--        .tab.active { display: block; }-->
+<!--        button { margin: 5px; padding: 10px; }-->
+<!--        table { width: 100%; border-collapse: collapse; margin-top: 10px; }-->
+<!--        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--    <h1>Мини-приложение студента</h1>-->
+<!--    <div>-->
+<!--        <button onclick="showTab('profile')">Профиль</button>-->
+<!--        <button onclick="showTab('leaderboard')">Лидерборд</button>-->
+<!--        <button onclick="showTab('upload')">Загрузить работу</button>-->
+<!--    </div>-->
+
+<!--    <div id="profile" class="tab active">-->
+<!--        <h2>Профиль</h2>-->
+<!--        <div id="profile-info">Загрузка...</div>-->
+<!--    </div>-->
+
+<!--    <div id="leaderboard" class="tab">-->
+<!--        <h2>Лидерборд</h2>-->
+<!--        <table>-->
+<!--            <thead>-->
+<!--                <tr><th>Имя</th><th>Работ загружено</th></tr>-->
+<!--            </thead>-->
+<!--            <tbody id="leaderboard-body"></tbody>-->
+<!--        </table>-->
+<!--    </div>-->
+
+<!--    <div id="upload" class="tab">-->
+<!--        <h2>Загрузить работу</h2>-->
+<!--        <form id="upload-form">-->
+<!--            <input type="file" name="file" required /><br />-->
+<!--            <button type="submit">Отправить</button>-->
+<!--        </form>-->
+<!--        <div id="upload-result"></div>-->
+<!--    </div>-->
+
+<!--    <script>-->
+<!--        const tg = window.Telegram.WebApp;-->
+<!--        tg.expand();-->
+<!--        const user = tg.initDataUnsafe.user;-->
+<!--        const userId = user.id;-->
+<!--        const API_BASE = `${window.location.origin}/api`;-->
+
+<!--        function showTab(id) {-->
+<!--            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));-->
+<!--            document.getElementById(id).classList.add('active');-->
+<!--            if (id === 'profile') loadProfile();-->
+<!--            if (id === 'leaderboard') loadLeaderboard();-->
+<!--        }-->
+
+<!--        async function loadProfile() {-->
+<!--            const res = await fetch(`${API_BASE}/profile/${userId}`);-->
+<!--            const data = await res.json();-->
+<!--            document.getElementById('profile-info').innerHTML =-->
+<!--                `<p><strong>Имя:</strong> ${data.name}</p>` +-->
+<!--                `<p><strong>Email:</strong> ${data.email}</p>`;-->
+<!--        }-->
+
+<!--        async function loadLeaderboard() {-->
+<!--            const res = await fetch(`${API_BASE}/leaderboard`);-->
+<!--            const list = await res.json();-->
+<!--            const tbody = document.getElementById('leaderboard-body');-->
+<!--            tbody.innerHTML = '';-->
+<!--            list.forEach(item => {-->
+<!--                tbody.innerHTML += `<tr><td>${item.name}</td><td>${item.submissions}</td></tr>`;-->
+<!--            });-->
+<!--        }-->
+
+<!--        document.getElementById('upload-form').addEventListener('submit', async e => {-->
+<!--            e.preventDefault();-->
+<!--            const formData = new FormData(e.target);-->
+<!--            formData.append('user_id', userId);-->
+<!--            const res = await fetch(`${API_BASE}/upload`, { method: 'POST', body: formData });-->
+<!--            const result = await res.json();-->
+<!--            document.getElementById('upload-result').textContent =-->
+<!--                result.success ? '✅ Успешно загружено!' : '❌ Ошибка загрузки.';-->
+<!--        });-->
+<!--    </script>-->
+<!--</body>-->
+<!--</html>-->
