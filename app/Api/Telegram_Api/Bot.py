@@ -65,27 +65,46 @@ async def process_verification(message: Message, state: FSMContext):
         data = await state.get_data()
         user_email = data.get("user_email")
         await state.clear()
-        payload = {
-          "telegram_id": str(chat_id),
-          "username": str(message.from_user.username),
-          "first_name": str(message.from_user.first_name) or " ",
-          "last_name": str(message.from_user.last_name) or " ",
-          "role": "student",
-          "email": str(user_email)
-        }
-        headers = {
-            "Content-Type": "application/json"
-        }
-        response = requests.post(EXTERNAL_API_URL+"users/", json=payload, headers=headers)
-        if response.status_code == 201:
-            print("Студент успешно создан!")
-            print("Ответ сервера:", response.json())
-        else:
-            print(f"Ошибка: статус {response.status_code}")
-            print("Текст ответа:", response.text)
-        answer = requests.get(EXTERNAL_API_URL + "users/telegram/" + str(chat_id))
-        print(answer.json())
-        print(EXTERNAL_API_URL + "users/telegram/" + str(chat_id))
+        answer = requests.get(EXTERNAL_API_URL + "supervisors/" + str(chat_id))
+        if answer.status_code == 404:
+            payload = {
+                "telegram_id": str(chat_id),
+                "username": str(message.from_user.username),
+                "first_name": str(message.from_user.first_name) or " ",
+                "last_name": str(message.from_user.last_name) or " ",
+                "role": "student",
+                "email": str(user_email)
+            }
+            headers = {
+                "Content-Type": "application/json"
+            }
+            response1 = requests.post(EXTERNAL_API_URL + "users/", json=payload, headers=headers)
+            if response1.status_code == 201:
+                print("Юзер успешно создан!")
+                print("Ответ сервера:", response1.json())
+            else:
+                print(f"Ошибка: статус {response1.status_code}")
+                print("Текст ответа:", response1.text)
+            payload = {
+              "user_id": str(message.from_user.id),
+              "supervisor_id": "Shilov",
+              "program": "DSAI",
+              "year": 0,
+              "thesis_id": "string",
+              "peer_group_id": "string",
+              "points": 0,
+              "progress": 0
+            }
+            headers = {
+                "Content-Type": "application/json"
+            }
+            response2 = requests.post(EXTERNAL_API_URL+"students/", json=payload, headers=headers)
+            if response2.status_code == 201:
+                print("Студент успешно создан!")
+                print("Ответ сервера:", response2.json())
+            else:
+                print(f"Ошибка: статус {response2.status_code}")
+                print("Текст ответа:", response2.text)
         webapp_url = f"{BASE_WEBAPP_URL}?user_id={chat_id}"
         web_app = types.WebAppInfo(url=webapp_url)
         keyboard = ReplyKeyboardMarkup(
