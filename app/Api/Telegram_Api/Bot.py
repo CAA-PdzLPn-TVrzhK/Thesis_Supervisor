@@ -45,7 +45,7 @@ async def cmd_start(message: Message, state: FSMContext):
         )
         await message.answer("You already have an account with our service, and you can either log in to your account or log in with your new email.", reply_markup=keyboard)
     else:
-        await message.answer("Send your email for authorization", reply_markup=ReplyKeyboardRemove())
+        await message.answer("Send your email for authorization.", reply_markup=ReplyKeyboardRemove())
         await state.set_state(Form.waiting_for_email)
 
 @dp.message()
