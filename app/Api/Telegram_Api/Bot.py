@@ -5,6 +5,7 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.utils import keyboard
 from dotenv import load_dotenv
 import requests
 import random
@@ -30,8 +31,33 @@ class Form(StatesGroup):
 
 @dp.message(Command(commands=["start"]))
 async def cmd_start(message: Message, state: FSMContext):
-    await message.answer("Send your email for authorization", reply_markup=ReplyKeyboardRemove())
-    await state.set_state(Form.waiting_for_email)
+    resp = requests.get(EXTERNAL_API_URL + "users/telegram" + str(message.from_user.id))
+    if resp.status_code == 200:
+        webapp_url = f"{BASE_WEBAPP_URL}?user_id={message.from_user.id}"
+        web_app = types.WebAppInfo(url=webapp_url)
+        keyboard = ReplyKeyboardMarkup(
+            keyboard=[
+                [KeyboardButton(text="Log in to the portal", web_app=web_app)],
+                [KeyboardButton(text="Change email")],
+            ],
+            resize_keyboard=True,
+            one_time_keyboard=True
+        )
+        await message.answer("You already have an account with our service, and you can either log in to your account or log in with your new email.", reply_markup=keyboard)
+    else:
+        await message.answer("Send your email for authorization.", reply_markup=ReplyKeyboardRemove())
+        await state.set_state(Form.waiting_for_email)
+
+@dp.message()
+async def cmd_email(message: Message, state: FSMContext):
+    if message.test == "Change email":
+        resp = requests.delete(str(requests.get(EXTERNAL_API_URL + "users/telegram" + str(message.from_user.id)).json()["_id"]))
+        if resp.status_code == 204:
+            await message.answer("Send your email for authorization", reply_markup=ReplyKeyboardRemove())
+            await state.set_state(Form.waiting_for_email)
+        else:
+            await message.answer("Nothing was found in the database using your ID, click /start to restart the bot", reply_markup=ReplyKeyboardRemove())
+            await state.clear()
 
 @dp.message(Form.waiting_for_email)
 async def process_email(message: Message, state: FSMContext):
