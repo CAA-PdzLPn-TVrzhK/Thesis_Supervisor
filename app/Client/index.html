@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Портал студента</title>
+    <title>Mini-app portal</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
@@ -16,33 +16,33 @@
     </style>
 </head>
 <body>
-    <h1>Мини-приложение студента</h1>
+    <h1>Mini-app portal</h1>
     <div>
-        <button onclick="showTab('profile')">Профиль</button>
-        <button onclick="showTab('leaderboard')">Лидерборд</button>
-        <button onclick="showTab('upload')">Загрузить работу</button>
+        <button onclick="showTab('profile')">Profile</button>
+        <button onclick="showTab('leaderboard')">Liderboard</button>
+        <button onclick="showTab('upload')">Upload your work</button>
     </div>
 
     <div id="profile" class="tab active">
-        <h2>Профиль</h2>
-        <div id="profile-info">Загрузка...</div>
+        <h2>Profile</h2>
+        <div id="profile-info">Loading...</div>
     </div>
 
     <div id="leaderboard" class="tab">
-        <h2>Лидерборд</h2>
+        <h2>Liderboard</h2>
         <table>
             <thead>
-                <tr><th>Имя</th><th>Работ загружено</th></tr>
+                <tr><th>Name</th><th>Works submitted</th></tr>
             </thead>
-            <tbody id="leaderboard-body"><tr><td colspan="2">Загрузка...</td></tr></tbody>
+            <tbody id="leaderboard-body"><tr><td colspan="2">Loading...</td></tr></tbody>
         </table>
     </div>
 
     <div id="upload" class="tab">
-        <h2>Загрузить работу</h2>
+        <h2>Submit your work</h2>
         <form id="upload-form">
             <input type="file" name="file" accept="*/*" required /><br />
-            <button type="submit">Отправить</button>
+            <button type="submit">Send</button>
         </form>
         <div id="upload-result"></div>
     </div>
@@ -75,16 +75,16 @@
         }
 
         async function loadProfile() {
-            document.getElementById('profile-info').textContent = 'Загрузка...';
+            document.getElementById('profile-info').textContent = 'Loading...';
             try {
                 // const res = await fetch(`${API_BASE}/users/telegram/${user_id}`);
-                const res = await fetch(`${API_BASE}students/user/${user_id}`);
+                const res = await fetch(`${API_BASE}users/telegram/${user_id}`);
                 if (!res.ok) throw new Error('Ошибка загрузки профиля');
                 const data = await res.json();
                 document.getElementById('profile-info').innerHTML =
-                    `<p><strong>Имя:</strong> ${data.username}</p>` +
-                    `<p><strong>Email:</strong> ${data.year}</p>` +
-                    `<p><strong>Роль:</strong> ${data.program}</p>`;
+                    `<p><strong>Name:</strong> ${data.first_name} ${data.last_name}</p>` +
+                    `<p><strong>Email:</strong> ${data.email}</p>` +
+                    `<p><strong>Role:</strong> ${data.role}</p>`;
             } catch (err) {
                 console.error(err);
                 document.getElementById('profile-info').textContent = `Не удалось загрузить профиль. ${err}`;
@@ -93,7 +93,7 @@
 
         async function loadLeaderboard() {
             const tbody = document.getElementById('leaderboard-body');
-            tbody.innerHTML = '<tr><td colspan="2">Загрузка...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="2">Loading...</td></tr>';
             try {
                 const res = await fetch(`${API_BASE}/leaderboard`);
                 if (!res.ok) throw new Error('Ошибка загрузки лидерборда');
@@ -104,14 +104,14 @@
                 });
             } catch (err) {
                 console.error(err);
-                tbody.innerHTML = '<tr><td colspan="2">Не удалось загрузить данные.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="2">The data could not be uploaded.</td></tr>';
             }
         }
 
         document.getElementById('upload-form').addEventListener('submit', async e => {
             e.preventDefault();
             const resultEl = document.getElementById('upload-result');
-            resultEl.textContent = 'Загрузка...';
+            resultEl.textContent = 'Loading...';
             const formData = new FormData(e.target);
             formData.append('user_id', user_id);
             try {
