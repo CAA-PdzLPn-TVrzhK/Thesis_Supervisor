@@ -1,6 +1,6 @@
-import StudentList from "./components/student_list"
-import SupervisorList from "./components/supervisor_list"
-import GroupList from "./components/group_list"
+import StudentList from "./components/student_list.jsx"
+import SupervisorList from "./components/supervisor_list.jsx"
+import GroupList from "./components/group_list.jsx"
 import './components/index.css';
 import {useState} from "react";
 

@@ -1,19 +1,19 @@
 import axios from 'axios';
-import Profile from "./Profile"
-import Calendar from "./Calendar"
-import Leaderboard from "./Leaderboard"
+import Profile from "./Profile.jsx"
+import Dashboard from "./Dashboard.jsx"
+import Leaderboard from "./Leaderboard.jsx"
 import React from "react";
 import './style.css'
 
-class Dashboard extends React.Component {
+class Calendar extends React.Component {
 
     constructor(props) {
         super(props)
 
         this.state = {
             profile: false,
-            calendar: false,
-            dashboard: true,
+            calendar: true,
+            dashboard: false,
             leaderboard: false,
             data: [],
             error: false,
@@ -67,20 +67,20 @@ class Dashboard extends React.Component {
                 </div>
             )
         }
-
+        
         if (this.state.profile) {
             return <Profile id={this.props.id}/>
         }
-        if (this.state.calendar) {
-            return <Calendar id={this.props.id}/>
-        }
-        // if (this.state.dashboard) {
-        //     return <Dashboard id={this.props.id}/>
+        // if (this.state.calendar) {
+        //     return <Calendar id={this.props.id}/>
         // }
+        if (this.state.dashboard) {
+            return <Dashboard id={this.props.id}/>
+        }
         if (this.state.leaderboard) {
             return <Leaderboard id={this.props.id}/>
         }
-
+        
         return (
             <div className={'profile-container'}>
                 <header className={'header'}>
@@ -92,7 +92,7 @@ class Dashboard extends React.Component {
                     </div>
                 </header>
                 <main>
-                    Dashboard
+                    Calendar
                 </main>
                 <futter className={'footer'}>
                     <div className={'footer-content'}>
@@ -111,4 +111,4 @@ class Dashboard extends React.Component {
     }
 }
 
-export default Dashboard
+export default Calendar

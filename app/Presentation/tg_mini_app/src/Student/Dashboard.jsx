@@ -1,11 +1,11 @@
 import axios from 'axios';
-import Profile from "./Profile"
-import Dashboard from "./Dashboard"
-import Calendar from "./Calendar"
+import Profile from "./Profile.jsx"
+import Calendar from "./Calendar.jsx"
+import Leaderboard from "./Leaderboard.jsx"
 import React from "react";
 import './style.css'
 
-class Leaderboard extends React.Component {
+class Dashboard extends React.Component {
 
     constructor(props) {
         super(props)
@@ -13,8 +13,8 @@ class Leaderboard extends React.Component {
         this.state = {
             profile: false,
             calendar: false,
-            dashboard: false,
-            leaderboard: true,
+            dashboard: true,
+            leaderboard: false,
             data: [],
             error: false,
             loading: true,
@@ -74,12 +74,12 @@ class Leaderboard extends React.Component {
         if (this.state.calendar) {
             return <Calendar id={this.props.id}/>
         }
-        if (this.state.dashboard) {
-            return <Dashboard id={this.props.id}/>
-        }
-        // if (this.state.leaderboard) {
-        //     return <Leaderboard id={this.props.id}/>
+        // if (this.state.dashboard) {
+        //     return <Dashboard id={this.props.id}/>
         // }
+        if (this.state.leaderboard) {
+            return <Leaderboard id={this.props.id}/>
+        }
 
         return (
             <div className={'profile-container'}>
@@ -92,39 +92,7 @@ class Leaderboard extends React.Component {
                     </div>
                 </header>
                 <main>
-                    <div>
-                        <table className="leaderboard-table">
-                            <thead>
-                                <tr>
-                                    <td>Place</td>
-                                    <td>Student</td>
-                                    <td>Score</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>Student</td>
-                                    <td>Score</td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>Student</td>
-                                    <td>Score</td>
-                                </tr>
-                                <tr>
-                                    <td>3</td>
-                                    <td>Student</td>
-                                    <td>Score</td>
-                                </tr>
-                                <tr>
-                                    <td>Place</td>
-                                    <td>Student</td>
-                                    <td>Score</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    Dashboard
                 </main>
                 <futter className={'footer'}>
                     <div className={'footer-content'}>
@@ -143,4 +111,4 @@ class Leaderboard extends React.Component {
     }
 }
 
-export default Leaderboard
+export default Dashboard

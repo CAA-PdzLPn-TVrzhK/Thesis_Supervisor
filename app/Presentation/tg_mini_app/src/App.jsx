@@ -1,12 +1,11 @@
-import MainPage from "./main_page"
-import student_list from "./components/student_list"
+import Profile from "./Student/Profile.jsx"
 
 function App() {
     console.log('🟢 App rendered');
 
     return (
     <div>
-      <MainPage />
+      <Profile id={3}/>
     </div>
   );
 }
