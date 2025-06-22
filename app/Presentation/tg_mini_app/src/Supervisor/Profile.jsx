@@ -1,6 +1,6 @@
 import axios from 'axios';
-import Students from "./Students"
-import Calendar from "./Calendar"
+import Students from "./Students.jsx"
+import Calendar from "./Calendar.jsx"
 import React from "react";
 import './style.css'
 

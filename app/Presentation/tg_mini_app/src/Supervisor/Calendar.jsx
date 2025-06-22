@@ -1,6 +1,6 @@
 import axios from 'axios';
-import Profile from "./Profile"
-import Students from "./Students"
+import Profile from "./Profile.jsx"
+import Students from "./Students.jsx"
 import React from "react";
 import './style.css'
 
