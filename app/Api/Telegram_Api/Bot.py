@@ -89,15 +89,15 @@ async def process_verification(message: Message, state: FSMContext):
         answer = requests.get(EXTERNAL_API_URL + "users/telegram/" + str(chat_id))
         print(answer.json())
         print(EXTERNAL_API_URL + "users/telegram/" + str(chat_id))
-        web_app = types.WebAppInfo(url=BASE_WEBAPP_URL)
+        webapp_url = f"{BASE_WEBAPP_URL}?user_id={chat_id}"
+        web_app = types.WebAppInfo(url=webapp_url)
         keyboard = ReplyKeyboardMarkup(
-            keyboard=[
-                [KeyboardButton(text="Open the student's portal", web_app=web_app)]
-            ],
-            resize_keyboard=True,
-            one_time_keyboard=True
-        )
-
+                keyboard=[
+                    [KeyboardButton(text="Open the student's portal", web_app=web_app)]
+                ],
+                resize_keyboard=True,
+                one_time_keyboard=True
+            )
         await message.answer("🔗 Open the student's mini-app:", reply_markup=keyboard)
 
 

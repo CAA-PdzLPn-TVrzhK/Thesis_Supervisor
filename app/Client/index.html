@@ -18,7 +18,7 @@
 <body>
     <h1>Мини-приложение студента</h1>
     <div>
-        <button onclick="showTab('profile')">Профиль епта хуй</button>
+        <button onclick="showTab('profile')">Профиль</button>
         <button onclick="showTab('leaderboard')">Лидерборд</button>
         <button onclick="showTab('upload')">Загрузить работу</button>
     </div>
@@ -49,13 +49,27 @@
     <script src="https://telegram.org/js/telegram-web-app.js?57"></script>
 
     <script>
-        // Telegram.WebApp.ready();
-        const tg = window.Telegram.WebApp;
+        Telegram.WebApp.ready();
+        const tg = Telegram.WebApp;
         tg.expand();
-        const user = tg.initDataUnsafe.user;
-        window.user_id = user.id;
 
-// window.API_BASE = `http://52.87.161.100:8000/`;
+        // Получаем user_id из параметров URL
+        const urlParams = new URLSearchParams(window.location.search);
+        window.user_id = urlParams.get('user_id');
+
+        // Если не нашли в URL, пробуем получить из Telegram
+        if (!window.user_id && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            window.user_id = tg.initDataUnsafe.user.id;
+        }
+
+        // Для отладки
+        console.log("User ID:", window.user_id);
+        console.log("Full initData:", tg.initData);
+        console.log("Unsafe initData:", tg.initDataUnsafe);
+
+        // Базовый URL API
+        window.API_BASE = "http://52.87.161.100:8000/";
+
         function showTab(id) {
             document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
             document.getElementById(id).classList.add('active');
