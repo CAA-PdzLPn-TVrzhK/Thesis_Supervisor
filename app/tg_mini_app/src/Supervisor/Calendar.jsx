@@ -4,7 +4,7 @@ import Students from "./Students"
 import React from "react";
 import './style.css'
 
-const API_BASE = "http://52.87.161.100:8000/"
+const API_BASE = "https://52.87.161.100:8000/"
 
 class Calendar extends React.Component {
 
