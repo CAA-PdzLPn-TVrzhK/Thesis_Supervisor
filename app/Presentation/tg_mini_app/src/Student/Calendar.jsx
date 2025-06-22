@@ -1,7 +1,7 @@
 import axios from 'axios';
-import Profile from "./Profile"
-import Dashboard from "./Dashboard"
-import Leaderboard from "./Leaderboard"
+import Profile from "./Profile.jsx"
+import Dashboard from "./Dashboard.jsx"
+import Leaderboard from "./Leaderboard.jsx"
 import React from "react";
 import './style.css'
 

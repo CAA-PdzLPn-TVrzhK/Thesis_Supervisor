@@ -1,7 +1,7 @@
 import axios from 'axios';
-import Dashboard from "./Dashboard"
-import Calendar from "./Calendar"
-import Leaderboard from "./Leaderboard"
+import Dashboard from "./Dashboard.jsx"
+import Calendar from "./Calendar.jsx"
+import Leaderboard from "./Leaderboard.jsx"
 import React from "react";
 import './style.css'
 
