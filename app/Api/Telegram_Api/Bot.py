@@ -115,7 +115,9 @@ async def process_verification(message: Message, state: FSMContext):
                 one_time_keyboard=True
             )
         await message.answer("🔗 Open the student's mini-app:", reply_markup=keyboard)
-
+    else:
+        await state.set_state(Form.waiting_for_verification)
+        await message.answer("Incorrect code, please try again.", reply_markup=ReplyKeyboardRemove())
 
 @dp.message(F.content_type == ContentType.WEB_APP_DATA)
 async def handle_webapp_data(message: types.Message):
