@@ -46,13 +46,15 @@
         </form>
         <div id="upload-result"></div>
     </div>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <script>
+        window.API_BASE = `http://52.87.161.100:8000/`;
         const tg = window.Telegram.WebApp;
         tg.expand();
         const user = tg.initDataUnsafe.user;
         window.user_id = user.id;
-        window.API_BASE = `http://52.87.161.100:8000/`;
+
 
         function showTab(id) {
             document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
@@ -64,8 +66,8 @@
         async function loadProfile() {
             document.getElementById('profile-info').textContent = 'Загрузка...';
             try {
-                // const res = await fetch(`${API_BASE}/users/telegram/${user_id}`);
-                const res = await fetch(`http://52.87.161.100:8000/users/telegram/${user_id}`);
+                const res = await fetch(`${API_BASE}/users/telegram/${user_id}`);
+                // const res = await fetch(`http://52.87.161.100:8000/users/telegram/${user_id}`);
                 if (!res.ok) throw new Error('Ошибка загрузки профиля');
                 const data = await res.json();
                 document.getElementById('profile-info').innerHTML =
