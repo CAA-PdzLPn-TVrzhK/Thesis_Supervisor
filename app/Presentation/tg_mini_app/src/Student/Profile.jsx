@@ -5,9 +5,9 @@ import Leaderboard from "./Leaderboard.jsx"
 import React from "react";
 import './style.css'
 
-const API_BASE = "http://52.87.161.100:8000/"
+const API_BASE = "https://52.87.161.100:8000/"
 
-class Profile extends React.Component {
+class StudentProfile extends React.Component {
 
     constructor(props) {
         super(props)
@@ -29,10 +29,8 @@ class Profile extends React.Component {
     }
 
     componentDidMount() {
-        // Устанавливаем флаг для анимации
         this.setState({ opened: true });
 
-        // Запрос данных
         axios.get(`${API_BASE}users/telegram/${this.props.id}`)
             .then(res => {
                 this.setState({ data: res.data });
@@ -118,11 +116,11 @@ class Profile extends React.Component {
                         <div className={'profile-info'}>
                             <div className={'info-item'}>
                                 <span className={'info-label'}> Name </span>
-                                <span className={'info-value'}> Timur AA </span>
+                                <span className={'info-value'}> {this.state.data.first_name} {this.state.data.last_name} </span>
                             </div>
                             <div className={'info-item'}>
                                 <span className={'info-label'}> Email </span>
-                                <span className={'info-value'}> t.aa@mail.ru AA </span>
+                                <span className={'info-value'}> {this.state.data.email} </span>
                             </div>
                             <div className={'info-item'}>
                                 <span className={'info-label'}> Group </span>
@@ -162,4 +160,4 @@ class Profile extends React.Component {
     }
 }
 
-export default Profile
+export default StudentProfile

@@ -1,4 +1,4 @@
-import Profile from "./Student/Profile.jsx"
+import Profile from "./Student/Profile"
 
 function App() {
     console.log('🟢 App rendered');
