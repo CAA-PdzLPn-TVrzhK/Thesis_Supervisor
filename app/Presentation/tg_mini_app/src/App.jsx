@@ -30,7 +30,7 @@ class App extends React.Component{
     }
 
     render() {
-        if (this.state.data.role == "student") {
+        if (this.state.data.role === "student") {
             return (
                 <div>
                     <StudentProfile data={this.state.data}/>
@@ -39,7 +39,7 @@ class App extends React.Component{
         } else {
             return (
                 <div>
-                    <SupervisorProfile data={this.state.data}/>
+                    ebal v rot
                 </div>
             )
         }
