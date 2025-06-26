@@ -99,6 +99,7 @@ async def process_verification(message: Message, state: FSMContext):
                 "first_name": str(message.from_user.first_name) or " ",
                 "last_name": str(message.from_user.last_name) or " ",
                 "role": "student",
+                "department": "educ",
                 "email": str(user_email)
             }
             headers = {
@@ -115,6 +116,7 @@ async def process_verification(message: Message, state: FSMContext):
               "user_id": str(message.from_user.id),
               "supervisor_id": "Shilov",
               "program": "DSAI",
+              "department": "string",
               "year": 0,
               "thesis_id": "string",
               "peer_group_id": "string",
