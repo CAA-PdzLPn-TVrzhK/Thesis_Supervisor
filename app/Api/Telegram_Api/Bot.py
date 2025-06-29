@@ -16,7 +16,7 @@ from email.mime.text import MIMEText
 load_dotenv()
 API_TOKEN = "7766131056:AAF70m3Omm0BeaXbRSOm_pzIQCtbPckzBCA"
 BASE_WEBAPP_URL = "https://thesis-supervisor.pages.dev"
-EXTERNAL_API_URL  = "https://dprwupbzatrqmqpdwcgq.supabase.co"
+EXTERNAL_API_URL  = "http://52.87.161.100:8000/"
 headers = {
     "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3NzcsImV4cCI6MjA2Njc2MDc3N30.yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc",
 }
@@ -54,7 +54,7 @@ async def cmd_start(message: Message, state: FSMContext):
 @dp.message(F.text == "Change email")
 async def cmd_email(message: Message, state: FSMContext):
     resp = requests.delete(
-        EXTERNAL_API_URL + "users/" + str(requests.get(EXTERNAL_API_URL + "users/telegram/" + str(message.from_user.id)).json()["_id"]), headers = headers)
+        EXTERNAL_API_URL + "users/" + str(requests.get(EXTERNAL_API_URL + "users/telegram/" + str(message.from_user.id)).json()["_id"]))
     if resp.status_code == 204:
         await message.answer("Send your Innopolis University email for authorization", reply_markup=ReplyKeyboardRemove())
         await state.set_state(Form.waiting_for_email)

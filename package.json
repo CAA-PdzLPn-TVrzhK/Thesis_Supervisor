@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "axios": "^1.10.0"
+  },
+  "scripts": {
+    "lint": "eslint \"src/**/*.{js,ts,tsx}\"",
+    "lint:ci": "eslint \"src/**/*.{js,ts,tsx}\" -f junit -o eslint-report.xml"
+  },
+
+  "devDependencies": {
+    "eslint": "^9.30.0"
+  }
+}
