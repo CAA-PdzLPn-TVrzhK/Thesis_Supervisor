@@ -4,8 +4,13 @@ import responses
 from unittest.mock import MagicMock
 import app.Api.Telegram_Api.Bot as bot_module
 from app.Api.Telegram_Api.Bot import (
-    cmd_start, cmd_email, process_email, process_verification,
-    Form, pending_codes, EXTERNAL_API_URL,
+    cmd_start,
+    cmd_email,
+    process_email,
+    process_verification,
+    Form,
+    pending_codes,
+    EXTERNAL_API_URL,
 )
 
 
@@ -44,10 +49,14 @@ async def test_onboarding_happy_path(msg, fsm, monkeypatch):
         await process_verification(msg, fsm)
 
         # Проверки результата — ДОЛЖНЫ быть ВНУТРИ with!
-        assert any(c.request.method == "POST" and c.request.url.endswith("/users/")
-                   for c in rsps.calls), "POST /users/ не был вызван"
-        assert any(c.request.method == "POST" and c.request.url.endswith("/students/")
-                   for c in rsps.calls), "POST /students/ не был вызван"
+        assert any(
+            c.request.method == "POST" and c.request.url.endswith("/users/")
+            for c in rsps.calls
+        ), "POST /users/ не был вызван"
+        assert any(
+            c.request.method == "POST" and c.request.url.endswith("/students/")
+            for c in rsps.calls
+        ), "POST /students/ не был вызван"
 
     # FSM очищен, код убран
     assert fsm.state is None
@@ -79,7 +88,9 @@ async def test_onboarding_wrong_code(msg, fsm, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_start_existing_user(msg, fsm, monkeypatch):
-    monkeypatch.setattr(bot_module.requests, "get", lambda *_a, **_k: MagicMock(status_code=200))
+    monkeypatch.setattr(
+        bot_module.requests, "get", lambda *_a, **_k: MagicMock(status_code=200)
+    )
 
     await cmd_start(msg, fsm)
 

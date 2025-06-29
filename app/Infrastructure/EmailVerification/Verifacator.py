@@ -6,7 +6,7 @@ from telegram.ext import (
     MessageHandler,
     filters,
     ConversationHandler,
-    CallbackContext
+    CallbackContext,
 )
 import random, smtplib
 from email.mime.text import MIMEText
@@ -18,9 +18,11 @@ ASK_EMAIL, ASK_CODE = range(2)
 # временное хранилище: chat_id → { email, code }
 pending = {}
 
+
 def start_verify(update: Update, ctx: CallbackContext) -> int:
     update.message.reply_text("🏷 Введи, пожалуйста, свой e-mail для верификации:")
     return ASK_EMAIL
+
 
 def receive_email(update: Update, ctx: CallbackContext) -> int:
     email = update.message.text.strip()
@@ -47,6 +49,7 @@ def receive_email(update: Update, ctx: CallbackContext) -> int:
     update.message.reply_text("✉ Код отправлен! Проверь почту и пришли его сюда:")
     return ASK_CODE
 
+
 def receive_code(update: Update, ctx: CallbackContext) -> int:
     chat_id = update.effective_chat.id
     user_code = update.message.text.strip()
@@ -60,18 +63,24 @@ def receive_code(update: Update, ctx: CallbackContext) -> int:
         update.message.reply_text("❌ Код не подошёл. Попробуй ещё раз или /cancel")
     return ConversationHandler.END
 
+
 def cancel(update: Update, ctx: CallbackContext) -> int:
     pending.pop(update.effective_chat.id, None)
     update.message.reply_text("Верификацию отменили.")
     return ConversationHandler.END
 
+
 # сам ConversationHandler, который надо добавить в диспатчер
 verify_conv = ConversationHandler(
     entry_points=[CommandHandler("verify", start_verify)],
     states={
-        ASK_EMAIL: [MessageHandler(filters.TEXT & ~filters.COMMAND, receive_email)],  # Фильтры в верхнем регистре
-        ASK_CODE:  [MessageHandler(filters.TEXT & ~filters.COMMAND, receive_code)],   # Фильтры в верхнем регистре
+        ASK_EMAIL: [
+            MessageHandler(filters.TEXT & ~filters.COMMAND, receive_email)
+        ],  # Фильтры в верхнем регистре
+        ASK_CODE: [
+            MessageHandler(filters.TEXT & ~filters.COMMAND, receive_code)
+        ],  # Фильтры в верхнем регистре
     },
     fallbacks=[CommandHandler("cancel", cancel)],
-    allow_reentry=False
+    allow_reentry=False,
 )
