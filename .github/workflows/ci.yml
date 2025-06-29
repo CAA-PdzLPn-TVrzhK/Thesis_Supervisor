@@ -64,7 +64,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install pytest pytest-cov requests responses flake8 bandit aiogram python-dotenv \
                       aiohttp aiosignal certifi charset-normalizer frozenlist idna multidict \
-                      pydantic typing-extensions urllib3 yarl
+                      pydantic typing-extensions urllib3 yarl pytest-asyncio
 
       - name: Run tests with coverage
         run: |
