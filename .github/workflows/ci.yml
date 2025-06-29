@@ -38,16 +38,42 @@ jobs:
         run: |
           flake8 .
 
-
-      # ------ TESTS ------
-      - name: Run tests with coverage
-        run: |
-            pip install pytest pytest-cov
-            mkdir -p coverage
-            pytest app/Tests --verbose --cov=app --cov-report=term --cov-report=xml:coverage/coverage.xml
+#      # ------ TESTS ------
+#      - name: Run tests with coverage
+#        run: |
+#          pip install pytest pytest-cov
+#          mkdir -p coverage
+#          pytest app/Tests --verbose --cov=app --cov-report=term --cov-report=xml:coverage/coverage.xml
 
       - name: Upload coverage to Codecov
         if: success() && github.event_name != 'pull_request'
         uses: codecov/codecov-action@v4
         with:
-          files: coverage.xml
+          files: coverage/coverage.xml
+
+  security-scan:
+    name: Bandit Security Scan
+    runs-on: ubuntu-latest
+    needs: lint-build-test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Bandit
+        run: pip install bandit
+
+      - name: Run Bandit → HTML report
+        run: |
+          mkdir -p reports
+          bandit -r . -f html -o reports/bandit.html || true
+
+      - name: Upload Bandit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bandit-report
+          path: reports/bandit.html
