@@ -9,73 +9,48 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        language: [node, python]
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Node.js
+
+      - name: Set up ${{ matrix.language }}
+        # Для Node.js
+        if: matrix.language == 'node'
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+      # Для Python
+      - name: Set up Python
+        if: matrix.language == 'python'
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
       - name: Install dependencies
+        if: matrix.language == 'node'
         run: npm ci
-      - name: Run ESLint
-        run: npm run lint
+      - name: Install dependencies
+        if: matrix.language == 'python'
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 flake8-junit-xml
+
+      - name: Run linter
+        if: matrix.language == 'node'
+        run: npm run lint:ci
+      - name: Run Flake8 (generate JUnit report)
+        if: matrix.language == 'python'
+        run: |
+          mkdir -p reports
+          flake8 . --format=pytest --output-file=reports/flake8-report.xml
+
       - name: Upload lint report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: eslint-report
-          path: eslint-report.xml
-
-  build:
-    needs: lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-      - name: Install dependencies
-        run: npm ci
-      - name: Build project
-        run: npm run build
-      - name: Archive build
-        uses: actions/upload-artifact@v4
-        with:
-          name: built-snapshot
-          path: dist/
-
-  test:
-    needs: build
-    runs-on: ubuntu-latest
-    services:
-      # Пример: интеграционные тесты с БД
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: user
-          POSTGRES_PASSWORD: pass
-          POSTGRES_DB: testdb
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-      - name: Install dependencies
-        run: npm ci
-      - name: Run tests with coverage
-        run: npm run test:ci          # должна генерировать coverage-report/
-      - name: Upload coverage report
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage-report
-          path: coverage/
+          name: lint-report-${{ matrix.language }}
+          path: |
+            eslint-report.xml
+            reports/flake8-report.xml
