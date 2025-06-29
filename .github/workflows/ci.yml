@@ -50,11 +50,6 @@ jobs:
 #        run: |
 #          mypy .
 
-      # ------ BUILD ------
-      - name: Build package
-        run: |
-          pip install build
-          python -m build --sdist --wheel
 
       # ------ TESTS ------
       - name: Run tests with coverage
