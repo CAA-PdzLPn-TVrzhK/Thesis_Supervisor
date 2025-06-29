@@ -53,7 +53,7 @@ async def cmd_email(message: Message, state: FSMContext):
     resp = requests.delete(
         EXTERNAL_API_URL + "users/" + str(requests.get(EXTERNAL_API_URL + "users/telegram/" + str(message.from_user.id)).json()["_id"]))
     if resp.status_code == 204:
-        await message.answer("Send your email for authorization", reply_markup=ReplyKeyboardRemove())
+        await message.answer("Send your Innopolis University email for authorization", reply_markup=ReplyKeyboardRemove())
         await state.set_state(Form.waiting_for_email)
     else:
         await message.answer("Nothing was found in the database using your ID, click /start to restart the bot", reply_markup=ReplyKeyboardRemove())
@@ -62,25 +62,29 @@ async def cmd_email(message: Message, state: FSMContext):
 @dp.message(Form.waiting_for_email)
 async def process_email(message: Message, state: FSMContext):
     user_email = message.text.strip()
+    if user_email.endswith("@innopolis.university"):
     # user = await UserService.get_profile(message.chat.id)
     # if user is None:
     #     user = await UserService.register_user(message.chat.id, "@" + message.from_user.username, user_email, False)
-    code = f"{random.randint(100000, 999999)}"
-    pending_codes[message.chat.id] = code
+        code = f"{random.randint(100000, 999999)}"
+        pending_codes[message.chat.id] = code
 
-    msg = MIMEText(f"Your verification code: {code}")
-    msg["Subject"] = "Telegram bot: verification code"
-    msg["From"] = "markdajver@gmail.com"
-    msg["To"] = user_email
+        msg = MIMEText(f"Your verification code: {code}")
+        msg["Subject"] = "Telegram bot: verification code"
+        msg["From"] = "markdajver@gmail.com"
+        msg["To"] = user_email
 
-    server = smtplib.SMTP("smtp.gmail.com", 587)
-    server.starttls()
-    server.login("markdajver@gmail.com", "jaaf lawy rtpi glpr")
-    server.send_message(msg)
-    server.quit()
-    await state.update_data(user_email=user_email)
-    await message.answer("The code has been sent by e-mail, enter it in the reply message:", reply_markup=ReplyKeyboardRemove())
-    await state.set_state(Form.waiting_for_verification)
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()
+        server.login("markdajver@gmail.com", "jaaf lawy rtpi glpr")
+        server.send_message(msg)
+        server.quit()
+        await state.update_data(user_email=user_email)
+        await message.answer("The code has been sent by e-mail, enter it in the reply message:", reply_markup=ReplyKeyboardRemove())
+        await state.set_state(Form.waiting_for_verification)
+    else:
+        await message.answer("Please send an Innopolis University email")
+        await state.set_state(Form.waiting_for_email)
 
 @dp.message(Form.waiting_for_verification)
 async def process_verification(message: Message, state: FSMContext):
