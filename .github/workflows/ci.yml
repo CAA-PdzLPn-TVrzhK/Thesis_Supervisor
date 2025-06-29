@@ -27,14 +27,14 @@ jobs:
       - name: Run Flake8 → JUnit report
         run: |
           mkdir -p reports
-          flake8 . --format=pytest --output-file=reports/flake8.xml || true
+          flake8 . --format=flake8_junit_xml --output-file=reports/flake8.xml || true
 
       - name: Upload Flake8 report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: flake8-report
-          path: reports/*.xml
+          path: reports/flake8.xml
 
 
   # 2) Tests with pytest & coverage
