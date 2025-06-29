@@ -7,50 +7,58 @@ on:
     branches: [ '*' ]
 
 jobs:
-  lint:
+  lint-node:
+    name: Lint (Node.js)
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        language: [node, python]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
-      - name: Set up ${{ matrix.language }}
-        # Для Node.js
-        if: matrix.language == 'node'
-        uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: '18'
-      # Для Python
-      - name: Set up Python
-        if: matrix.language == 'python'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint (JUnit report)
+        run: |
+          # убедитесь, что eslint-junit-reporter установлен:
+          # npm install --save-dev eslint-junit-reporter
+          npm run lint:ci
+
+      - name: Upload ESLint report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eslint-report
+          path: eslint-report.xml
+
+  lint-python:
+    name: Lint (Python)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
-        if: matrix.language == 'node'
-        run: npm ci
-      - name: Install dependencies
-        if: matrix.language == 'python'
+      - name: Install flake8 + JUnit formatter
         run: |
           python -m pip install --upgrade pip
           pip install flake8 flake8-junit-xml
 
-      - name: Run linter
-        if: matrix.language == 'node'
-        run: npm run lint:ci
-      - name: Run Flake8 (generate JUnit report)
-        if: matrix.language == 'python'
+      - name: Run Flake8 (JUnit report)
         run: |
           mkdir -p reports
-          flake8 . --format=pytest --output-file=reports/flake8-report.xml
+          # --format=pytest + flake8-junit-xml выводит JUnit в reports/flake8.xml
+          flake8 . --format=pytest --output-file=reports/flake8.xml
 
-      - name: Upload lint report
+      - name: Upload Flake8 report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: lint-report-${{ matrix.language }}
-          path: |
-            eslint-report.xml
-            reports/flake8-report.xml
+          name: flake8-report
+          path: reports/flake8.xml
