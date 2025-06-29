@@ -9,29 +9,14 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        language: [js, python]
     steps:
       - uses: actions/checkout@v4
 
-      # JS Lint
-      - if: matrix.language == 'js'
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-      - if: matrix.language == 'js'
-        run: npm ci
-      - if: matrix.language == 'js'
-        run: npm run lint:ci
-
       # Python Lint
-      - if: matrix.language == 'python'
-        uses: actions/setup-python@v4
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      - if: matrix.language == 'python'
-        run: |
+      - run: |
           python -m pip install --upgrade pip
           pip install black isort flake8 mypy
           black --check .
@@ -39,15 +24,9 @@ jobs:
           flake8 app/
           mypy app/
       - uses: actions/upload-artifact@v4
-        if: matrix.language == 'js'
-        with:
-          name: eslint-report
-          path: eslint-report.xml
-      - uses: actions/upload-artifact@v4
-        if: matrix.language == 'python'
         with:
           name: python-lint-report
-          path: '**/flake8-report.xml'  # если нужен XML; иначе убрать
+          path: '**/flake8-report.xml'
 
   build:
     runs-on: ubuntu-latest
@@ -66,17 +45,6 @@ jobs:
         with:
           name: python-dist
           path: dist/*.whl
-
-      # Build frontend
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-      - run: npm ci
-      - run: npm run build
-      - uses: actions/upload-artifact@v4
-        with:
-          name: frontend-build
-          path: build/
 
   test:
     runs-on: ubuntu-latest
@@ -99,18 +67,6 @@ jobs:
           name: pytest-report
           path: pytest-report.xml
       - uses: codecov/codecov-action@v4
-
-      # JS tests
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-      - run: |
-          npm ci
-          npm test
-      - uses: actions/upload-artifact@v4
-        with:
-          name: jest-coverage
-          path: coverage/lcov.info
 
   security_scan:
     runs-on: ubuntu-latest
