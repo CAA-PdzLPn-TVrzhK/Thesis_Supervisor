@@ -28,7 +28,7 @@ jobs:
       - name: Run Flake8 → JUnit report
         run: |
           mkdir -p reports
-          flake8 . --format=flake8_junit_xml --output-file=reports/flake8.xml || true
+          flake8 . --format junit-xml > reports/flake8.xml || true
 
       - name: Upload Flake8 report
         if: always()
