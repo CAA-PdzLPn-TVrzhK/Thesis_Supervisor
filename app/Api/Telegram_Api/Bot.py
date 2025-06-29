@@ -65,7 +65,9 @@ async def cmd_start(message: Message, state: FSMContext):
             reply_markup=keyboard,
         )
     else:
-        await message.answer("Send your email for authorization", reply_markup=ReplyKeyboardRemove())
+        await message.answer(
+            "Send your email for authorization", reply_markup=ReplyKeyboardRemove()
+        )
         await state.set_state(Form.waiting_for_email)
 
 
@@ -76,11 +78,17 @@ async def cmd_email(message: Message, state: FSMContext):
         user_id = user_resp.json()["_id"]
         delete_resp = requests.delete(f"{EXTERNAL_API_URL}users/{user_id}")
         if delete_resp.status_code == 204:
-            await message.answer("Send your Innopolis University email for authorization", reply_markup=ReplyKeyboardRemove())
+            await message.answer(
+                "Send your Innopolis University email for authorization",
+                reply_markup=ReplyKeyboardRemove(),
+            )
             await state.set_state(Form.waiting_for_email)
             return
 
-    await message.answer("Nothing was found in the database using your ID, click /start to restart the bot", reply_markup=ReplyKeyboardRemove())
+    await message.answer(
+        "Nothing was found in the database using your ID, click /start to restart the bot",
+        reply_markup=ReplyKeyboardRemove(),
+    )
     await state.clear()
 
 
@@ -103,7 +111,10 @@ async def process_email(message: Message, state: FSMContext):
         server.quit()
 
         await state.update_data(user_email=user_email)
-        await message.answer("The code has been sent by e-mail, enter it in the reply message:", reply_markup=ReplyKeyboardRemove())
+        await message.answer(
+            "The code has been sent by e-mail, enter it in the reply message:",
+            reply_markup=ReplyKeyboardRemove(),
+        )
         await state.set_state(Form.waiting_for_verification)
     else:
         await message.answer("Please send an Innopolis University email")
@@ -132,7 +143,9 @@ async def process_verification(message: Message, state: FSMContext):
                 "email": str(user_email),
             }
             headers_json = {"Content-Type": "application/json"}
-            requests.post(f"{EXTERNAL_API_URL}users/", json=user_payload, headers=headers_json)
+            requests.post(
+                f"{EXTERNAL_API_URL}users/", json=user_payload, headers=headers_json
+            )
 
             student_payload = {
                 "user_id": str(message.from_user.id),
@@ -145,22 +158,32 @@ async def process_verification(message: Message, state: FSMContext):
                 "points": 0,
                 "progress": 0,
             }
-            requests.post(f"{EXTERNAL_API_URL}students/", json=student_payload, headers=headers_json)
+            requests.post(
+                f"{EXTERNAL_API_URL}students/",
+                json=student_payload,
+                headers=headers_json,
+            )
 
         webapp_url = f"{BASE_WEBAPP_URL}?user_id={chat_id}"
         web_app = WebAppInfo(url=webapp_url)
         keyboard = ReplyKeyboardMarkup(
-            keyboard=[[KeyboardButton(text="Open the student's portal", web_app=web_app)]],
+            keyboard=[
+                [KeyboardButton(text="Open the student's portal", web_app=web_app)]
+            ],
             resize_keyboard=True,
             one_time_keyboard=True,
         )
         await message.answer("🔗 Open the student's mini-app:", reply_markup=keyboard)
     else:
-        await message.answer("Incorrect code, please try again.", reply_markup=ReplyKeyboardRemove())
+        await message.answer(
+            "Incorrect code, please try again.", reply_markup=ReplyKeyboardRemove()
+        )
         await state.set_state(Form.waiting_for_verification)
 
 
 @dp.message(F.content_type == ContentType.WEB_APP_DATA)
 async def handle_webapp_data(message: types.Message):
     data = message.web_app_data.data
-    await message.answer("✅ Данные получены из мини-приложения", reply_markup=ReplyKeyboardRemove())
+    await message.answer(
+        "✅ Данные получены из мини-приложения", reply_markup=ReplyKeyboardRemove()
+    )

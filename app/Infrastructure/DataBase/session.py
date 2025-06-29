@@ -7,10 +7,8 @@ from app.config import DATABASE_URL
 engine = create_async_engine(DATABASE_URL, echo=True, future=True)
 
 # фабрика сессий
-AsyncSessionLocal = async_sessionmaker(
-    bind=engine,
-    expire_on_commit=False
-)
+AsyncSessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False)
+
 
 async def get_async_session() -> AsyncSession:
     """

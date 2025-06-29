@@ -4,9 +4,12 @@ from app.Infrastructure.DataBase.Repositories.UserRepo import UserRepo
 from app.Infrastructure.DataBase.session import get_async_session
 from app.Infrastructure.DataBase.Models.user import User
 
+
 class UserService:
     @staticmethod
-    async def register_user(id: int, name: str, email: str, status: bool) -> User | None:
+    async def register_user(
+        id: int, name: str, email: str, status: bool
+    ) -> User | None:
         # Получаем сессию
         async for session in get_async_session():
             repo = UserRepo(session)

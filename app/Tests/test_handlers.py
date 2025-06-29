@@ -1,14 +1,23 @@
 import pytest
 from unittest.mock import MagicMock
 import app.Api.Telegram_Api.Bot as bot_module
-from app.Api.Telegram_Api.Bot import cmd_start, cmd_email, process_email, process_verification, Form, pending_codes
+from app.Api.Telegram_Api.Bot import (
+    cmd_start,
+    cmd_email,
+    process_email,
+    process_verification,
+    Form,
+    pending_codes,
+)
 
 
 @pytest.mark.asyncio
 async def test_cmd_start_user_exists(fake_msg, fsm, monkeypatch):
     fake_msg.text = "/start"
 
-    monkeypatch.setattr(bot_module.requests, "get", lambda *_args, **_kw: MagicMock(status_code=200))
+    monkeypatch.setattr(
+        bot_module.requests, "get", lambda *_args, **_kw: MagicMock(status_code=200)
+    )
 
     await cmd_start(fake_msg, fsm)
 
@@ -20,7 +29,9 @@ async def test_cmd_start_user_exists(fake_msg, fsm, monkeypatch):
 async def test_cmd_start_user_not_found(fake_msg, fsm, monkeypatch):
     fake_msg.text = "/start"
 
-    monkeypatch.setattr(bot_module.requests, "get", lambda *_args, **_kw: MagicMock(status_code=404))
+    monkeypatch.setattr(
+        bot_module.requests, "get", lambda *_args, **_kw: MagicMock(status_code=404)
+    )
 
     await cmd_start(fake_msg, fsm)
 
@@ -32,8 +43,14 @@ async def test_cmd_start_user_not_found(fake_msg, fsm, monkeypatch):
 async def test_cmd_email_success(fake_msg, fsm, monkeypatch):
     fake_msg.text = "Change email"
 
-    monkeypatch.setattr(bot_module.requests, "get", lambda url: MagicMock(status_code=200, json=lambda: {"_id": 999}))
-    monkeypatch.setattr(bot_module.requests, "delete", lambda url: MagicMock(status_code=204))
+    monkeypatch.setattr(
+        bot_module.requests,
+        "get",
+        lambda url: MagicMock(status_code=200, json=lambda: {"_id": 999}),
+    )
+    monkeypatch.setattr(
+        bot_module.requests, "delete", lambda url: MagicMock(status_code=204)
+    )
 
     await cmd_email(fake_msg, fsm)
 
@@ -72,7 +89,11 @@ async def test_verification_correct_code(fake_msg, fsm, monkeypatch):
     import responses
 
     with responses.RequestsMock() as rsps:
-        rsps.add("GET", f"{bot_module.EXTERNAL_API_URL}supervisors/{fake_msg.chat.id}", status=404)
+        rsps.add(
+            "GET",
+            f"{bot_module.EXTERNAL_API_URL}supervisors/{fake_msg.chat.id}",
+            status=404,
+        )
         rsps.add("POST", f"{bot_module.EXTERNAL_API_URL}users/", status=201)
         rsps.add("POST", f"{bot_module.EXTERNAL_API_URL}students/", status=201)
 
