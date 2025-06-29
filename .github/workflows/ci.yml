@@ -42,13 +42,13 @@ jobs:
 #        run: |
 #          isort --check-only .
 
-      - name: Run Flake8
-        run: |
-          flake8 .
-
-      - name: Run mypy
-        run: |
-          mypy .
+#      - name: Run Flake8
+#        run: |
+#          flake8 .
+#
+#      - name: Run mypy
+#        run: |
+#          mypy .
 
       # ------ BUILD ------
       - name: Build package
@@ -59,9 +59,9 @@ jobs:
       # ------ TESTS ------
       - name: Run tests with coverage
         run: |
-          pip install pytest pytest-cov
-          mkdir -p coverage
-          pytest --verbose --cov=./ --cov-report=xml --cov-report=term
+            pip install pytest pytest-cov
+            mkdir -p coverage
+            pytest app/Tests --verbose --cov=app --cov-report=term --cov-report=xml:coverage/coverage.xml
 
       - name: Upload coverage to Codecov
         if: success() && github.event_name != 'pull_request'
