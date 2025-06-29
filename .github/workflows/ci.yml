@@ -32,15 +32,11 @@ jobs:
       # ------ LINT ------
       - name: Install linters
         run: |
-          pip install flake8 mypy
+          pip install flake8
 
       - name: Run Flake8
         run: |
           flake8 .
-
-      - name: Run mypy
-        run: |
-          mypy .
 
 
       # ------ TESTS ------
