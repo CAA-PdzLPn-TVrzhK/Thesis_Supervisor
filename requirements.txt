@@ -18,3 +18,9 @@ pytest-twisted
 pytest>=8.4.1
 responses>=0.25.7
 python-telegram-bot>=22.1
+requests
+responses
+pytest
+pytest-cov
+flake8
+bandit
