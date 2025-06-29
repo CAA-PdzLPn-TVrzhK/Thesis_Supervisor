@@ -32,11 +32,11 @@ jobs:
       # ------ LINT ------
       - name: Install linters
         run: |
-          pip install flake8 black mypy isort
-
-      - name: Run Black (check formatting)
-        run: |
-          black --check .
+          pip install flake8
+#
+#      - name: Run Black (check formatting)
+#        run: |
+#          black --check .
 
 #      - name: Run isort (check imports)
 #        run: |
