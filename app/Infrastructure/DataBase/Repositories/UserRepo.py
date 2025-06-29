@@ -1,7 +1,7 @@
 # repositories/UserRepo.py
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, insert, update, delete
+from sqlalchemy import select
 from app.Infrastructure.DataBase.Models.user import User
 
 
@@ -19,7 +19,9 @@ class UserRepo:
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def create(self, id: int, name: str, email: str, status: bool) -> User:
+    async def create(
+        self, id: int, name: str, email: str, status: bool
+    ) -> User:
         new_user = User(id=id, name=name, email=email, status=status)
         self.session.add(new_user)
         await self.session.commit()

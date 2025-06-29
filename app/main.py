@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from app.Api.Telegram_Api.Bot import dp, bot
 
 if __name__ == "__main__":
