@@ -81,11 +81,16 @@ jobs:
         run: |
           docker build -t thesis-supervisor:ci .
 
-      - name: Save Docker image artifact
+      - name: Save Docker image to tar file
+        run: |
+          docker save thesis-supervisor:ci -o image.tar
+
+      - name: Upload Docker image artifact
         uses: actions/upload-artifact@v4
         with:
           name: docker-image-tar
           path: image.tar
+
         # если нужно: run: docker save thesis-supervisor:ci -o image.tar
 
   #————————————
