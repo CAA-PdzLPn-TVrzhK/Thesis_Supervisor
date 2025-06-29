@@ -18,7 +18,7 @@ def msg():
     return FakeMessage("/start")
 
 
-def http_stub(rsps: responses.RequestsMock, method: str, url_suffix: str, **kw):
+def http_stub(rsps, method, url_suffix, **kw):
     rsps.add(method, f"{EXTERNAL_API_URL}{url_suffix}", **kw)
 
 
