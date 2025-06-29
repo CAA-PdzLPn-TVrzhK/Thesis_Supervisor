@@ -7,6 +7,9 @@ on:
     branches: [ '*' ]
 
 jobs:
+
+  #————————————
+  # 1) Lint Node.js
   lint-node:
     name: Lint (Node.js)
     runs-on: ubuntu-latest
@@ -19,12 +22,13 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
+        working-directory: app
         run: npm ci
 
-      - name: Run ESLint (JUnit report)
+      - name: Run ESLint → JUnit report
+        working-directory: app
         run: |
-          # убедитесь, что eslint-junit-reporter установлен:
-          # npm install --save-dev eslint-junit-reporter
+          # убедитесь, что eslint-junit-reporter установлен в devDependencies
           npm run lint:ci
 
       - name: Upload ESLint report
@@ -32,8 +36,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: eslint-report
-          path: eslint-report.xml
+          path: app/eslint-report.xml
 
+  #————————————
+  # 2) Lint Python
   lint-python:
     name: Lint (Python)
     runs-on: ubuntu-latest
@@ -50,10 +56,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install flake8 flake8-junit-xml
 
-      - name: Run Flake8 (JUnit report)
+      - name: Run Flake8 → JUnit report
         run: |
           mkdir -p reports
-          # --format=pytest + flake8-junit-xml выводит JUnit в reports/flake8.xml
           flake8 . --format=pytest --output-file=reports/flake8.xml
 
       - name: Upload Flake8 report
@@ -62,3 +67,97 @@ jobs:
         with:
           name: flake8-report
           path: reports/flake8.xml
+
+  #————————————
+  # 3) Build & Snapshot
+  build:
+    name: Build Docker Snapshot
+    runs-on: ubuntu-latest
+    needs: [lint-node, lint-python]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: |
+          docker build -t thesis-supervisor:ci .
+
+      - name: Save Docker image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image-tar
+          path: image.tar
+        # если нужно: run: docker save thesis-supervisor:ci -o image.tar
+
+  #————————————
+  # 4) Test (unit + integration)
+  test:
+    name: Test (Python)
+    runs-on: ubuntu-latest
+    services:
+      # пример: если вы используете SQLite, можно опустить;
+      # для Postgres, Redis и т.п. — раскомментируйте и настройте
+      # postgres:
+      #   image: postgres:15
+      #   env:
+      #     POSTGRES_USER: user
+      #     POSTGRES_PASSWORD: pass
+      #     POSTGRES_DB: testdb
+      #   ports: ['5432:5432']
+      #   options: >-
+      #     --health-cmd pg_isready
+      #     --health-interval 10s
+      #     --health-timeout 5s
+      #     --health-retries 5
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install deps & test requirements
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov
+
+      - name: Run tests with coverage
+        run: |
+          pytest --junitxml=reports/pytest.xml --cov=./ --cov-report=xml
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-report
+          path: reports/
+
+  #————————————
+  # 5) QA → SonarCloud (или любой другой)
+  sonarcloud:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js  # нужен для анализа JS
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Sonar Scanner
+        run: npm install -g sonarqube-scanner
+
+      - name: Run SonarCloud
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          sonar-scanner \
+            -Dsonar.projectKey=YOUR_PROJECT_KEY \
+            -Dsonar.organization=YOUR_ORG \
+            -Dsonar.sources=. \
+            -Dsonar.tests=. \
+            -Dsonar.python.coverage.reportPaths=reports/coverage.xml \
+            -Dsonar.javascript.lcov.reportPaths=app/coverage/lcov.info
