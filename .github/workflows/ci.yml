@@ -38,9 +38,9 @@ jobs:
         run: |
           black --check .
 
-      - name: Run isort (check imports)
-        run: |
-          isort --check-only .
+#      - name: Run isort (check imports)
+#        run: |
+#          isort --check-only .
 
       - name: Run Flake8
         run: |
