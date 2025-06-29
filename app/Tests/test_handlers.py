@@ -16,7 +16,9 @@ async def test_cmd_start_user_exists(fake_msg, fsm, monkeypatch):
     fake_msg.text = "/start"
 
     monkeypatch.setattr(
-        bot_module.requests, "get", lambda *_args, **_kw: MagicMock(status_code=200)
+        bot_module.requests,
+        "get",
+        lambda *_args, **_kw: MagicMock(status_code=200),
     )
 
     await cmd_start(fake_msg, fsm)
@@ -30,7 +32,9 @@ async def test_cmd_start_user_not_found(fake_msg, fsm, monkeypatch):
     fake_msg.text = "/start"
 
     monkeypatch.setattr(
-        bot_module.requests, "get", lambda *_args, **_kw: MagicMock(status_code=404)
+        bot_module.requests,
+        "get",
+        lambda *_args, **_kw: MagicMock(status_code=404),
     )
 
     await cmd_start(fake_msg, fsm)
@@ -49,7 +53,9 @@ async def test_cmd_email_success(fake_msg, fsm, monkeypatch):
         lambda url: MagicMock(status_code=200, json=lambda: {"_id": 999}),
     )
     monkeypatch.setattr(
-        bot_module.requests, "delete", lambda url: MagicMock(status_code=204)
+        bot_module.requests,
+        "delete",
+        lambda url: MagicMock(status_code=204),
     )
 
     await cmd_email(fake_msg, fsm)

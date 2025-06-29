@@ -8,7 +8,8 @@ from telegram.ext import (
     ConversationHandler,
     CallbackContext,
 )
-import random, smtplib
+import random
+import smtplib
 from email.mime.text import MIMEText
 import os
 
@@ -20,7 +21,9 @@ pending = {}
 
 
 def start_verify(update: Update, ctx: CallbackContext) -> int:
-    update.message.reply_text("🏷 Введи, пожалуйста, свой e-mail для верификации:")
+    update.message.reply_text(
+        "🏷 Введи, пожалуйста, свой e-mail для верификации:"
+    )
     return ASK_EMAIL
 
 
@@ -39,14 +42,18 @@ def receive_email(update: Update, ctx: CallbackContext) -> int:
     try:
         server = smtplib.SMTP("smtp.gmail.com", 587)
         server.starttls()
-        server.login(os.getenv("GMAIL_USER"), os.getenv("GMAIL_APP_PASS"))
+        server.login(
+            os.getenv("GMAIL_USER"), os.getenv("GMAIL_APP_PASS")
+        )
         server.send_message(msg)
     except Exception as e:
         update.message.reply_text(f"❌ Ошибка отправки: {e}")
     finally:
         server.quit()
 
-    update.message.reply_text("✉ Код отправлен! Проверь почту и пришли его сюда:")
+    update.message.reply_text(
+        "✉ Код отправлен! Проверь почту и пришли его сюда:"
+    )
     return ASK_CODE
 
 
@@ -60,7 +67,9 @@ def receive_code(update: Update, ctx: CallbackContext) -> int:
         # пометь в БД или памяти, что user верифицирован
         pending.pop(chat_id, None)
     else:
-        update.message.reply_text("❌ Код не подошёл. Попробуй ещё раз или /cancel")
+        update.message.reply_text(
+            "❌ Код не подошёл. Попробуй ещё раз или /cancel"
+        )
     return ConversationHandler.END
 
 

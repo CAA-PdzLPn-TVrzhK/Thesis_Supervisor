@@ -20,7 +20,9 @@ class UserService:
                 return None  # возвращаем None, если пользователь уже есть
 
             # Создадим нового
-            user = await repo.create(id=id, name=name, email=email, status=status)
+            user = await repo.create(
+                id=id, name=name, email=email, status=status
+            )
             return user
 
     @staticmethod

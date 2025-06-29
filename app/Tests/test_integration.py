@@ -5,7 +5,6 @@ from unittest.mock import MagicMock
 import app.Api.Telegram_Api.Bot as bot_module
 from app.Api.Telegram_Api.Bot import (
     cmd_start,
-    cmd_email,
     process_email,
     process_verification,
     Form,
@@ -31,7 +30,9 @@ async def test_onboarding_happy_path(msg, fsm, monkeypatch):
         http_stub(rsps, "POST", "users/", status=201)
         http_stub(rsps, "POST", "students/", status=201)
 
-        monkeypatch.setattr(bot_module.smtplib, "SMTP", lambda *_a, **_k: MagicMock())
+        monkeypatch.setattr(
+            bot_module.smtplib, "SMTP", lambda *_a, **_k: MagicMock()
+        )
         monkeypatch.setattr(bot_module.random, "randint", lambda *_: 111222)
 
         # шаг 1: /start
@@ -50,11 +51,17 @@ async def test_onboarding_happy_path(msg, fsm, monkeypatch):
 
         # Проверки результата — ДОЛЖНЫ быть ВНУТРИ with!
         assert any(
-            c.request.method == "POST" and c.request.url.endswith("/users/")
+            (
+                c.request.method == "POST"
+                and c.request.url.endswith("/users/")
+            )
             for c in rsps.calls
         ), "POST /users/ не был вызван"
         assert any(
-            c.request.method == "POST" and c.request.url.endswith("/students/")
+            (
+                c.request.method == "POST"
+                and c.request.url.endswith("/students/")
+            )
             for c in rsps.calls
         ), "POST /students/ не был вызван"
 
@@ -68,7 +75,9 @@ async def test_onboarding_wrong_code(msg, fsm, monkeypatch):
     with responses.RequestsMock() as rsps:
         http_stub(rsps, "GET", "users/telegram/42", status=404)
 
-        monkeypatch.setattr(bot_module.smtplib, "SMTP", lambda *_a, **_k: MagicMock())
+        monkeypatch.setattr(
+            bot_module.smtplib, "SMTP", lambda *_a, **_k: MagicMock()
+        )
         monkeypatch.setattr(bot_module.random, "randint", lambda *_: 333444)
 
         await cmd_start(msg, fsm)
@@ -89,7 +98,9 @@ async def test_onboarding_wrong_code(msg, fsm, monkeypatch):
 @pytest.mark.asyncio
 async def test_start_existing_user(msg, fsm, monkeypatch):
     monkeypatch.setattr(
-        bot_module.requests, "get", lambda *_a, **_k: MagicMock(status_code=200)
+        bot_module.requests,
+        "get",
+        lambda *_a, **_k: MagicMock(status_code=200),
     )
 
     await cmd_start(msg, fsm)

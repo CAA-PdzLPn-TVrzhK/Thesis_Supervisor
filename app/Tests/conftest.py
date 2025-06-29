@@ -11,7 +11,11 @@ class FakeMessage:
         self.text = text
         self.chat = SimpleNamespace(id=uid, type="private")
         self.from_user = SimpleNamespace(
-            id=uid, username="tester", first_name="Test", last_name="User", is_bot=False
+            id=uid,
+            username="tester",
+            first_name="Test",
+            last_name="User",
+            is_bot=False,
         )
         # aiogram хендлеры зовут .answer(...) — перехватываем:
         self.answer = AsyncMock()

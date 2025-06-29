@@ -1,4 +1,3 @@
-import os
 import random
 import smtplib
 import requests
@@ -30,7 +29,8 @@ headers = {
     "apikey": (
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6"
         "ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3"
-        "NzcsImV4cCI6MjA2Njc2MDc3N30.yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc"
+        "NzcsImV4cCI6MjA2Njc2MDc3N30."
+        "yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc"
     )
 }
 
@@ -49,7 +49,8 @@ class Form(StatesGroup):
 
 @dp.message(Command(commands=["start"]))
 async def cmd_start(message: Message, state: FSMContext):
-    resp = requests.get(f"{EXTERNAL_API_URL}users/telegram/{message.from_user.id}")
+    user_id = message.from_user.id
+    resp = requests.get(f"{EXTERNAL_API_URL}users/telegram/{user_id}")
     if resp.status_code == 200:
         web_app = WebAppInfo(url=BASE_WEBAPP_URL)
         keyboard = ReplyKeyboardMarkup(
@@ -61,19 +62,22 @@ async def cmd_start(message: Message, state: FSMContext):
             one_time_keyboard=True,
         )
         await message.answer(
-            "You already have an account with our service, and you can either log in to your account or log in with your new email.",
+            "You already have an account with our service, and you can "
+            "either log in to your account or log in with your new email.",
             reply_markup=keyboard,
         )
     else:
         await message.answer(
-            "Send your email for authorization", reply_markup=ReplyKeyboardRemove()
+            "Send your email for authorization",
+            reply_markup=ReplyKeyboardRemove()
         )
         await state.set_state(Form.waiting_for_email)
 
 
 @dp.message(F.text == "Change email")
 async def cmd_email(message: Message, state: FSMContext):
-    user_resp = requests.get(f"{EXTERNAL_API_URL}users/telegram/{message.from_user.id}")
+    user_id = message.from_user.id
+    user_resp = requests.get(f"{EXTERNAL_API_URL}users/telegram/{user_id}")
     if user_resp.status_code == 200:
         user_id = user_resp.json()["_id"]
         delete_resp = requests.delete(f"{EXTERNAL_API_URL}users/{user_id}")
@@ -86,7 +90,8 @@ async def cmd_email(message: Message, state: FSMContext):
             return
 
     await message.answer(
-        "Nothing was found in the database using your ID, click /start to restart the bot",
+        "Nothing was found in the database using your ID, "
+        "click /start to restart the bot",
         reply_markup=ReplyKeyboardRemove(),
     )
     await state.clear()
@@ -112,7 +117,8 @@ async def process_email(message: Message, state: FSMContext):
 
         await state.update_data(user_email=user_email)
         await message.answer(
-            "The code has been sent by e-mail, enter it in the reply message:",
+            "The code has been sent by e-mail, "
+            "enter it in the reply message:",
             reply_markup=ReplyKeyboardRemove(),
         )
         await state.set_state(Form.waiting_for_verification)
@@ -144,7 +150,9 @@ async def process_verification(message: Message, state: FSMContext):
             }
             headers_json = {"Content-Type": "application/json"}
             requests.post(
-                f"{EXTERNAL_API_URL}users/", json=user_payload, headers=headers_json
+                f"{EXTERNAL_API_URL}users/",
+                json=user_payload,
+                headers=headers_json
             )
 
             student_payload = {
@@ -168,22 +176,29 @@ async def process_verification(message: Message, state: FSMContext):
         web_app = WebAppInfo(url=webapp_url)
         keyboard = ReplyKeyboardMarkup(
             keyboard=[
-                [KeyboardButton(text="Open the student's portal", web_app=web_app)]
+                [
+                    KeyboardButton(
+                        text="Open the student's portal", web_app=web_app
+                    )
+                ]
             ],
             resize_keyboard=True,
             one_time_keyboard=True,
         )
-        await message.answer("🔗 Open the student's mini-app:", reply_markup=keyboard)
+        await message.answer(
+            "🔗 Open the student's mini-app:", reply_markup=keyboard
+        )
     else:
         await message.answer(
-            "Incorrect code, please try again.", reply_markup=ReplyKeyboardRemove()
+            "Incorrect code, please try again.",
+            reply_markup=ReplyKeyboardRemove()
         )
         await state.set_state(Form.waiting_for_verification)
 
 
 @dp.message(F.content_type == ContentType.WEB_APP_DATA)
 async def handle_webapp_data(message: types.Message):
-    data = message.web_app_data.data
     await message.answer(
-        "✅ Данные получены из мини-приложения", reply_markup=ReplyKeyboardRemove()
+        "✅ Данные получены из мини-приложения",
+        reply_markup=ReplyKeyboardRemove()
     )
