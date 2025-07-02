@@ -88,6 +88,14 @@ class Profile extends React.Component {
                             <span className={'info-label'}> Score </span>
                             <span className={'info-value'}> {this.state.roleData[0].score} </span>
                         </div>
+                        <div className={'info-item'}>
+                            <span className={'info-label'}> Year of study </span>
+                            <span className={'info-value'}> {this.state.roleData[0].year} </span>
+                        </div>
+                        <div className={'info-item'}>
+                            <span className={'info-label'}> Department and program </span>
+                            <span className={'info-value'}> {this.state.roleData[0].department} {this.state.roleData[0].program} </span>
+                        </div>
                     </div>
                 </div>
 
