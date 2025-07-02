@@ -33,29 +33,22 @@ export async function getTasks() {
     let error = false;
     let msRes = [];
     let thesisId = [];
-    try {
-        const thesisRes = await axios.get(`${window.TelegramWebApp.API_BASE}student?user_id=eq.${window.TelegramWebApp.userId}`,
+    const thesisRes = await axios.get(`${window.TelegramWebApp.API_BASE}students?user_id=eq.${window.TelegramWebApp.userId}`,
             {
-                headers: {
-                    apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3NzcsImV4cCI6MjA2Njc2MDc3N30.yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc",
-                    Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3NzcsImV4cCI6MjA2Njc2MDc3N30.yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc`,
-                    "Content-Type": "application/json"
-                }
+                headers: window.TelegramWebApp.headers,
             });
         thesisId = thesisRes.data[0].thesis_id;
-        msRes = await axios.get(`${window.TelegramWebApp.API_BASE}milestones?thesis_id=${thesisId}`,
+        console.log("thesisId that you got:", thesisId);
+    try {
+
+        msRes = await axios.get(`${window.TelegramWebApp.API_BASE}milestones?thesis_id=eq.${thesisId}`,
             {
-                headers: {
-                    apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3NzcsImV4cCI6MjA2Njc2MDc3N30.yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc",
-                    Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3NzcsImV4cCI6MjA2Njc2MDc3N30.yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc`,
-                    "Content-Type": "application/json"
-                }
+                headers: window.TelegramWebApp.headers,
             });
-        console.log('результат вызова списка заданий', msRes);
     } catch (err) {
         console.log(err);
         error = true;
     }
-    console.log('вернулись данные:', msRes);
-    return msRes.data[0];
+    console.log('результат вызова списка заданий:', msRes.data);
+    return msRes.data;
 }

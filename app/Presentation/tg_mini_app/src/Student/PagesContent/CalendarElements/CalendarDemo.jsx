@@ -53,30 +53,34 @@ class Calendar extends React.Component {
         this.setState({ calendar: calendar });
     }
 
-    setDailyDeals = (date) => {
+    async setDailyDeals(date) {
+        this.setState({dailyDeals: []})
         let taskList = [];
-        taskList = getTasks();
+        taskList = await getTasks();
         let meetingList = [];
-        meetingList = getMeetings();
+        meetingList = await getMeetings();
 
 
         console.log('вернулись данные в calendar_demo:', taskList);
 
         if (taskList.length > 0) {
             for(let task of taskList) {
-                console.log(task.date, date);
-                if(task.date === date) {
-                    this.setState({dailyDeals: this.state.dailyDeals.concat(['task', task])});
+                const taskDate = new Date(task.deadline);
+                console.log(taskDate, date);
+                if(taskDate.getFullYear() === date.getFullYear() && taskDate.getMonth() === date.getMonth() && taskDate.getDate() === date.getDate()) {
+                    let taskElement = ['task', task];
+                    this.setState({dailyDeals: this.state.dailyDeals.concat([taskElement])});
                 }
             }
         }
-        if (meetingList.length > 0) {
-            for(let meeting of meetingList) {
-                if(meeting.date === date) {
-                    this.setState({dailyDeals: this.state.dailyDeals.concat(['meeting', meeting])});
-                }
-            }
-        }
+        // if (meetingList.length > 0) {
+        //     for(let meeting of meetingList) {
+        //         if(meeting.date === date) {
+        //             this.setState({dailyDeals: this.state.dailyDeals.concat(['meeting', meeting])});
+        //         }
+        //     }
+        // }
+
     }
 
     render() {
@@ -108,11 +112,17 @@ class Calendar extends React.Component {
                     ))}
                     </tbody>
                 </table>
-                <div>
+                <div className={'dateInfo'}>
                     {this.state.dailyDeals.map((dailyDeal, index) => (
-                        <div key={index}>
-                            aa
-                            {dailyDeal[0] === "meeting" ? 'meeting' : 'task'}
+                        <div key={index} className={'dateInfoElement'}>
+                            <div>
+                                <div>{dailyDeal[0] === "meeting" ? 'meeting' : 'task'}</div>
+                                <div>deadline: {dailyDeal[1].deadline}</div>
+                            </div>
+                            <div>
+                                <div>{dailyDeal[1].title}</div>
+                                <div>{dailyDeal[1].status === "done" ? 'Done' : 'Non done'}</div>
+                            </div>
                         </div>
                     ))}
                 </div>

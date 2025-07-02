@@ -4,6 +4,7 @@ import "../PagesContentStyle.css"
 import {getUserData} from "./getUserData.jsx";
 import {getSupervisorData} from "./getSupervisorData.jsx";
 import {getRoleData} from "./getRoleData.jsx";
+import {getSupervisorUserData} from "./getSupervisorUserData.jsx";
 
 class Profile extends React.Component {
     constructor(props) {
@@ -13,6 +14,7 @@ class Profile extends React.Component {
             userData: null,
             roleData: null,
             supervisorData: null,
+            supervisorUserData: null,
             error: false,
             loading: true,
         }
@@ -31,10 +33,14 @@ class Profile extends React.Component {
             const gotSupervisorData = await getSupervisorData(gotRoleData[0].supervisor_id);
             console.log("gotSupervisorData:", gotSupervisorData);
 
+            const gotSupervisorUserData = await getSupervisorUserData(gotSupervisorData[0].user_id);
+            console.log("gotSupervisorUserData:", gotSupervisorUserData);
+
             this.setState({
                 userData: gotUserData,
                 roleData: gotRoleData,
                 supervisorData: gotSupervisorData,
+                supervisorUserData: gotSupervisorUserData,
                 loading: false,
             });
         } catch (error) {
@@ -76,7 +82,7 @@ class Profile extends React.Component {
                         </div>
                         <div className={'info-item'}>
                             <span className={'info-label'}> Supervisor </span>
-                            <span className={'info-value'}> Nikita Selezenev </span>
+                            <span className={'info-value'}> {this.state.supervisorUserData[0].first_name} {this.state.supervisorUserData[0].last_name} </span>
                         </div>
                         <div className={'info-item'}>
                             <span className={'info-label'}> Score </span>
@@ -87,7 +93,11 @@ class Profile extends React.Component {
 
                 <div className={'links-section'}>
                     <div onClick={this.goToCalendar} className={'link-card'}>Link to calendar</div>
+                </div>
+                <div className={'links-section'}>
                     <div onClick={this.goToDashboard} className={'link-card'}>Link to dashboard</div>
+                </div>
+                <div className={'links-section'}>
                     <div onClick={this.goToLeaderboard} className={'link-card'}>Link to leaderboard</div>
                 </div>
             </main>
