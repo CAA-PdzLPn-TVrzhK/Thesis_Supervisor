@@ -36,7 +36,7 @@ export async function getMeetings() {
             {
                 headers: window.TelegramWebApp.headers,
             });
-        group_id = student_data[0].peer_group_id;
+        group_id = student_data.data[0].peer_group_id;
         listOfMeetings = await axios.get(`${window.TelegramWebApp.API_BASE}meetings?peer_group_id=eq.${group_id}`,
             {
                 headers: window.TelegramWebApp.headers,
@@ -45,6 +45,12 @@ export async function getMeetings() {
         console.log(err);
         error = true;
     }
-    console.log('результат вызова списка встреч:', listOfMeetings.data);
-    return listOfMeetings.data;
+
+    if (listOfMeetings != null) {
+        console.log('результат вызова списка встреч:', listOfMeetings.data);
+        return listOfMeetings.data;
+    } else {
+        console.log('результат вызова списка встреч вернул пустой список');
+        return [];
+    }
 }

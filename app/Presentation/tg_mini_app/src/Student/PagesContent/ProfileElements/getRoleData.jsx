@@ -1,7 +1,7 @@
 import axios from "axios";
 
-export async function getRoleData() {
-    const roleDate = await axios.get(`${window.TelegramWebApp.API_BASE}students?id=eq.${window.TelegramWebApp.roleId}`,
+export async function getRoleData(userId) {
+    const roleDate = await axios.get(`${window.TelegramWebApp.API_BASE}students?user_id=eq.${userId}`,
         {
             headers: window.TelegramWebApp.headers,
         }

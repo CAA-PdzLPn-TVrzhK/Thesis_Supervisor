@@ -5,6 +5,7 @@ import {getUserData} from "./getUserData.jsx";
 import {getSupervisorData} from "./getSupervisorData.jsx";
 import {getRoleData} from "./getRoleData.jsx";
 import {getSupervisorUserData} from "./getSupervisorUserData.jsx";
+import {getGroupData} from "./getGroupData.jsx";
 
 class Profile extends React.Component {
     constructor(props) {
@@ -13,6 +14,7 @@ class Profile extends React.Component {
         this.state = {
             userData: null,
             roleData: null,
+            groupData: null,
             supervisorData: null,
             supervisorUserData: null,
             error: false,
@@ -22,13 +24,14 @@ class Profile extends React.Component {
 
     async componentDidMount() {
         try {
-            console.log("в данный момент id студента:", window.TelegramWebApp.userId);
-
             const gotUserData = await getUserData();
             console.log("gotUserData:", gotUserData);
 
-            const gotRoleData = await getRoleData();
+            const gotRoleData = await getRoleData(gotUserData[0].id);
             console.log("gotRoleData:", gotRoleData);
+
+            const gotGroupData = await getGroupData(gotRoleData[0].peer_group_id);
+            console.log("gotGroupData:", gotGroupData)
 
             const gotSupervisorData = await getSupervisorData(gotRoleData[0].supervisor_id);
             console.log("gotSupervisorData:", gotSupervisorData);
@@ -39,26 +42,26 @@ class Profile extends React.Component {
             this.setState({
                 userData: gotUserData,
                 roleData: gotRoleData,
+                groupData: gotGroupData,
                 supervisorData: gotSupervisorData,
                 supervisorUserData: gotSupervisorUserData,
                 loading: false,
             });
         } catch (error) {
-            console.error("Ошибка загрузки данных:", error);
+            console.error( "user_id:", window.TelegramWebApp.userId, "role_id:", window.TelegramWebApp.roleId, "больше информации", error.response.data, "Ошибка загрузки данных:", error);
             this.setState({ error: true, loading: false });
         }
     }
 
     render() {
-        if(!this.state.userData || !this.state.roleData || !this.state.supervisorData) {
-            console.log(this.state.userData, this.state.roleData, this.state.supervisorData, 'wait a bit');
+        if(!this.state.userData || !this.state.roleData || !this.state.supervisorData || !this.state.groupData || !this.state.supervisorUserData) {
+            console.log(this.state.userData, this.state.roleData, this.state.supervisorData, this.state.groupData, this.state.supervisorUserData, 'wait a bit');
             return (
                 <div>
                     Please, wait a bit
                 </div>
             )
         }
-        console.log('user data for profile:', this.state.userData);
         return (
             <main className={'main'}>
                 <div className={'profile-card'}>
@@ -78,7 +81,7 @@ class Profile extends React.Component {
                         </div>
                         <div className={'info-item'}>
                             <span className={'info-label'}> Group </span>
-                            <span className={'info-value'}> {this.state.roleData[0].group} </span>
+                            <span className={'info-value'}> {this.state.groupData[0].name} </span>
                         </div>
                         <div className={'info-item'}>
                             <span className={'info-label'}> Supervisor </span>
@@ -93,8 +96,12 @@ class Profile extends React.Component {
                             <span className={'info-value'}> {this.state.roleData[0].year} </span>
                         </div>
                         <div className={'info-item'}>
-                            <span className={'info-label'}> Department and program </span>
-                            <span className={'info-value'}> {this.state.roleData[0].department} {this.state.roleData[0].program} </span>
+                            <span className={'info-label'}> Department </span>
+                            <span className={'info-value'}> {this.state.roleData[0].department} </span>
+                        </div>
+                        <div className={'info-item'}>
+                            <span className={'info-label'}> Program </span>
+                            <span className={'info-value'}> {this.state.roleData[0].program} </span>
                         </div>
                     </div>
                 </div>

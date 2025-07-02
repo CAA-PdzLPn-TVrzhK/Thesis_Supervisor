@@ -54,33 +54,35 @@ class Calendar extends React.Component {
     }
 
     async setDailyDeals(date) {
-        this.setState({dailyDeals: []})
+        const newDeals = [];
         let taskList = [];
         taskList = await getTasks();
         let meetingList = [];
         meetingList = await getMeetings();
 
 
-        console.log('вернулись данные в calendar_demo:', taskList);
+        console.log('вернулись данные в calendar_demo:', taskList, meetingList);
 
         if (taskList.length > 0) {
             for(let task of taskList) {
                 const taskDate = new Date(task.deadline);
-                console.log(taskDate, date);
                 if(taskDate.getFullYear() === date.getFullYear() && taskDate.getMonth() === date.getMonth() && taskDate.getDate() === date.getDate()) {
                     let taskElement = ['task', task];
-                    this.setState({dailyDeals: this.state.dailyDeals.concat([taskElement])});
+                    newDeals.push(taskElement);
                 }
             }
         }
-        // if (meetingList.length > 0) {
-        //     for(let meeting of meetingList) {
-        //         if(meeting.date === date) {
-        //             this.setState({dailyDeals: this.state.dailyDeals.concat(['meeting', meeting])});
-        //         }
-        //     }
-        // }
-
+        if (meetingList.length > 0) {
+            for(let meeting of meetingList) {
+                const meetingDate = new Date(meeting.date);
+                if(meetingDate.getFullYear() === date.getFullYear() && meetingDate.getMonth() === date.getMonth() && meetingDate.getDate() === date.getDate()) {
+                    let meetingElement = ['meeting', meeting];
+                    newDeals.push(meetingElement);
+                }
+            }
+        }
+        console.log('обновляем dailyDeals на:', newDeals);
+        this.setState({dailyDeals: newDeals});
     }
 
     render() {
@@ -113,16 +115,31 @@ class Calendar extends React.Component {
                     </tbody>
                 </table>
                 <div className={'dateInfo'}>
+                    {console.log('dailyDeals:', this.state.dailyDeals)}
                     {this.state.dailyDeals.map((dailyDeal, index) => (
                         <div key={index} className={'dateInfoElement'}>
-                            <div>
-                                <div>{dailyDeal[0] === "meeting" ? 'meeting' : 'task'}</div>
-                                <div>deadline: {dailyDeal[1].deadline}</div>
-                            </div>
-                            <div>
-                                <div>{dailyDeal[1].title}</div>
-                                <div>{dailyDeal[1].status === "done" ? 'Done' : 'Non done'}</div>
-                            </div>
+                            {dailyDeal[0] === "task" ?
+                                <div>
+                                    <div>
+                                        <div>{dailyDeal[0]}</div>
+                                        <div>deadline: {dailyDeal[1].deadline}</div>
+                                    </div>
+                                    <div>
+                                        <div>{dailyDeal[1].title}</div>
+                                        <div>{dailyDeal[1].status === "done" ? 'Done' : 'Non done'}</div>
+                                    </div>
+                                </div> :
+                                <div>
+                                    <div>
+                                        <div>{dailyDeal[0]}</div>
+                                        <div>date: {dailyDeal[1].date}</div>
+                                    </div>
+                                    <div>
+                                        <div>{dailyDeal[1].title}</div>
+                                        <div>{dailyDeal[1].status === "done" ? 'Done' : 'Planned'}</div>
+                                    </div>
+                                </div>
+                            }
                         </div>
                     ))}
                 </div>

@@ -4,8 +4,7 @@ import SupervisorConstructor from "../Supervisor/Constructor.jsx"
 import React from "react";
 import {getUserId} from "./getUserId.jsx";
 import {getDataOfUser} from "./getDataOfUser.jsx";
-import {setRoleIdAsSupervisor} from "./setRoleAsSupervisor.jsx";
-import {setRoleIdAsStudent} from "./setRoleIdAsStudent.jsx";
+import {setRole} from "./setRole.jsx";
 
 class Distributor extends React.Component{
     constructor(props) {
@@ -20,17 +19,11 @@ class Distributor extends React.Component{
 
     async componentDidMount() {
         window.TelegramWebApp.userId  = await getUserId();
-        console.log('new user id:', window.TelegramWebApp.userId);
+        console.log('userId:', window.TelegramWebApp.userId);
         const userData = await getDataOfUser();
-        if (userData && userData[0].role === "student") {
-            this.setState({data: userData});
-            await setRoleIdAsStudent();
-        } else if (userData && userData[0].role === "supervisor") {
-            this.setState({data: userData});
-            await setRoleIdAsSupervisor();
-        } else {
-            console.log('we have not data after getDataOfUser in method componentDidMount in Distributor.jsx', userData);
-        }
+        console.log('userData:', userData);
+        this.setState({data: userData});
+
     }
 
     render() {
