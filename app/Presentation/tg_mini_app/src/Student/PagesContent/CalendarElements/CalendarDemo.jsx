@@ -1,6 +1,5 @@
 
 import React from 'react'
-import axios from 'axios'
 import {getTasks} from "./tasksGetter.jsx";
 import {getMeetings} from "./meetingGetter.jsx";
 
@@ -34,6 +33,22 @@ class Calendar extends React.Component {
         const month_names = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"];
         return month_names[month_number];
+    }
+
+    goToNextYear = () => {
+        this.setState((previous_data) => {
+            return {
+                year: previous_data.year + 1,
+            }
+        }, this.getCalendar);
+    }
+
+    goToPreviousYear = () => {
+        this.setState((previous_data) => {
+            return {
+                year: previous_data.year - 1,
+            }
+        }, this.getCalendar);
     }
 
     goToNextMonth = () => {
@@ -125,6 +140,11 @@ class Calendar extends React.Component {
     render() {
         return (
             <div>
+                <div>
+                    <span onClick={this.goToPreviousYear}> {this.state.year - 1} </span>
+                    <span> {this.state.year} </span>
+                    <span onClick={this.goToNextYear}> {this.state.year + 1} </span>
+                </div>
                 <div>
                     <span onClick={this.goToPreviousMonth}> {this.getMonthName(this.state.month - 1)} </span>
                     <span> {this.getMonthName(this.state.month)} </span>
