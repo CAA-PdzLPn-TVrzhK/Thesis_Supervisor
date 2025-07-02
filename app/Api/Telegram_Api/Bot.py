@@ -22,7 +22,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 API_TOKEN = "7766131056:AAF70m3Omm0BeaXbRSOm_pzIQCtbPckzBCA"
-BASE_WEBAPP_URL = "https://thesis-supervisor.pages.dev"
+BASE_WEBAPP_URL = "https://thesis-supervisor.netlify.app/"
 EXTERNAL_API_URL = "http://52.87.161.100:8000/"
 
 headers = {
