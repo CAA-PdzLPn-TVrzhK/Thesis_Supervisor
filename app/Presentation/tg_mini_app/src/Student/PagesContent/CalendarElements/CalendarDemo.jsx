@@ -7,15 +7,14 @@ import {getMeetings} from "./meetingGetter.jsx";
 class Calendar extends React.Component {
     constructor(props) {
         super(props);
+        const now = new Date();
         this.state = {
             first_day: null,
             last_day: null,
             current_day: null,
             calendar: [],
-            tasksData: [],
-            tasksByDate: [],
-            meetingData: [],
-            meetingsByDate: [],
+            year: now.getFullYear(),
+            month: now.getMonth(),
             dailyDeals: [],
         }
 
@@ -25,15 +24,53 @@ class Calendar extends React.Component {
 
 
     componentDidMount() {
-        axios.get(``)
         this.getCalendar();
     }
 
+    getMonthName(month_number) {
+        if (month_number === 12) { month_number = 0; }
+        if (month_number === -1) { month_number = 11; }
+
+        const month_names = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"];
+        return month_names[month_number];
+    }
+
+    goToNextMonth = () => {
+        this.setState((previous_data) => {
+            if (previous_data.month === 11) {
+                return {
+                    month: 0,
+                    year: previous_data.year + 1,
+                }
+            } else {
+                return {
+                    month: previous_data.month + 1,
+                }
+            }
+        }, this.getCalendar);
+    }
+
+    goToPreviousMonth = () => {
+        this.setState((previous_data) => {
+            if (previous_data.month === 0) {
+                return {
+                    month: 11,
+                    year: previous_data.year - 1,
+                }
+            } else {
+                return {
+                    month: previous_data.month - 1,
+                }
+            }
+        }, this.getCalendar);
+    }
+
     getCalendar = () => {
-        const year = new Date().getFullYear();
-        const month = new Date().getMonth();
+        const year = this.state.year;
+        const month = this.state.month;
+        console.log('Current month:', month, 'Current year:', year);
         const calendarStart = new Date(year, month, 1);
-        const calendarEnd = new Date(year, month + 1, 0);
         let dateOfMonth = new Date(calendarStart);
         dateOfMonth.setDate(calendarStart.getDate() - (calendarStart.getDay() + 6) % 7);
 
@@ -41,7 +78,7 @@ class Calendar extends React.Component {
         for(let weekId = 0; weekId < 6; weekId++) {
             const week = [];
             for(let dayId = 0; dayId < 7; dayId++) {
-                if (dateOfMonth.getMonth() !== calendarStart.getMonth()) {
+                if (dateOfMonth.getMonth() !== month) {
                     week.push('');
                 } else {
                     week.push(new Date(dateOfMonth));
@@ -88,6 +125,11 @@ class Calendar extends React.Component {
     render() {
         return (
             <div>
+                <div>
+                    <span onClick={this.goToPreviousMonth}> {this.getMonthName(this.state.month - 1)} </span>
+                    <span> {this.getMonthName(this.state.month)} </span>
+                    <span onClick={this.goToNextMonth}> {this.getMonthName(this.state.month + 1)}</span>
+                </div>
                 <table>
                     <thead>
                         <tr>
