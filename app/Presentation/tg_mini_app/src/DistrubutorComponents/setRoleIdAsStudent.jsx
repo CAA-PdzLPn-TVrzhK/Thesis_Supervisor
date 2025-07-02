@@ -10,6 +10,7 @@ export async function setRoleIdAsStudent() {
     );
     student_id = student_data.data[0].id;
 
+    console.log('setRoleId:')
     console.log('Student ID: ', student_id, ' User ID: ', window.TelegramWebApp.userId);
     window.TelegramWebApp.roleId = student_id;
 }

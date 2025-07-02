@@ -6,5 +6,5 @@ export async function getRoleData() {
             headers: window.TelegramWebApp.headers,
         }
     );
-    return roleDate;
+    return roleDate.data;
 }

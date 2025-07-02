@@ -6,5 +6,5 @@ export async function getUserData() {
             headers: window.TelegramWebApp.headers,
         }
     );
-    return userData;
+    return userData.data;
 }

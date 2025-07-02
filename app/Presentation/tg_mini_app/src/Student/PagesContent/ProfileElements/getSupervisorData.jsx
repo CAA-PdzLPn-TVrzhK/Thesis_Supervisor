@@ -6,5 +6,5 @@ export async function getSupervisorData(supervisorId) {
             headers: window.TelegramWebApp.headers,
         }
     );
-    return supervisorDate;
+    return supervisorDate.data;
 }
