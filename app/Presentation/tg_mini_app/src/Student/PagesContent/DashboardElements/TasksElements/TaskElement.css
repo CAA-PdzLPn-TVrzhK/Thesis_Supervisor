@@ -1,0 +1,148 @@
+
+.loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    background: #f5f7fa;
+    border-radius: 12px;
+}
+
+.loader-image {
+    width: 250px;
+    height: auto;
+}
+
+.dashboard-task-container {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #f8f9fa;
+    border-radius: 16px;
+    box-shadow: 0 8px 14px rgba(0, 0, 0, 0.08);
+    animation: fadeIn 0.6s ease-out forwards;
+}
+
+.dashboard-task-content-block {
+    max-width: 800px;
+    margin: 20px auto;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    padding: 10px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    box-sizing: border-box;
+}
+
+.dashboard-task-content-info {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a73e8;
+    margin-bottom: 30px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: default;
+}
+
+.task-info-item {
+    margin-top: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    font-size: 16px;
+    display: flex;
+    cursor: default;
+    align-items: center;
+}
+
+.dashboard-task-content-mark {
+    font-weight: 600;
+    color: #6a11cb;
+    min-width: 120px;
+}
+
+.dashboard-task-content-value {
+    flex: 1;
+    color: #555;
+}
+
+.dashboard-task-content-status {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    margin-bottom: 12px;
+    padding: 10px;
+    border-radius: 20px;
+}
+
+.dashboard-task-content-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.dashboard-task-content-form-input {
+    width: 90%;
+    min-height: 180px;
+    padding: 20px;
+    border: 2px solid #e3e8ee;
+    border-radius: 10px;
+    font-size: 16px;
+    resize: vertical;
+    transition: border-color 0.3s;
+}
+.dashboard-task-content-form-input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+.dashboard-task-content-form-submit-button {
+    align-self: flex-start;
+    background: #bdbdbe;
+    color: #000000;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 36px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.dashboard-task-content-form-submit-button:hover {
+  background: #2980b9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.dashboard-task-content-go-back {
+    background: none;
+    border: 2px solid #be8082;
+    color: #be8082;
+    border-radius: 8px;
+    padding: 12px 30px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.dashboard-task-content-go-back:hover {
+  background: #be8082;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
+}
+
+.successful-submit-block {
+
+}
+
+.non-successful-submit-block {
+
+}

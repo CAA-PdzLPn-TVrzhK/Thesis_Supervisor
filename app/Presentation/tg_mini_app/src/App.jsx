@@ -1,13 +1,14 @@
-import Profile from "./Student/Profile.jsx"
+import Distributor from "./DistrubutorComponents/Distributor.jsx"
+import React from "react"
 
 function App() {
     console.log('🟢 App rendered');
 
     return (
-    <div>
-      <Profile id={1212566690}/>
-    </div>
-  );
+        <div>
+            <Distributor />
+        </div>
+    );
 }
 
 export default App;

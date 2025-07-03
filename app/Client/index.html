@@ -19,7 +19,7 @@
     <h1>Mini-app portal</h1>
     <div>
         <button onclick="showTab('profile')">Profile</button>
-        <button onclick="showTab('leaderboard')">Liderboard</button>
+        <button onclick="showTab('leaderboard')">Leaderboard</button>
         <button onclick="showTab('upload')">Upload your work</button>
     </div>
 
@@ -29,7 +29,7 @@
     </div>
 
     <div id="leaderboard" class="tab">
-        <h2>Liderboard</h2>
+        <h2>Leaderboard</h2>
         <table>
             <thead>
                 <tr><th>Name</th><th>Works submitted</th></tr>
@@ -54,19 +54,22 @@
         const urlParams = new URLSearchParams(window.location.search);
         window.user_id = urlParams.get('user_id');
 
-        // Если не нашли в URL, пробуем получить из Telegram
         if (!window.user_id && tg.initDataUnsafe && tg.initDataUnsafe.user) {
             window.user_id = tg.initDataUnsafe.user.id;
         }
 
-        // Для отладки
         console.log("User ID:", window.user_id);
         console.log("Full initData:", tg.initData);
         console.log("Unsafe initData:", tg.initDataUnsafe);
 
         // Базовый URL API
-        window.API_BASE = "http://52.87.161.100:8000/";
-        window.user_id = "1212566690"
+        window.API_BASE = "https://dprwupbzatrqmqpdwcgq.supabase.co/rest/v1/";
+        // window.user_id = "1234567890"
+        window.headers = {
+          "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3NzcsImV4cCI6MjA2Njc2MDc3N30.yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc",
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3NzcsImV4cCI6MjA2Njc2MDc3N30.yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc",
+          "Content-Type": "application/json"
+        };
         function showTab(id) {
             document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -77,19 +80,28 @@
         async function loadProfile() {
             document.getElementById('profile-info').textContent = 'Loading...';
             try {
-                // const res = await fetch(`${API_BASE}/users/telegram/${user_id}`);
-                const res = await fetch(`${API_BASE}users/telegram/${user_id}`);
-                if (!res.ok) throw new Error('Ошибка загрузки профиля');
+                const res = await fetch(`${API_BASE}users?telegram_id=eq.${user_id}`, { headers });
+                if (!res.ok) throw new Error(`Ошибка загрузки профиля: ${res.status}`);
+
                 const data = await res.json();
+
+                if (data.length === 0) {
+                    document.getElementById('profile-info').textContent = 'Пользователь не найден.';
+                    return;
+                }
+
+                const user = data[0];
+
                 document.getElementById('profile-info').innerHTML =
-                    `<p><strong>Name:</strong> ${data.first_name} ${data.last_name}</p>` +
-                    `<p><strong>Email:</strong> ${data.email}</p>` +
-                    `<p><strong>Role:</strong> ${data.role}</p>`;
+                    `<p><strong>Name:</strong> ${user.first_name} ${user.last_name}</p>` +
+                    `<p><strong>Email:</strong> ${user.email}</p>` +
+                    `<p><strong>Role:</strong> ${user.role}</p>`;
             } catch (err) {
                 console.error(err);
-                document.getElementById('profile-info').textContent = `Не удалось загрузить профиль.${user_id} ${err}`;
+                document.getElementById('profile-info').textContent = `Не удалось загрузить профиль. ${err.message}`;
             }
         }
+
 
         async function loadLeaderboard() {
             const tbody = document.getElementById('leaderboard-body');
