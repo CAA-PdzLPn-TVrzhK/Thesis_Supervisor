@@ -15,19 +15,30 @@ class TaskManager extends React.Component {
             submission_status: null,
         }
         this.closeTask = this.closeTask.bind(this);
+        this.handleInputChange = this.handleInputChange.bind(this);
+        this.sendSolution = this.sendSolution.bind(this);
+        this.resetSubmissionStatus = this.resetSubmissionStatus.bind(this);
     }
 
     async sendSolution() {
-        if (this.state.content !== "") {
+        console.log('you try to submit content')
+        const content = this.state.content;
+        if (content !== "") {
             const submissionDate = {
                 student_id: this.state.student_id,
-                milestones_id: this.props.data.id,
-                content: this.state.content,
+                milestone_id: this.props.data.id,
+                content: content,
             }
-            await sendSubmission(submissionDate);
+            console.log('your submission date:', submissionDate);
+            try {
+                await sendSubmission(submissionDate);
+            } catch (err) {
+                console.error(err.response.data);
+            }
             this.setState(() => {
                 return {
                     submission_status: true,
+                    content: "",
                 }
             })
         } else {
@@ -51,6 +62,14 @@ class TaskManager extends React.Component {
         })
     }
 
+    handleInputChange(event) {
+        this.setState(() => {
+            return {
+                content: event.target.value,
+            }
+        })
+    }
+
     async componentDidMount() {
         const studentId = await getStudentId();
         this.setState({student_id: studentId});
@@ -67,6 +86,18 @@ class TaskManager extends React.Component {
 
         return (
             <div className = "dashboard-task-container">
+                {this.state.submission_status === null ?
+                    <div></div> :
+                    (this.state.submission_status === true ?
+                        <div className = "successful-submit-block">
+                            <div> Successful submit </div>
+                            <button onClick={this.resetSubmissionStatus} className = "close-results-submission-button">  </button>
+                        </div> :
+                        <div className = "non-successful-submit-block">
+                            <div>Unsuccessful submit</div>
+                            <div>Please, write your draft</div>
+                            <button onClick={this.resetSubmissionStatus}>  </button>
+                        </div>)}
                 <div className = "dashboard-task-content-info"> Milestone info </div>
                 <div className = "dashboard-task-content-block">
                     <div className = "task-info-item">
@@ -90,22 +121,14 @@ class TaskManager extends React.Component {
                 </div>
                 <form className = "dashboard-task-content-form">
                     <label>
-                        <input type="text" placeholder="Write your draft" className = "dashboard-task-content-form-input"></input>
+                        <input type="text" placeholder="Write your draft" className = "dashboard-task-content-form-input" onChange={this.handleInputChange}></input>
                     </label>
-                    <button className = "dashboard-task-content-form-submit-button" onClick={this.sendSolution}>
+                    <button type={"button"} className = "dashboard-task-content-form-submit-button" onClick={this.sendSolution}>
                         Submit
                     </button>
                 </form>
                 <button onClick={this.closeTask} className = "dashboard-task-content-go-back"> Back </button>
 
-                {this.state.submission_status === null ?
-                    <div></div> :
-                    (this.state.submission_status === true ?
-                        <div>
-                            <div> Successful submit </div>
-                            <button onClick={this.resetSubmissionStatus}> close </button>
-                        </div> :
-                        <div>Write your draft</div>)}
             </div>
         )
     }
