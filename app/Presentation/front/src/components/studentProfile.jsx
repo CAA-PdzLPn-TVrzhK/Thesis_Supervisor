@@ -1,33 +1,35 @@
-import React, { useEffect, useState } from 'react';
-import { Form, Input, Select, Button } from 'antd';
+import React, {useEffect} from 'react';
+import axios from 'axios';
+import { Form, Input, InputNumber, Button } from 'antd';
 import './index.css';
-const { Option } = Select;
 
-export default function StudentProfile({ student, onBack, onSave, groupOptions = [], supervisorOptions = [] }) {
+
+const API_URL = 'https://dprwupbzatrqmqpdwcgq.supabase.co/rest/v1/students';
+const API_HEADERS = {
+  apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3NzcsImV4cCI6MjA2Njc2MDc3N30.yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc"
+};
+
+export default function StudentProfile({ student, onBack, onSave}) {
   const [form] = Form.useForm();
-  const [avatar, setAvatar] = useState(student?.avatarUrl || null);
 
   useEffect(() => {
-    form.setFieldsValue({
-      name: student?.name || '',
-      email: student?.email || '',
-      group: student?.group || undefined,
-      supervisor: student?.supervisor || undefined,
-      score: student?.score || '',
-    });
-    setAvatar(student?.avatarUrl || null);
+    if (student) {
+      form.setFieldsValue({ ...student });
+    } else {
+      form.resetFields();
+    }
   }, [student, form]);
 
-  const handleFinish = (values) => {
-    onSave({ ...values, avatar });
-  };
+  const handleFinish = async (values) => {
+    try {
+      const response = student?.id
+        ? await axios.put(`${API_URL}?id=eq.${student.id}`, values, { headers: API_HEADERS })
+        : await axios.post(API_URL, values, { headers: API_HEADERS });
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setAvatar(reader.result);
-    reader.readAsDataURL(file);
+      onSave(student?.id ? { ...student, ...values } : response.data[0]); // Supabase возвращает массив
+    } catch (err) {
+      console.error('Error saving student', err);
+    }
   };
 
   return (
@@ -35,19 +37,6 @@ export default function StudentProfile({ student, onBack, onSave, groupOptions =
         <Button onClick={onBack} className="backLink">
           ← Back to list
         </Button>
-
-        <div className="photoUpload">
-          <div className="avatarPreview">
-            {avatar
-                ? <img src={avatar} alt="Avatar"/>
-                : <span style={{color: '#aaa'}}>No Photo</span>
-            }
-          </div>
-          <div className="uploadButton btn">
-            Upload photo
-            <input type="file" accept="image/*" onChange={handleFileChange}/>
-          </div>
-        </div>
 
         <h2>{student ? 'Edit student' : 'Add new student'}</h2>
 
@@ -58,51 +47,71 @@ export default function StudentProfile({ student, onBack, onSave, groupOptions =
             className="profileForm"
         >
           <Form.Item
-              label="Имя"
-              name="name"
-              rules={[{required: true, message: 'Enter your name'}]}
+              label="Full Name"
+              name="studentName"
+              rules={[{message: 'Enter your user id'}]}
           >
-            <Input placeholder="Pupkin Zalupkin"/>
+            <Input placeholder="123"/>
           </Form.Item>
 
           <Form.Item
-              label="Email"
-              name="email"
-              rules={[{type: 'email', message: 'Wrong format'}]}
+              label="Supervisor "
+              name="supervisorName"
+              rules={[{message: 'Enter supervisor ID'}]}
           >
-            <Input placeholder="example@mail.com"/>
+            <Input placeholder="123"/>
+          </Form.Item>
+
+          <Form.Item
+              label="Program"
+              name="program"
+              rules={[{message: 'Enter a program'}]}
+          >
+            <Input placeholder="Enter a program"/>
+          </Form.Item>
+
+          <Form.Item
+              label="Department"
+              name="department"
+              rules={[{message: 'Enter a department'}]}
+          >
+            <Input placeholder="Enter a department"/>
+          </Form.Item>
+
+          <Form.Item
+              label="Year"
+              name="year"
+          >
+            <InputNumber min={1} style={{width: '100%'}} placeholder="Enter a year" />
+          </Form.Item>
+
+          <Form.Item
+              label="Thesis"
+              name="thesisName"
+          >
+            <Input placeholder = "123"></Input>
           </Form.Item>
 
           <Form.Item
               label="Group"
-              name="group"
-              rules={[{required: true, message: 'Choose a group'}]}
+              name="groupName"
+              rules={[{message: 'Enter a group ID'}]}
           >
-            <Select placeholder="Choose a group">
-              {groupOptions.map(g => (
-                  <Option key={g} value={g}>{g}</Option>
-              ))}
-            </Select>
+            <Input placeholder="123"/>
           </Form.Item>
 
           <Form.Item
-              label="Supervisor"
-              name="supervisor"
-              rules={[{required: true, message: 'Choose a supervisor'}]}
+              label="Points"
+              name="points"
           >
-            <Select placeholder="Choose a supervisor">
-              {supervisorOptions.map(s => (
-                  <Option key={s} value={s}>{s}</Option>
-              ))}
-            </Select>
+            <InputNumber min={0} style={{width: '100%'}} placeholder="Enter a score" />
           </Form.Item>
 
           <Form.Item
-              label="Score"
-              name="score"
-              rules={[{required: true, message: 'Enter your score'}]}
+              label="Prorgess"
+              name="progress"
           >
-            <Input placeholder="0–100"/>
+            <InputNumber min={0} style={{width: '100%'}} placeholder="Enter a progress" />
           </Form.Item>
 
           <Form.Item>

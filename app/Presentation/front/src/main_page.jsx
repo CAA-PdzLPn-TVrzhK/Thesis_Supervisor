@@ -1,11 +1,10 @@
 import StudentList from "./components/student_list"
 import SupervisorList from "./components/supervisor_list"
-import GroupList from "./components/group_list"
 import './components/index.css';
 import {useState} from "react";
 
 
-function MainPage() {
+export default function MainPage() {
     // current — это ключ текущей “страницы”
     const [current, setCurrent] = useState('menu');
 
@@ -16,8 +15,6 @@ function MainPage() {
                 return <StudentList onBackToMenu={() => setCurrent('menu')}/>;
             case 'page2':
                 return <SupervisorList onBackToMenu={() => setCurrent('menu')}/>;
-            case 'page3':
-                return <GroupList onBackToMenu={() => setCurrent('menu')}/>;
             default:
                 // Главное меню с тремя кнопками
                 return (
@@ -40,4 +37,3 @@ function MainPage() {
   );
 }
 
-export default MainPage;
