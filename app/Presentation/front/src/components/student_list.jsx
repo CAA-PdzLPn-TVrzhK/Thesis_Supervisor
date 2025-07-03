@@ -1,133 +1,246 @@
 import axios from 'axios';
-import { Table } from 'antd';
+import {Table} from 'antd';
 import './index.css';
 import StudentProfile from "./studentProfile.jsx";
-import React from "react";
+import React, {useEffect, useState} from "react";
+import ControlPanel from "./control-panel.jsx"
+import MainPage from "@/main_page.jsx";
 
 const { Column } = Table;
 
-class StudentList extends React.Component {
-  constructor(props) {
-    super(props);
+const API_URL = 'https://dprwupbzatrqmqpdwcgq.supabase.co/rest/v1/';
+const API_HEADERS = {
+  apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3NzcsImV4cCI6MjA2Njc2MDc3N30.yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc"
+};
 
-    // Сначала инициализируем state
-    this.state = {
-      data: [],
-      error: false,
-      loading: true,
-      isEditing: false,
-      selectedRows: [],
-      current: "studentList",
-      selectedStudent: null,
-    };
+export default function StudentList() {
+
+    const [data, setData] = useState([]);
+    const [display, setDisplay] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [selectedRows, setSelectedRows] = useState([]);
+    const [current, setCurrent] = useState('studentList');
+    const [selectedStudent, setSelectedStudent] = useState(null);
+    const [groups, setGroups] = useState([]);
+    const [years, setYear] = useState([]);
 
     // А теперь уже можно дернуть API
-    axios
-      .get('http://52.87.161.100:8000/users/')
-      .then(res => {
-        this.setState({ data: res.data });   // ← используем res.data
-      })
-      .catch(() => {
-        this.setState({ error: true });
-      })
-      .finally(() => {
-        this.setState({ loading: false });
-      });
-  }
+    useEffect(() => {
+        async function fetchAll(){
+            try{
+                const [stuData, usrData, supData, grpData, thssData] = await Promise.all([
+                    axios.get(API_URL + 'students', {headers: API_HEADERS}),
+                    axios.get(API_URL + 'users', {headers: API_HEADERS}),
+                    axios.get(API_URL + 'supervisors', {headers: API_HEADERS}),
+                    axios.get(API_URL + 'peer_groups', {headers: API_HEADERS}),
+                    axios.get(API_URL + 'theses', {headers: API_HEADERS}),
+                ])
 
-  render() {
-    const { loading, error, data, current, selectedStudent } = this.state;
+                const student = stuData.data;
+                const users = usrData.data;
+                const supervisors = supData.data;
+                const groups = grpData.data;
+                const theses = thssData.data;
+
+                const supToUserMap = supervisors.reduce((m, sup) =>{
+                    m[sup.id] = sup.user_id;
+                    return m;
+                }, {})
+
+
+                const stdToNAmeMap = users.filter(u => u.role === 'student').reduce((m, u) => {
+                    m[u.id] = `${u.first_name} ${u.last_name}`;
+                    return m;
+                }, {})
+
+                const idToName = users.filter(u => u.role === 'supervisor').reduce((m, u) => {
+                    m[u.id] = `${u.first_name} ${u.last_name}`;
+                    return m;
+                }, {})
+
+                const grpToStdMap = groups.reduce((m, g) => {
+                    m[g.id] = g.name;
+                    return m;
+                }, {})
+
+                const thssIdtoName = theses.reduce((m, t) => {
+                    m[t.id] = t.title;
+                    return m;
+                }, {})
+
+
+                const enriched = student.map(st => {
+                    const uId = supToUserMap[st.supervisor_id];
+                    return {
+                      ...st,
+                      supervisorName: idToName[uId] || '—',
+                      studentName: stdToNAmeMap[st.user_id] || '—',
+                      groupName: grpToStdMap[st.peer_group_id] || '—',
+                        thesisName: thssIdtoName[st.thesis_id] || '—',
+                    };
+                });
+
+                setData(enriched);
+                setDisplay(enriched);
+
+                const uniqueGroups = [...new Set(student.map(s => s.group))].filter(Boolean);
+                setGroups(uniqueGroups);
+
+                const uniqueYears = [...new Set(student.map(s => s.year))].filter(Boolean);
+                setYear(uniqueYears);
+            } catch (e){
+                console.error(e);
+                setError(true);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchAll();
+    }, []);
+
+    const handleSearch = term => {
+        const filtered = data.filter(item =>
+            item.user_id.toString().includes(term) ||
+            (item.program || '').toLowerCase().includes(term.toLowerCase()) || item.year.toString().includes(term)
+        );
+        setDisplay(filtered);
+    };
+
+    const handleSort = ({field, order}) => {
+        const sorted = [...display].sort((a, b) =>
+            order === 'asc' ? (a[field] - b[field]) : (b[field] - a[field])
+        );
+        setDisplay(sorted);
+    };
+
+    const handleFilter = ({group, year}) => {
+        let result = data;
+        if (group) {
+            result = result.filter(item => group.includes(item.group));
+        }
+        if (year) {
+            result = result.filter(item => year.includes(item.year));
+        }
+        setDisplay(result);
+    };
+
+
+
+    const handleDelete = async () => {
+        try {
+            await Promise.all(
+                selectedRows.map(id =>
+                    axios.delete(`${API_URL}?id=eq.${id}`, {headers: API_HEADERS})
+                )
+            );
+            setDisplay(display.filter(item => !selectedRows.includes(item.id)));
+            setIsEditing(false);
+            setSelectedRows([]);
+        } catch (err) {
+            console.error('Error deleting students', err);
+        }
+    };
 
     if (loading) {
-      return <div>Loading…</div>;
+        return <div>Loading…</div>;
     }
     if (error) {
-      return <div>Error:(</div>;
+        return <div>Error:(</div>;
     }
     if (current === "add" || current === "profile") {
-      return <StudentProfile
-          student={current === 'profile' ? selectedStudent : null}
-          onBack={() => this.setState({ current: 'list', selectedStudent: null })}
-          onSave={newData => {
-            // тут обрабатываешь newData
-              //NEWDATA для бэка!!!
-            this.setState({ data: [...data, newData], current: 'list', selectedStudent: null });
-          }}
+        return <StudentProfile
+            student={current === 'profile' ? selectedStudent : null}
+            onBack={() => setCurrent('studentList')}
+            onSave={(updated) => {
+                setDisplay(display.map(s => s.id === updated.id ? updated : s));
+                setCurrent('studentList');
+            }}
         />
     }
-        return (
+    return (
+        <main>
+            <header>
+                <div className={"listHeader"}>
+                    <h1>List of Students</h1>
+                </div>
+            </header>
             <div className="pageContainer">
-                <button
-                    className="backButton"
-                    onClick={() => this.props.onBackToMenu?.()}
-                >
-                    ← Back to menu
-                </button>
-                {this.state.isEditing && (
+                <ControlPanel
+                    onSearch={handleSearch}
+                    onFilter={handleFilter}
+                    onSort={handleSort}
+                    onAdd={() => {setCurrent('add')}}
+                    onEditMode={() => setIsEditing(true)}
+                    groupOptions={groups}
+                    yearOptions={years}
+                />
+                {isEditing && (
                     <div className="editPanel">
-                        <button onClick={this.handleDelete}>🗑 Удалить</button>
-                        <button onClick={this.handleMove}>📦 Переместить</button>
-                        <button onClick={() => this.setState({isEditing: false, selectedRows: []})}>❌ Отмена</button>
+                        <button onClick={handleDelete} className="upperButton">Delete</button>
+                        <button onClick={() => {
+                            setIsEditing(false);
+                            setSelectedRows([]);
+                        }} className="upperButton">Back
+                        </button>
                     </div>
                 )}
 
-                <Table
-                    dataSource={data}
-                    rowKey="id"
-                    rowSelection={
-                        this.state.isEditing
-                            ? {
-                                selectedRowKeys: this.state.selectedRows,
-                                onChange: selectedRowKeys => this.setState({selectedRows: selectedRowKeys}),
+                <div className={"tableWrapper"}>
+                    <Table
+                        dataSource={display}
+                        rowKey="id"
+                        rowSelection={isEditing ? {
+                            selectedRowKeys: selectedRows,
+                            onChange: keys => setSelectedRows(keys)
+                        } : null
+                        }
+                        pagination={false}
+                        scroll={{x: 'max-content'}}
+                        style={{
+                            width: '100%'
+                        }}
+                        // навигация в профиль по клику на строку
+                        onRow={record => ({
+                            onClick: () => {
+                                setCurrent('profile');
+                                setSelectedStudent(record);
                             }
-                            : null
-                    }
-                    pagination={false}
-                    scroll={{ y: 600, x: true}}
-                    style={{
-                        tableLayout: 'fixed',
-                        width: '100%'
-                    }}
-                    // навигация в профиль по клику на строку
-                    onRow={record => ({
-                        onClick: () => this.setState({
-                            current: 'profile',
-                            selectedStudent: record
-                        })
-                    })}
-                >
-                    <Column
-                        title="Name"
-                        dataIndex="name"
-                        key="name"
-                        className="table_name"
-                        render={(text) => (
-                            <span style={{color: 'black', cursor: 'pointer'}}>
-                        {text}
-                      </span>
-                        )}
-                    />
-                    <Column title="Email" dataIndex="email" key="email" className={"table_email"}/>
-                    <Column title="Group" dataIndex="group" key="group"/>
-                    <Column title="Supervisor" dataIndex="supervisor" key="supervisor"/>
-                    <Column title="Pass\Fail" dataIndex="P/F" key="P/F"/>
-                    <Column title="Score" dataIndex="score" key="score"/>
-                </Table>
-
-                <div className="buttonRow bottomButtons">
-                    <button className="addButton" onClick={() => this.setState({current: "add"})}>
-                        Add student
-                    </button>
-                    <button className="changeButton" onClick={() => this.setState({isEditing: true})}>
-                        Edit student
-                    </button>
+                        })}
+                    >
+                        <Column
+                            title="ID"
+                            dataIndex="id"
+                            key="id"
+                            onCell={() => ({style: {maxWidth: '295px'}})}
+                            render={(text) => (
+                                <span style={{color: 'black', cursor: 'pointer'}}>
+                            {text}
+                          </span>
+                            )}
+                        />
+                        <Column title="Full Name" dataIndex="studentName" key="FullName"
+                                onCell={() => ({style: {maxWidth: '300px'}})}/>
+                        <Column title="Supervisor" dataIndex="supervisorName" key="supervisorName"/>
+                        <Column title="Program" dataIndex="program" key="program"/>
+                        <Column title="Department" dataIndex="department" key="department"
+                                onCell={() => ({style: {minWidth: 120}})}/>
+                        <Column title="Year" dataIndex="year" key="year" onCell={() => ({style: {minWidth: 60}})}/>
+                        <Column title="Thesis" dataIndex="thesisName" key="thesisName"
+                                onCell={() => ({style: {minWidth: '70px'}})}/>
+                        <Column title="Points" dataIndex="points" key="points"
+                                onCell={() => ({style: {minWidth: '75px'}})}/>
+                        <Column title="Progress" dataIndex="progress" key="progress"
+                                onCell={() => ({style: {minWidth: '95px'}})}/>
+                        <Column title="Group" dataIndex="groupName" key="group"/>
+                    </Table>
                 </div>
             </div>
-        );
-  }
+        </main>
+    );
 }
 
-export default StudentList;
 
 
 
