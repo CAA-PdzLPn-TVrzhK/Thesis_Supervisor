@@ -65,7 +65,7 @@ export default function StudentList() {
                     return m;
                 }, {})
 
-                const thssIdtoName = theses.reduce((m, t) => {
+                const thssIdToName = theses.reduce((m, t) => {
                     m[t.id] = t.title;
                     return m;
                 }, {})
@@ -78,14 +78,14 @@ export default function StudentList() {
                       supervisorName: idToName[uId] || '—',
                       studentName: stdToNAmeMap[st.user_id] || '—',
                       groupName: grpToStdMap[st.peer_group_id] || '—',
-                        thesisName: thssIdtoName[st.thesis_id] || '—',
+                        thesisName: thssIdToName[st.thesis_id] || '—',
                     };
                 });
 
                 setData(enriched);
                 setDisplay(enriched);
 
-                const uniqueGroups = [...new Set(student.map(s => s.group))].filter(Boolean);
+                const uniqueGroups = [...new Set(groups.map(g => g.name))].filter(Boolean);
                 setGroups(uniqueGroups);
 
                 const uniqueYears = [...new Set(student.map(s => s.year))].filter(Boolean);
@@ -100,6 +100,25 @@ export default function StudentList() {
         fetchAll();
     }, []);
 
+    const filterOptions = [
+      {
+        name: 'group',
+        label: 'Group',
+        options: groups.map(g => ({ label: g, value: g })),
+      },
+      {
+        name: 'year',
+        label: 'Year',
+        options: years.map(y => ({ label: y, value: y })),
+      },
+    ];
+
+    const sortOptions = [
+      { name: 'id', label: 'ID' },
+      { name: 'points', label: 'Points' },
+      { name: 'year', label: 'Year' },
+    ];
+
     const handleSearch = term => {
         const filtered = data.filter(item =>
             item.user_id.toString().includes(term) ||
@@ -108,22 +127,24 @@ export default function StudentList() {
         setDisplay(filtered);
     };
 
-    const handleSort = ({field, order}) => {
-        const sorted = [...display].sort((a, b) =>
-            order === 'asc' ? (a[field] - b[field]) : (b[field] - a[field])
-        );
-        setDisplay(sorted);
+    const handleSort = ({ field, order }) => {
+      const sorted = [...display].sort((a, b) => {
+        const valA = a[field];
+        const valB = b[field];
+        return order === 'asc' ? valA - valB : valB - valA;
+      });
+      setDisplay(sorted);
     };
 
-    const handleFilter = ({group, year}) => {
-        let result = data;
-        if (group) {
-            result = result.filter(item => group.includes(item.group));
-        }
-        if (year) {
-            result = result.filter(item => year.includes(item.year));
-        }
-        setDisplay(result);
+    const handleFilter = (filters) => {
+      let result = data;
+      if (filters.group) {
+        result = result.filter(item => filters.group.includes(item.group));
+      }
+      if (filters.year) {
+        result = result.filter(item => filters.year.includes(item.year));
+      }
+      setDisplay(result);
     };
 
 
@@ -173,8 +194,9 @@ export default function StudentList() {
                     onSort={handleSort}
                     onAdd={() => {setCurrent('add')}}
                     onEditMode={() => setIsEditing(true)}
-                    groupOptions={groups}
-                    yearOptions={years}
+                    filters={filterOptions}
+                    sorts={sortOptions}
+
                 />
                 {isEditing && (
                     <div className="editPanel">
