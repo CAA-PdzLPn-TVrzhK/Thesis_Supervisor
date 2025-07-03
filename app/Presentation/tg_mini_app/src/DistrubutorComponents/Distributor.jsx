@@ -4,7 +4,6 @@ import SupervisorConstructor from "../Supervisor/Constructor.jsx"
 import React from "react";
 import {getUserId} from "./getUserId.jsx";
 import {getDataOfUser} from "./getDataOfUser.jsx";
-import {setRole} from "./setRole.jsx";
 
 class Distributor extends React.Component{
     constructor(props) {

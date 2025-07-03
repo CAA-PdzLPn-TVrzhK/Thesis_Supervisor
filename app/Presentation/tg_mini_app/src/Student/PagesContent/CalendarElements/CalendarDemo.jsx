@@ -2,19 +2,19 @@
 import React from 'react'
 import {getTasks} from "./tasksGetter.jsx";
 import {getMeetings} from "./meetingGetter.jsx";
+import './calendar.css'
 
 class Calendar extends React.Component {
     constructor(props) {
         super(props);
         const now = new Date();
         this.state = {
-            first_day: null,
-            last_day: null,
-            current_day: null,
+            current_day: now.getDate(),
             calendar: [],
             year: now.getFullYear(),
             month: now.getMonth(),
             dailyDeals: [],
+            dateWithInfo: [],
         }
 
         this.getCalendar = this.getCalendar.bind(this);
@@ -81,13 +81,48 @@ class Calendar extends React.Component {
         }, this.getCalendar);
     }
 
+    async getDaysWithTask() {
+        let taskList = [];
+        taskList = await getTasks();
+        let meetingList = [];
+        meetingList = await getMeetings();
+
+        let days= [];
+        if (taskList.length > 0) {
+            for(let task of taskList) {
+                const taskDate = new Date(task.deadline);
+                if(taskDate.getFullYear() === this.state.year && taskDate.getMonth() === this.state.month) {
+                    days.push(taskDate.getDate());
+                }
+            }
+        }
+        if (meetingList.length > 0) {
+            for(let meeting of meetingList) {
+                const meetingDate = new Date(meeting.date);
+                if(meetingDate.getFullYear() === this.state.year && meetingDate.getMonth() === this.state.month) {
+                    days.push(meetingDate.getDate());
+                }
+            }
+        }
+
+        console.log('date with task:', days);
+        this.setState(() => {
+            return {
+                dateWithInfo: days,
+            }
+        });
+    }
+
     getCalendar = () => {
+        this.getDaysWithTask();
         const year = this.state.year;
         const month = this.state.month;
         console.log('Current month:', month, 'Current year:', year);
         const calendarStart = new Date(year, month, 1);
         let dateOfMonth = new Date(calendarStart);
         dateOfMonth.setDate(calendarStart.getDate() - (calendarStart.getDay() + 6) % 7);
+
+
 
         const calendar = [];
         for(let weekId = 0; weekId < 6; weekId++) {
@@ -137,37 +172,62 @@ class Calendar extends React.Component {
         this.setState({dailyDeals: newDeals});
     }
 
+    getTimeForInfoBlock(dateForTime) {
+        const date = new Date(dateForTime);
+        const day = date.getDate().toString();
+        const month = this.getMonthName(date.getMonth());
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `${day} ${month}, ${hours}:${minutes}`;
+    }
+
     render() {
         return (
-            <div>
-                <div>
-                    <span onClick={this.goToPreviousYear}> {this.state.year - 1} </span>
-                    <span> {this.state.year} </span>
-                    <span onClick={this.goToNextYear}> {this.state.year + 1} </span>
+            <div className='calendar-container'>
+                <div className='years-calendar-block'>
+                    <span onClick={this.goToPreviousYear} className='years-calendar-element'> {this.state.year - 1} </span>
+                    <span className='years-calendar-element-current'> {this.state.year} </span>
+                    <span onClick={this.goToNextYear} className='years-calendar-element'> {this.state.year + 1} </span>
                 </div>
-                <div>
-                    <span onClick={this.goToPreviousMonth}> {this.getMonthName(this.state.month - 1)} </span>
-                    <span> {this.getMonthName(this.state.month)} </span>
-                    <span onClick={this.goToNextMonth}> {this.getMonthName(this.state.month + 1)}</span>
+                <div className='years-month-block'>
+                    <span onClick={this.goToPreviousMonth} className='years-month-element'> {this.getMonthName(this.state.month - 1)} </span>
+                    <span className='years-month-element-current'> {this.getMonthName(this.state.month)} </span>
+                    <span onClick={this.goToNextMonth} className='years-month-element'> {this.getMonthName(this.state.month + 1)}</span>
                 </div>
-                <table>
-                    <thead>
+                <table className='calendar-main-container'>
+                    <thead className='calendar-days-of-week-block'>
                         <tr>
-                            <td> <span>Mo</span> </td>
-                            <td> <span>Tu</span> </td>
-                            <td> <span>We</span> </td>
-                            <td> <span>Th</span> </td>
-                            <td> <span>Fr</span> </td>
-                            <td> <span>Sa</span> </td>
-                            <td> <span>Su</span> </td>
+                            <td> <span className='calendar-days-of-week-element'>Mo</span> </td>
+                            <td> <span className='calendar-days-of-week-element'>Tu</span> </td>
+                            <td> <span className='calendar-days-of-week-element'>We</span> </td>
+                            <td> <span className='calendar-days-of-week-element'>Th</span> </td>
+                            <td> <span className='calendar-days-of-week-element'>Fr</span> </td>
+                            <td> <span className='calendar-days-of-week-element'>Sa</span> </td>
+                            <td> <span className='calendar-days-of-week-element'>Su</span> </td>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody  className='calendar-main-date-block'>
                     {this.state.calendar.map((week, weekIndex) => (
-                        <tr key={weekIndex}>
+                        <tr key={weekIndex} className='calendar-main-date-element-week-block'>
                             {week.map((day, dayIndex) => {
                                 return (
-                                    <td key={`${weekIndex}-${dayIndex}`} onClick={() => this.setDailyDeals(day)}>
+                                    <td key={`${weekIndex}-${dayIndex}`}
+                                        onClick={() => this.setDailyDeals(day)}
+                                        className= {(day !== '') ?
+                                            (
+                                                this.state.dateWithInfo.includes(day.getDate()) ?
+                                                    (
+                                                        day.getDate() === this.state.current_day ?
+                                                            'calendar-main-date-element-active-with-task' :
+                                                            'calendar-main-date-element-with-task'
+                                                    ) :
+                                                    (
+                                                        day.getDate() === this.state.current_day ?
+                                                            'calendar-main-date-element-active' :
+                                                            'calendar-main-date-element'
+                                                    )
+                                            ) :
+                                            ''}>
                                         {day === '' ? '' : day.getDate()}
                                     </td>
                                 )
@@ -176,30 +236,29 @@ class Calendar extends React.Component {
                     ))}
                     </tbody>
                 </table>
-                <div className={'dateInfo'}>
-                    {console.log('dailyDeals:', this.state.dailyDeals)}
+                <div className='date-info-container'>
                     {this.state.dailyDeals.map((dailyDeal, index) => (
-                        <div key={index} className={'dateInfoElement'}>
+                        <div key={index}>
                             {dailyDeal[0] === "task" ?
-                                <div>
-                                    <div>
-                                        <div>{dailyDeal[0]}</div>
-                                        <div>deadline: {dailyDeal[1].deadline}</div>
+                                <div className='date-info-block'>
+                                    <div className='date-info-main-data-block'>
+                                        <div className='date-info-main-data-element'>{dailyDeal[0]}</div>
+                                        <div className='date-info-main-data-element'>deadline: {this.getTimeForInfoBlock(dailyDeal[1].deadline)}</div>
                                     </div>
-                                    <div>
-                                        <div>{dailyDeal[1].title}</div>
-                                        <div>{dailyDeal[1].status === "done" ? 'Done' : 'Non done'}</div>
+                                    <div className='date-info-optional-data-block'>
+                                        <div className='date-info-optional-data-element'>{dailyDeal[1].title}</div>
                                     </div>
+                                    <div className='date-info-status-data-element'>{dailyDeal[1].status === "done" ? 'Done' : 'Non done'}</div>
                                 </div> :
-                                <div>
-                                    <div>
-                                        <div>{dailyDeal[0]}</div>
-                                        <div>date: {dailyDeal[1].date}</div>
+                                <div className='date-info-block'>
+                                    <div className='date-info-main-data-block'>
+                                        <div className='date-info-main-data-element'>{dailyDeal[0]}</div>
+                                        <div className='date-info-main-data-element'>date: {this.getTimeForInfoBlock(dailyDeal[1].date)}</div>
                                     </div>
-                                    <div>
-                                        <div>{dailyDeal[1].title}</div>
-                                        <div>{dailyDeal[1].status === "done" ? 'Done' : 'Planned'}</div>
+                                    <div className='date-info-optional-data-block'>
+                                        <div className='date-info-optional-data-element'>{dailyDeal[1].title}</div>
                                     </div>
+                                    <div className='date-info-status-data-element'>{dailyDeal[1].status === "done" ? 'Done' : 'Planned'}</div>
                                 </div>
                             }
                         </div>
