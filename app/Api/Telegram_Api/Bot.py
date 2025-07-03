@@ -18,12 +18,11 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.memory import MemoryStorage
 from dotenv import load_dotenv
 
-# Load environment variables
 load_dotenv()
 
 API_TOKEN = "7766131056:AAF70m3Omm0BeaXbRSOm_pzIQCtbPckzBCA"
 BASE_WEBAPP_URL = "https://thesis-supervisor.netlify.app/"
-EXTERNAL_API_URL = "http://52.87.161.100:8000/"
+EXTERNAL_API_URL = "https://dprwupbzatrqmqpdwcgq.supabase.co/rest/v1/"
 
 headers = {
     "apikey": (
@@ -31,7 +30,9 @@ headers = {
         "ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3"
         "NzcsImV4cCI6MjA2Njc2MDc3N30."
         "yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc"
-    )
+    ),
+    "Content-Type": "application/json",
+    "Prefer": "return=representation"
 }
 
 bot = Bot(token=API_TOKEN)
@@ -50,9 +51,10 @@ class Form(StatesGroup):
 @dp.message(Command(commands=["start"]))
 async def cmd_start(message: Message, state: FSMContext):
     user_id = message.from_user.id
-    resp = requests.get(f"{EXTERNAL_API_URL}users/telegram/{user_id}")
-    if resp.status_code == 200:
-        web_app = WebAppInfo(url=BASE_WEBAPP_URL)
+    resp = requests.get(f"{EXTERNAL_API_URL}users?telegram_id=eq.{user_id}", headers=headers)
+    if len(resp.json()) != 0:
+        webapp_url = f"{BASE_WEBAPP_URL}?user_id={message.from_user.id}"
+        web_app = WebAppInfo(url=webapp_url)
         keyboard = ReplyKeyboardMarkup(
             keyboard=[
                 [KeyboardButton(text="Log in to the portal", web_app=web_app)],
@@ -77,24 +79,24 @@ async def cmd_start(message: Message, state: FSMContext):
 @dp.message(F.text == "Change email")
 async def cmd_email(message: Message, state: FSMContext):
     user_id = message.from_user.id
-    user_resp = requests.get(f"{EXTERNAL_API_URL}users/telegram/{user_id}")
-    if user_resp.status_code == 200:
-        user_id = user_resp.json()["_id"]
-        delete_resp = requests.delete(f"{EXTERNAL_API_URL}users/{user_id}")
-        if delete_resp.status_code == 204:
+    user_resp = requests.get(f"{EXTERNAL_API_URL}users?telegram_id=eq.{user_id}", headers=headers)
+    if len(user_resp.json()) != 0:
+        db_id = user_resp.json()[0]["id"]
+        delete_resp = requests.delete(f"{EXTERNAL_API_URL}users?id=eq.{db_id}", headers=headers)
+        if delete_resp.status_code == 200:
             await message.answer(
                 "Send your Innopolis University email for authorization",
                 reply_markup=ReplyKeyboardRemove(),
             )
             await state.set_state(Form.waiting_for_email)
             return
-
-    await message.answer(
-        "Nothing was found in the database using your ID, "
-        "click /start to restart the bot",
-        reply_markup=ReplyKeyboardRemove(),
-    )
-    await state.clear()
+    else:
+        await message.answer(
+            "Nothing was found in the database using your ID, "
+            "click /start to restart the bot",
+            reply_markup=ReplyKeyboardRemove(),
+        )
+        await state.clear()
 
 
 @dp.message(Form.waiting_for_email)
@@ -137,8 +139,8 @@ async def process_verification(message: Message, state: FSMContext):
         user_email = data.get("user_email")
         await state.clear()
 
-        answer = requests.get(f"{EXTERNAL_API_URL}supervisors/{chat_id}")
-        if answer.status_code == 404:
+        answer = requests.get(f"{EXTERNAL_API_URL}supervisors?user_id=eq.{message.from_user.id}", headers=headers)
+        if answer.status_code == 400:
             user_payload = {
                 "telegram_id": str(chat_id),
                 "username": str(message.from_user.username),
@@ -146,30 +148,21 @@ async def process_verification(message: Message, state: FSMContext):
                 "last_name": str(message.from_user.last_name) or " ",
                 "role": "student",
                 "department": "educ",
-                "email": str(user_email),
+                "email": str(user_email)
             }
-            headers_json = {"Content-Type": "application/json"}
-            requests.post(
-                f"{EXTERNAL_API_URL}users/",
+            user_req = requests.post(
+                f"{EXTERNAL_API_URL}users",
                 json=user_payload,
-                headers=headers_json
+                headers=headers
             )
-
+            db_id = user_req.json()[0]["id"]
             student_payload = {
-                "user_id": str(message.from_user.id),
-                "supervisor_id": "Shilov",
-                "program": "DSAI",
-                "department": "string",
-                "year": 0,
-                "thesis_id": "string",
-                "peer_group_id": "string",
-                "points": 0,
-                "progress": 0,
+                "user_id": db_id
             }
             requests.post(
-                f"{EXTERNAL_API_URL}students/",
+                f"{EXTERNAL_API_URL}students",
                 json=student_payload,
-                headers=headers_json,
+                headers=headers
             )
 
         webapp_url = f"{BASE_WEBAPP_URL}?user_id={chat_id}"
