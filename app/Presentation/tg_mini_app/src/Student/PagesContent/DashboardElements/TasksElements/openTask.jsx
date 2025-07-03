@@ -75,6 +75,21 @@ class TaskManager extends React.Component {
         this.setState({student_id: studentId});
     }
 
+    getMonthName(month_number) {
+        const month_names = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"];
+        return month_names[month_number];
+    }
+
+    getTimeForInfoBlock(dateForTime) {
+        const date = new Date(dateForTime);
+        const day = date.getDate().toString();
+        const month = this.getMonthName(date.getMonth());
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `${day} ${month}, ${hours}:${minutes}`;
+    }
+
     render() {
         if(!this.state.student_id) {
             return (
@@ -110,7 +125,7 @@ class TaskManager extends React.Component {
                     </div>
                     <div className = "task-info-item">
                         <div className = "dashboard-task-content-mark"> Deadline:  </div>
-                        <div className = "dashboard-task-content-value"> {this.state.data.deadline} </div>
+                        <div className = "dashboard-task-content-value"> {this.getTimeForInfoBlock(this.state.data.deadline)} </div>
                     </div>
                     <div className = "task-info-item">
                         <div className = "dashboard-task-content-mark"> Points:  </div>

@@ -1,5 +1,7 @@
+import asyncio
 import random
 import smtplib
+import datetime
 import requests
 from email.mime.text import MIMEText
 
@@ -70,7 +72,7 @@ async def cmd_start(message: Message, state: FSMContext):
         )
     else:
         await message.answer(
-            "Send your email for authorization",
+            "Send your Innopolis University email for authorization",
             reply_markup=ReplyKeyboardRemove()
         )
         await state.set_state(Form.waiting_for_email)
@@ -82,14 +84,11 @@ async def cmd_email(message: Message, state: FSMContext):
     user_resp = requests.get(f"{EXTERNAL_API_URL}users?telegram_id=eq.{user_id}", headers=headers)
     if len(user_resp.json()) != 0:
         db_id = user_resp.json()[0]["id"]
-        delete_resp = requests.delete(f"{EXTERNAL_API_URL}users?id=eq.{db_id}", headers=headers)
-        if delete_resp.status_code == 200:
-            await message.answer(
-                "Send your Innopolis University email for authorization",
-                reply_markup=ReplyKeyboardRemove(),
-            )
-            await state.set_state(Form.waiting_for_email)
-            return
+        await message.answer(
+            "Send your Innopolis University email for authorization",
+            reply_markup=ReplyKeyboardRemove(),
+        )
+        await state.set_state(Form.waiting_for_email)
     else:
         await message.answer(
             "Nothing was found in the database using your ID, "
@@ -138,7 +137,13 @@ async def process_verification(message: Message, state: FSMContext):
         data = await state.get_data()
         user_email = data.get("user_email")
         await state.clear()
-
+        user_resp = requests.get(f"{EXTERNAL_API_URL}users?telegram_id=eq.{message.from_user.id}", headers=headers)
+        if len(user_resp.json()) != 0:
+            db_id = user_resp.json()[0]["id"]
+            data = {
+                "email": str(user_email)
+            }
+            requests.patch(f"{EXTERNAL_API_URL}users?id=eq.{db_id}", json=data, headers=headers)
         answer = requests.get(f"{EXTERNAL_API_URL}supervisors?user_id=eq.{message.from_user.id}", headers=headers)
         if answer.status_code == 400:
             user_payload = {
@@ -189,9 +194,33 @@ async def process_verification(message: Message, state: FSMContext):
         await state.set_state(Form.waiting_for_verification)
 
 
-@dp.message(F.content_type == ContentType.WEB_APP_DATA)
-async def handle_webapp_data(message: types.Message):
-    await message.answer(
-        "✅ Данные получены из мини-приложения",
-        reply_markup=ReplyKeyboardRemove()
-    )
+async def notification_about_deadline():
+    while True:
+        resp1 = requests.get(f"{EXTERNAL_API_URL}milestones", headers=headers)
+        milestones = resp1.json()
+        for milestone in milestones:
+            deadline = datetime.datetime.fromisoformat(milestone["deadline"].rstrip("Z"))
+            now = datetime.datetime.now(
+                    datetime.timezone.utc)
+            if deadline <= now and milestone["status"] == "in process" and milestone["notified"] == False:
+                resp2 = requests.get(f"{EXTERNAL_API_URL}theses", headers=headers)
+                theses = resp2.json()
+                for thesis in theses:
+                    student_id = thesis["student_id"]
+                    try:
+                        student_resp = requests.get(f"{EXTERNAL_API_URL}students?id=eq.{student_id}", headers=headers)
+                        user_id = student_resp.json()[0]["user_id"]
+                        user_resp = requests.get(f"{EXTERNAL_API_URL}users?id=eq.{user_id}", headers=headers)
+                        tg_id = user_resp.json()[0]["telegram_id"]
+                        await bot.send_message(chat_id=tg_id,
+                                               text=f"<b>Thesis title:</b> {thesis['title']}\n\n"
+                                                    f"<b>Step:</b> {milestone['title']}\n\n"
+                                                    f"<b>Description:</b> {milestone['description']}\n\n"
+                                                    f"<b>Time left:</b> 00:00:00", parse_mode="HTML")
+                    except Exception as e:
+                        print(f"❌ Ошибка при обработке thesis {thesis}: {e}")
+                data = {
+                    "notified": "TRUE"
+                }
+                requests.patch(f"{EXTERNAL_API_URL}milestones?id=eq.{milestone["id"]}", json=data, headers=headers)
+        await asyncio.sleep(60)
