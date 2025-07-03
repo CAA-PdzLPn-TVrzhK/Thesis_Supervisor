@@ -219,3 +219,18 @@
     color: #5f6368;
     background-color: #ff7b79;
 }
+
+@media (max-width: 768px) {
+    .calendar-container {
+        width: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .calendar-container {
+        width: 200px;
+    }
+    .calendar-main-date-block td {
+        height: 25px;
+    }
+}
