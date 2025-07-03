@@ -23,7 +23,7 @@ class TaskManager extends React.Component {
     async sendSolution() {
         console.log('you try to submit content')
         const content = this.state.content;
-        if (content !== "") {
+        if (content) {
             const submissionDate = {
                 student_id: this.state.student_id,
                 milestone_id: this.props.data.id,
@@ -44,7 +44,7 @@ class TaskManager extends React.Component {
         } else {
             this.setState(() => {
                 return {
-                    submission_status: true,
+                    submission_status: false,
                 }
             })
         }
@@ -105,13 +105,15 @@ class TaskManager extends React.Component {
                     <div></div> :
                     (this.state.submission_status === true ?
                         <div className = "successful-submit-block">
-                            <div> Successful submit </div>
-                            <button onClick={this.resetSubmissionStatus} className = "close-results-submission-button">  </button>
+                            <div className = "results-submission-content"> Successful submit </div>
+                            <button onClick={this.resetSubmissionStatus} className = "close-results-submission-button"> Close </button>
                         </div> :
                         <div className = "non-successful-submit-block">
-                            <div>Unsuccessful submit</div>
-                            <div>Please, write your draft</div>
-                            <button onClick={this.resetSubmissionStatus}>  </button>
+                            <div>
+                                <div className = "results-submission-content">Unsuccessful submit</div>
+                                <div  className = "results-submission-content-optional">Please, write your draft</div>
+                            </div>
+                            <button onClick={this.resetSubmissionStatus} className = "close-results-submission-button"> Close </button>
                         </div>)}
                 <div className = "dashboard-task-content-info"> Milestone info </div>
                 <div className = "dashboard-task-content-block">
