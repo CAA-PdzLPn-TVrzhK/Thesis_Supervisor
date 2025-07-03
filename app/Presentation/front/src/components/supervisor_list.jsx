@@ -12,7 +12,7 @@ const API_HEADERS = {
   apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3NzcsImV4cCI6MjA2Njc2MDc3N30.yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc"
 };
 
-export default function SupervisorList({onBackToMenu}){
+export default function SupervisorList(){
     // Сначала инициализируем state
     const [data, setData] = useState([]);
     const [display, setDisplay] = useState([]);
@@ -98,12 +98,6 @@ export default function SupervisorList({onBackToMenu}){
                         onFilter={handleFilter}
                         onSort={handleSort}
                     />
-                    <button
-                        className="backButton"
-                        onClick={onBackToMenu}
-                    >
-                        ← Back to menu
-                    </button>
                     {isEditing && (
                         <div className="editPanel">
                             <button onClick={handleDelete} className="upperButton">Delete</button>
@@ -147,15 +141,6 @@ export default function SupervisorList({onBackToMenu}){
                         <Column title="Department" dataIndex="department" key="department" className={"table_email"}/>
                         <Column title="User ID" dataIndex="id" key="id"/>
                     </Table>
-
-                    <div className="buttonRow bottomButtons">
-                        <button className="addButton" onClick={() => setCurrent("add")}>
-                            Add supervisor
-                        </button>
-                        <button className="changeButton" onClick={() => setIsEditing(true)}>
-                            Edit supervisor
-                        </button>
-                    </div>
                 </div>
             </main>
   );
