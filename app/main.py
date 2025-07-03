@@ -1,9 +1,11 @@
 from app.Api.Telegram_Api.Bot import dp, bot
+import datetime
+
 
 if __name__ == "__main__":
     dp.run_polling(bot)
-
-# API_BASE = "http://52.87.161.100:8000/"
 #
-# now = datetime.now()
+# API_BASE = "https://dprwupbzatrqmqpdwcgq.supabase.co/rest/v1/theses?"
+#
+# now = datetime.datetime.now()
 # print(now)
