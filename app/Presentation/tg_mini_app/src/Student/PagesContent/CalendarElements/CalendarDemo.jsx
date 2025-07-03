@@ -182,6 +182,13 @@ class Calendar extends React.Component {
     }
 
     render() {
+        if (this.state.calendar.length === 0) {
+            return (
+                <div>
+                    <img src="https://megakeys.info/icons/loader.gif" alt="Please, wait a bit" />
+                </div>
+            )
+        }
         return (
             <div className='calendar-container'>
                 <div className='years-calendar-block'>

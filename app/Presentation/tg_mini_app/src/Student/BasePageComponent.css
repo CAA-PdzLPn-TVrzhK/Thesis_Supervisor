@@ -2,30 +2,47 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 10px;
     color: #333;
     background: #f8f9fa;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow-x: hidden
+}
+
+.main {
+    width: calc(100% - 30px);
+    margin: 10px auto;
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 800px;
+    align-items: center;
+    flex: 1;
 }
 
 .header {
+    max-width: 100%;
     background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     margin-bottom: 30px;
+    box-sizing: border-box;
 }
 
 .navigation-bar {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     padding: 15px 0;
+    gap: 10px;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .navigation-item {
     color: white;
-    padding: 12px 25px;
+    padding: 10px 18px;
     margin: 0 10px;
     cursor: pointer;
     font-weight: 500;
@@ -34,6 +51,7 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
     font-size: 16px;
+    flex: 0 1 auto;
 }
 
 .navigation-item:hover {
@@ -48,6 +66,9 @@
     border-radius: 12px;
     margin-top: auto;
     text-align: center;
+    max-width: 100%;
+    box-sizing: border-box;
+    word-wrap: break-word;
 }
 
 .futter-content {
@@ -57,25 +78,61 @@
     font-size: 16px;
 }
 
-.distributor_error_role {
-    background-color: #cef3f0;
-    min-width: 100%;
-    max-width: 1100px;
-    min-height: 100vh;
-
-    font-weight: bold;
-    font-size: 28px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    text-align: center;
-    justify-items: center;
-    padding: 50px 0
-}
-
 .photo_distributor_error_role {
     width: 80%;
     height: auto;
     margin: 40px 0;
 }
 
+@media (max-width: 768px) {
+    .profile-card {
+        grid-template-columns: 1fr;
+        padding: 25px;
+    }
+
+    .profile-info {
+        grid-template-columns: 1fr;
+        gap: 5px;
+    }
+
+    .info-label {
+        text-align: left;
+        font-size: 14px;
+    }
+
+    .navigation-bar {
+        gap: 5px;
+    }
+
+    .navigation-item {
+        padding: 8px 12px;
+        font-size: 14px;
+        margin: 0 5px;
+    }
+
+    .links-section {
+        flex-direction: column;
+        gap: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-card {
+        padding: 15px;
+    }
+
+    .navigation-item {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+
+    .header {
+        border-radius: 8px;
+    }
+
+    .footer {
+        padding: 15px;
+    }
+}
 
 

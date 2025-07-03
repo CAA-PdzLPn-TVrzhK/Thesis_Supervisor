@@ -1,0 +1,140 @@
+
+.loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    background: #f5f7fa;
+    border-radius: 12px;
+}
+
+.loader-image {
+    width: 250px;
+    height: auto;
+}
+
+.dashboard-content-container {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #f8f9fa;
+    border-radius: 16px;
+    box-shadow: 0 8px 14px rgba(0, 0, 0, 0.08);
+    animation: fadeIn 0.6s ease-out forwards;
+}
+
+.dashboard-content-header-text {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a73e8;
+    margin-bottom: 30px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: default;
+}
+
+.dashboard-content-thesis-block {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    cursor: default;
+}
+
+.dashboard-content-thesis-title-block {
+    background: #e9f0ff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-content-thesis-title {
+    font-size: 20px;
+    font-weight: 650;
+    margin-bottom: 20px;
+    color: #1a73e8;
+    cursor: default;
+}
+
+.dashboard-content-thesis-title-info {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.dashboard-content-thesis-description-block {
+    background: #e9f0ff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-content-thesis-description {
+    font-size: 20px;
+    font-weight: 650;
+    margin-bottom: 20px;
+    color: #1a73e8;
+    cursor: default;
+}
+
+.dashboard-content-thesis-description-info {
+    font-size: 15px;
+}
+
+.dashboard-content-roadmap-block {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    padding: 25px;
+}
+
+.dashboard-content-roadmap-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #2c3e50;
+    cursor: default;
+}
+
+.dashboard-content-roadmap-container {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dashboard-content-roadmap-item {
+  background: #f8fafc;
+  border-left: 4px solid #3498db;
+  border-radius: 4px;
+  padding: 15px 20px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dashboard-content-roadmap-item:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  background: #edf7ff;
+}
+
+.dashboard-content-milestones-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #2c3e50;
+}
+
+.dashboard-content-milestones-deadline {
+
+}
+
+.dashboard-content-milestones-status {
+    color: #27ae60;
+    font-weight: 500;
+    text-transform: capitalize;
+}

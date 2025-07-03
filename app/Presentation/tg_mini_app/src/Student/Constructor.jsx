@@ -2,7 +2,6 @@
 * Подвязываю header, который настраивает переменную page отвечающую за то, что возвращает main */
 
 import React from "react"
-import axios from "axios"
 import Header from "./Header.jsx"
 import Selector from "./Selector.jsx"
 import Futter from "./Futter.jsx"
@@ -26,7 +25,7 @@ class StudentConstructor extends React.Component {
         return (
             <div className="container">
                 <Header setCurrentPage={this.setCurrentPage} />
-                <Selector currentPage={this.state.currentPage} />
+                <Selector currentPage={this.state.currentPage} setCurrentPage={this.setCurrentPage}/>
                 <Futter />
             </div>
         )

@@ -1,6 +1,7 @@
 
 import React from "react"
-import "../PagesContentStyle.css"
+import "./Profile.css"
+import "../../BasePageComponent.css"
 import {getUserData} from "./getUserData.jsx";
 import {getSupervisorData} from "./getSupervisorData.jsx";
 import {getRoleData} from "./getRoleData.jsx";
@@ -53,17 +54,21 @@ class Profile extends React.Component {
         }
     }
 
+    goToPage(page) {
+        this.props.setCurrentPage(page);
+    }
+
     render() {
         if(!this.state.userData || !this.state.roleData || !this.state.supervisorData || !this.state.groupData || !this.state.supervisorUserData) {
             console.log(this.state.userData, this.state.roleData, this.state.supervisorData, this.state.groupData, this.state.supervisorUserData, 'wait a bit');
             return (
-                <div>
-                    Please, wait a bit
+                <div className = "loader-container">
+                    <img className = "loader-image" src="https://megakeys.info/icons/loader.gif" alt="Please, wait a bit" />
                 </div>
             )
         }
         return (
-            <main className={'main'}>
+            <div className={'main'}>
                 <div className={'profile-card'}>
                     <div className={'profile-photo'}>
                         <div className={'photo-placeholder'}>
@@ -88,7 +93,7 @@ class Profile extends React.Component {
                             <span className={'info-value'}> {this.state.supervisorUserData[0].first_name} {this.state.supervisorUserData[0].last_name} </span>
                         </div>
                         <div className={'info-item'}>
-                            <span className={'info-label'}> Score </span>
+                            <span className={'info-label'}> Points </span>
                             <span className={'info-value'}> {this.state.roleData[0].score} </span>
                         </div>
                         <div className={'info-item'}>
@@ -107,15 +112,15 @@ class Profile extends React.Component {
                 </div>
 
                 <div className={'links-section'}>
-                    <div onClick={this.goToCalendar} className={'link-card'}>Link to calendar</div>
+                    <div onClick={() => this.goToPage("calendar")} className={'link-card'}>Link to calendar</div>
                 </div>
                 <div className={'links-section'}>
-                    <div onClick={this.goToDashboard} className={'link-card'}>Link to dashboard</div>
+                    <div onClick={() => this.goToPage("dashboard")} className={'link-card'}>Link to dashboard</div>
                 </div>
                 <div className={'links-section'}>
-                    <div onClick={this.goToLeaderboard} className={'link-card'}>Link to leaderboard</div>
+                    <div onClick={() => this.goToPage("leaderboard")} className={'link-card'}>Link to leaderboard</div>
                 </div>
-            </main>
+            </div>
         )
     }
 }
