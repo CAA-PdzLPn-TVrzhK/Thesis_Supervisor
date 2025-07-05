@@ -101,14 +101,14 @@ async def cmd_email(message: Message, state: FSMContext):
 async def process_email(message: Message, state: FSMContext):
     user_email = message.text.strip()
     if user_email.endswith("@innopolis.university"):
-        try:
-            v = validate_email(user_email, check_deliverability=True)
-        except EmailNotValidError as e:
-            await message.answer(
-                "This email does not exist, please send a valid email."
-            )
-            await state.set_state(Form.waiting_for_email)
-            return
+        # try:
+        #     v = validate_email(user_email, check_deliverability=True)
+        # except EmailNotValidError as e:
+        #     await message.answer(
+        #         "This email does not exist, please send a valid email."
+        #     )
+        #     await state.set_state(Form.waiting_for_email)
+        #     return
 
         code = f"{random.randint(100000, 999999)}"
         pending_codes[message.chat.id] = code
