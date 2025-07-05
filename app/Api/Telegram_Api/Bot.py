@@ -3,15 +3,14 @@ import random
 import smtplib
 import datetime
 import requests
+from email_validator import validate_email, EmailNotValidError
 from email.mime.text import MIMEText
-
 from aiogram import Bot, Dispatcher, F, types
 from aiogram.types import (
     Message,
     WebAppInfo,
     ReplyKeyboardMarkup,
     KeyboardButton,
-    ContentType,
     ReplyKeyboardRemove,
 )
 from aiogram.filters import Command
@@ -102,6 +101,15 @@ async def cmd_email(message: Message, state: FSMContext):
 async def process_email(message: Message, state: FSMContext):
     user_email = message.text.strip()
     if user_email.endswith("@innopolis.university"):
+        try:
+            v = validate_email(user_email, check_deliverability=True)
+        except EmailNotValidError as e:
+            await message.answer(
+                "This email does not exist, please send a valid email."
+            )
+            await state.set_state(Form.waiting_for_email)
+            return
+
         code = f"{random.randint(100000, 999999)}"
         pending_codes[message.chat.id] = code
 
@@ -196,31 +204,94 @@ async def process_verification(message: Message, state: FSMContext):
 
 async def notification_about_deadline():
     while True:
-        resp1 = requests.get(f"{EXTERNAL_API_URL}milestones", headers=headers)
-        milestones = resp1.json()
-        for milestone in milestones:
-            deadline = datetime.datetime.fromisoformat(milestone["deadline"].rstrip("Z"))
-            now = datetime.datetime.now(
-                    datetime.timezone.utc)
-            if deadline <= now and milestone["status"] == "in process" and milestone["notified"] == False:
-                resp2 = requests.get(f"{EXTERNAL_API_URL}theses", headers=headers)
-                theses = resp2.json()
+        resp = requests.get(f"{EXTERNAL_API_URL}milestones", headers=headers)
+        milestones = resp.json()
+        now = datetime.datetime.now(datetime.timezone.utc)
+
+        for m in milestones:
+            deadline = (
+                datetime.datetime.fromisoformat(m["deadline"].rstrip("Z"))
+                .replace(tzinfo=datetime.timezone.utc)
+            )
+            delta = deadline - now
+
+            if m["status"] != "in process" or m["notified"] == "all_notified":
+                continue
+
+            schedule = [
+                (datetime.timedelta(days=7),   "in_7_days",    "in_3_days",    "7 days"),
+                (datetime.timedelta(days=3),   "in_3_days",    "in_1_day",     "3 days"),
+                (datetime.timedelta(days=1),   "in_1_day",     "in_12_hours",  "1 day"),
+                (datetime.timedelta(hours=12), "in_12_hours",  "in_1_hour",    "12 hours"),
+                (datetime.timedelta(hours=1),  "in_1_hour",    "deadline",     "1 hour"),
+            ]
+
+            for threshold, need_state, next_state, label in schedule:
+                if delta > datetime.timedelta(0) and delta <= threshold and m["notified"] == need_state:
+                    theses = requests.get(
+                        f"{EXTERNAL_API_URL}theses", headers=headers
+                    ).json()
+                    for thesis in theses:
+                        try:
+                            student = requests.get(
+                                f"{EXTERNAL_API_URL}students?id=eq.{thesis['student_id']}",
+                                headers=headers
+                            ).json()[0]
+                            user = requests.get(
+                                f"{EXTERNAL_API_URL}users?id=eq.{student['user_id']}",
+                                headers=headers
+                            ).json()[0]
+                            await bot.send_message(
+                                chat_id=user["telegram_id"],
+                                parse_mode="HTML",
+                                text=(
+                                    f"❗️<b>Notification about deadline</b>❗️\n\n"
+                                    f"<b>Thesis title:</b> {thesis['title']}\n\n"
+                                    f"<b>Step:</b> {m['title']}\n\n"
+                                    f"<b>Description:</b> {m['description']}\n\n"
+                                    f"<b>Time left:</b> {label}"
+                                )
+                            )
+                        except Exception as e:
+                            print(f"❌ error with thesis {thesis['id']}: {e}")
+
+                    requests.patch(
+                        f"{EXTERNAL_API_URL}milestones?id=eq.{m['id']}",
+                        json={"notified": next_state},
+                        headers=headers
+                    )
+                    break
+            if delta <= datetime.timedelta(0) and m["notified"] == "deadline":
+                theses = requests.get(
+                    f"{EXTERNAL_API_URL}theses", headers=headers
+                ).json()
                 for thesis in theses:
-                    student_id = thesis["student_id"]
                     try:
-                        student_resp = requests.get(f"{EXTERNAL_API_URL}students?id=eq.{student_id}", headers=headers)
-                        user_id = student_resp.json()[0]["user_id"]
-                        user_resp = requests.get(f"{EXTERNAL_API_URL}users?id=eq.{user_id}", headers=headers)
-                        tg_id = user_resp.json()[0]["telegram_id"]
-                        await bot.send_message(chat_id=tg_id,
-                                               text=f"<b>Thesis title:</b> {thesis['title']}\n\n"
-                                                    f"<b>Step:</b> {milestone['title']}\n\n"
-                                                    f"<b>Description:</b> {milestone['description']}\n\n"
-                                                    f"<b>Time left:</b> 00:00:00", parse_mode="HTML")
+                        student = requests.get(
+                            f"{EXTERNAL_API_URL}students?id=eq.{thesis['student_id']}",
+                            headers=headers
+                        ).json()[0]
+                        user = requests.get(
+                            f"{EXTERNAL_API_URL}users?id=eq.{student['user_id']}",
+                            headers=headers
+                        ).json()[0]
+                        await bot.send_message(
+                            chat_id=user["telegram_id"],
+                            parse_mode="HTML",
+                            text=(
+                                f"❗️<b>Notification about deadline</b>❗️\n\n"
+                                f"<b>Thesis title:</b> {thesis['title']}\n\n"
+                                f"<b>Step:</b> {m['title']}\n\n"
+                                f"<b>Description:</b> {m['description']}\n\n"
+                                f"<b>Time left:</b> Time’s up!"
+                            )
+                        )
                     except Exception as e:
-                        print(f"❌ Ошибка при обработке thesis {thesis}: {e}")
-                data = {
-                    "notified": "TRUE"
-                }
-                requests.patch(f"{EXTERNAL_API_URL}milestones?id=eq.{milestone["id"]}", json=data, headers=headers)
+                        print(f"❌ error with thesis {thesis['id']}: {e}")
+                requests.patch(
+                    f"{EXTERNAL_API_URL}milestones?id=eq.{m['id']}",
+                    json={"notified": "all_notified"},
+                    headers=headers
+                )
+
         await asyncio.sleep(60)
