@@ -13,6 +13,9 @@ export async function sendNewStudent(data) {
         user_id: window.TelegramWebApp.userId,
         supervisor_id: supervisorId,
         peer_group_id: groupId,
+        program: data.program,
+        department: data.department,
+        year: data.year,
     };
 
     await axios.post(`${window.TelegramWebApp.API_BASE}students`, submissionData, {

@@ -9,6 +9,9 @@ class AddStudent extends React.Component {
             studentFirstName: "",
             studentLastName: "",
             supervisorName: "",
+            yearOfStudy: "",
+            departmentName: "",
+            programName: "",
             groupName: "",
             errorFirstname: "",
             errorLastname: "",
@@ -18,6 +21,9 @@ class AddStudent extends React.Component {
         this.handleInputChangeSupervisorName = this.handleInputChangeSupervisorName.bind(this);
         this.handleInputChangeGroupName = this.handleInputChangeGroupName.bind(this);
         this.sendNewStudentInfo = this.sendNewStudentInfo.bind(this);
+        this.handleInputChangeYearOfStudy = this.handleInputChangeYearOfStudy.bind(this);
+        this.handleInputChangeProgram = this.handleInputChangeProgram.bind(this);
+        this.handleInputChangeDepartment = this.handleInputChangeDepartment.bind(this);
     }
 
     handleInputChangeFirstname(event) {
@@ -48,6 +54,27 @@ class AddStudent extends React.Component {
             }
         })
     }
+    handleInputChangeYearOfStudy(event) {
+        this.setState(() => {
+            return {
+                yearOfStudy: event.target.value,
+            }
+        })
+    }
+    handleInputChangeProgram(event) {
+        this.setState(() => {
+            return {
+                programName: event.target.value,
+            }
+        })
+    }
+    handleInputChangeDepartment(event) {
+        this.setState(() => {
+            return {
+                departmentName: event.target.value,
+            }
+        })
+    }
 
     async sendNewStudentInfo() {
         console.log('you try to submit content');
@@ -56,6 +83,9 @@ class AddStudent extends React.Component {
             lastname: this.state.studentLastName,
             supervisor: this.state.supervisorName,
             group: this.state.groupName,
+            year: this.state.yearOfStudy,
+            department: this.state.departmentName,
+            program: this.state.programName,
         }
 
         if (data["firstname"].length === 0) {
@@ -119,6 +149,30 @@ class AddStudent extends React.Component {
                             <span>
                                 <label>
                                     <input type="text" placeholder="Write your group" onChange={this.handleInputChangeGroupName}></input>
+                                </label>
+                            </span>
+                        </div>
+                        <div>
+                            <span>Write your year of study</span>
+                            <span>
+                                <label>
+                                    <input type="text" placeholder="Write your year of study" onChange={this.handleInputChangeYearOfStudy}></input>
+                                </label>
+                            </span>
+                        </div>
+                        <div>
+                            <span>Write your department</span>
+                            <span>
+                                <label>
+                                    <input type="text" placeholder="Write your department" onChange={this.handleInputChangeDepartment}></input>
+                                </label>
+                            </span>
+                        </div>
+                        <div>
+                            <span>Write your program</span>
+                            <span>
+                                <label>
+                                    <input type="text" placeholder="Write your program" onChange={this.handleInputChangeProgram}></input>
                                 </label>
                             </span>
                         </div>
