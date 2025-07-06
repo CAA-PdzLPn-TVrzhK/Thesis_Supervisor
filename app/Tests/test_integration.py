@@ -6,7 +6,7 @@ import asyncio
 import app.Api.Telegram_Api.Bot as bot_module
 from app.Api.Telegram_Api.Bot import (
     cmd_start, cmd_email, process_email, process_verification,
-    Form, pending_codes, notification_about_deadline, EXTERNAL_API_URL
+    Form, pending_codes, notification_about_events, EXTERNAL_API_URL
 )
 from app.Tests.conftest import FakeMessage, DummyFSM
 
@@ -201,7 +201,7 @@ async def test_notification_about_deadline_cycle(monkeypatch):
 
     monkeypatch.setattr(bot_module.asyncio, 'sleep', fake_sleep)
     with pytest.raises(asyncio.CancelledError):
-        await notification_about_deadline()
+        await notification_about_events()
     assert any('milestones?id=eq.10' in u for u in patched)
 
 
@@ -256,5 +256,5 @@ async def test_notification_meetings(monkeypatch):
 
     monkeypatch.setattr(bot_module.asyncio, 'sleep', fs)
     with pytest.raises(asyncio.CancelledError):
-        await notification_about_deadline()
+        await notification_about_events()
     assert sent and sent[0]['chat_id'] == 100

@@ -5,7 +5,7 @@ import asyncio
 import app.Api.Telegram_Api.Bot as bot_module
 from app.Api.Telegram_Api.Bot import (
     cmd_start, cmd_email, process_email, process_verification,
-    Form, pending_codes, notification_about_deadline, EXTERNAL_API_URL
+    Form, pending_codes, notification_about_events, EXTERNAL_API_URL
 )
 
 # ---------------- Unit tests for handlers -----------------
@@ -172,5 +172,5 @@ async def test_notification_about_deadline_single_iteration(monkeypatch):
     monkeypatch.setattr(bot_module.asyncio, 'sleep', fake_sleep)
     # run and catch
     with pytest.raises(asyncio.CancelledError):
-        await notification_about_deadline()
+        await notification_about_events()
     assert f"{EXTERNAL_API_URL}milestones?id=eq.1" in patched
