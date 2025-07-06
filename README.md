@@ -57,9 +57,7 @@ python app/main.py
 ### Static View
 The system follows a layered architecture pattern with clear separation of concerns:
 
-![Static Architecture Diagram](docs/architecture/static-view/component-diagram.puml)
-
-*Note: To generate PNG from PlantUML, use: `plantuml docs/architecture/static-view/component-diagram.puml`*
+![Static Architecture Diagram](docs/architecture/static-view/component-diagram.png)
 
 **Components:**
 - **Presentation Layer**: Web frontend (React) and Telegram Mini App
@@ -77,9 +75,7 @@ The cohesion within each layer is high, with related functionality grouped toget
 ### Dynamic View
 The following sequence diagram shows the user registration and verification process:
 
-![Dynamic Architecture Diagram](docs/architecture/dynamic-view/registration-sequence.puml)
-
-*Note: To generate PNG from PlantUML, use: `plantuml docs/architecture/dynamic-view/registration-sequence.puml`*
+![Dynamic Architecture Diagram](docs/architecture/dynamic-view/registration-sequence.png)
 
 **Registration Flow:**
 1. User submits registration form
@@ -92,9 +88,7 @@ The following sequence diagram shows the user registration and verification proc
 **Performance:** This scenario typically takes 2-3 seconds in production environment.
 
 ### Deployment View
-![Deployment Diagram](docs/architecture/deployment-view/deployment-diagram.puml)
-
-*Note: To generate PNG from PlantUML, use: `plantuml docs/architecture/deployment-view/deployment-diagram.puml`*
+![Deployment Diagram](docs/architecture/deployment-view/deployment-diagram.png)
 
 **Deployment Strategy:**
 - **Application Server**: Single server deployment for MVP
@@ -163,9 +157,7 @@ type(scope): description
 - Check test coverage
 - Verify documentation updates
 
-![Git Workflow](docs/development/git-workflow.mmd)
-
-*Note: This is a Mermaid diagram. To render, use Mermaid-compatible viewers or `mermaid-cli`*
+![Git Workflow](docs/development/git-workflow.png)
 
 ### Secrets Management
 **Security Policy:**
