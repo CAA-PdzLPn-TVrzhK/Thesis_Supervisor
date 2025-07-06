@@ -121,7 +121,7 @@ Project management is tracked using [Taiga Projects Board](https://tree.taiga.io
 - **Done**: Feature complete and deployed to production
 
 ### Git Workflow
-We follow a **GitHub Flow** adapted for our team:
+We follow a **GitHub Trunk-based workflow** adapted for our team:
 
 #### Branch Strategy
 - **main**: Production-ready code
