@@ -5,16 +5,11 @@ A comprehensive system for managing thesis supervision, connecting students and 
 ## Usage
 
 ### Authentication & Access
-The system provides multiple access points:
 
-1. **Web Application**: Access the main application at [Frontend URL]
-   - Default admin credentials:
-     - Username: `admin`
-     - Password: `admin123`
-
-2. **Telegram Mini App**: Access through the integrated Telegram bot
+**Telegram Mini App**: Access through the integrated Telegram bot
    - Bot username: `@thesis_supervisor_bot`
    - Use `/start` command to begin
+   - Use @innopolis.university email
 
 ### Getting Started
 1. **For Students**:
