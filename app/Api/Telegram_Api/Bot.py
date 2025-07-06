@@ -3,9 +3,8 @@ import random
 import smtplib
 import datetime
 import requests
-from email_validator import validate_email, EmailNotValidError
 from email.mime.text import MIMEText
-from aiogram import Bot, Dispatcher, F, types
+from aiogram import Bot, Dispatcher, F
 from aiogram.types import (
     Message,
     WebAppInfo,
@@ -52,7 +51,10 @@ class Form(StatesGroup):
 @dp.message(Command(commands=["start"]))
 async def cmd_start(message: Message, state: FSMContext):
     user_id = message.from_user.id
-    resp = requests.get(f"{EXTERNAL_API_URL}users?telegram_id=eq.{user_id}", headers=headers)
+    resp = requests.get(
+        f"{EXTERNAL_API_URL}users?telegram_id=eq.{user_id}",
+        headers=headers
+    )
     if len(resp.json()) != 0:
         webapp_url = f"{BASE_WEBAPP_URL}?user_id={message.from_user.id}"
         web_app = WebAppInfo(url=webapp_url)
@@ -80,9 +82,11 @@ async def cmd_start(message: Message, state: FSMContext):
 @dp.message(F.text == "Change email")
 async def cmd_email(message: Message, state: FSMContext):
     user_id = message.from_user.id
-    user_resp = requests.get(f"{EXTERNAL_API_URL}users?telegram_id=eq.{user_id}", headers=headers)
+    user_resp = requests.get(
+        f"{EXTERNAL_API_URL}users?telegram_id=eq.{user_id}",
+        headers=headers
+    )
     if len(user_resp.json()) != 0:
-        db_id = user_resp.json()[0]["id"]
         await message.answer(
             "Send your Innopolis University email for authorization",
             reply_markup=ReplyKeyboardRemove(),
@@ -145,14 +149,24 @@ async def process_verification(message: Message, state: FSMContext):
         data = await state.get_data()
         user_email = data.get("user_email")
         await state.clear()
-        user_resp = requests.get(f"{EXTERNAL_API_URL}users?telegram_id=eq.{message.from_user.id}", headers=headers)
+        user_resp = requests.get(
+            f"{EXTERNAL_API_URL}users?telegram_id=eq.{message.from_user.id}",
+            headers=headers
+        )
         if len(user_resp.json()) != 0:
             db_id = user_resp.json()[0]["id"]
             data = {
                 "email": str(user_email)
             }
-            requests.patch(f"{EXTERNAL_API_URL}users?id=eq.{db_id}", json=data, headers=headers)
-        answer = requests.get(f"{EXTERNAL_API_URL}supervisors?user_id=eq.{message.from_user.id}", headers=headers)
+            requests.patch(
+                f"{EXTERNAL_API_URL}users?id=eq.{db_id}",
+                json=data,
+                headers=headers
+            )
+        answer = requests.get(
+            f"{EXTERNAL_API_URL}supervisors?user_id=eq.{message.from_user.id}",
+            headers=headers
+        )
         if answer.status_code == 400:
             user_payload = {
                 "telegram_id": str(chat_id),
@@ -201,6 +215,7 @@ async def process_verification(message: Message, state: FSMContext):
         )
         await state.set_state(Form.waiting_for_verification)
 
+
 async def notification_about_deadline():
     while True:
         resp = requests.get(f"{EXTERNAL_API_URL}milestones", headers=headers)
@@ -218,36 +233,47 @@ async def notification_about_deadline():
                 continue
 
             schedule = [
-                (datetime.timedelta(days=7),   "in_7_days",    "in_3_days",    "7 days"),
-                (datetime.timedelta(days=3),   "in_3_days",    "in_1_day",     "3 days"),
-                (datetime.timedelta(days=1),   "in_1_day",     "in_12_hours",  "1 day"),
-                (datetime.timedelta(hours=12), "in_12_hours",  "in_1_hour",    "12 hours"),
-                (datetime.timedelta(hours=1),  "in_1_hour",    "deadline",     "1 hour"),
+                (datetime.timedelta(days=7), "in_7_days", "in_3_days",
+                 "7 days"),
+                (datetime.timedelta(days=3), "in_3_days", "in_1_day",
+                 "3 days"),
+                (datetime.timedelta(days=1), "in_1_day", "in_12_hours",
+                 "1 day"),
+                (datetime.timedelta(hours=12), "in_12_hours", "in_1_hour",
+                 "12 hours"),
+                (datetime.timedelta(hours=1), "in_1_hour", "deadline",
+                 "1 hour"),
             ]
 
             for threshold, need_state, next_state, label in schedule:
-                if delta > datetime.timedelta(0) and delta <= threshold and m["notified"] == need_state:
+                if (delta > datetime.timedelta(0) and
+                        delta <= threshold and m["notified"] == need_state):
                     theses = requests.get(
                         f"{EXTERNAL_API_URL}theses", headers=headers
                     ).json()
                     for thesis in theses:
                         try:
                             student = requests.get(
-                                f"{EXTERNAL_API_URL}students?id=eq.{thesis['student_id']}",
+                                f"{EXTERNAL_API_URL}students?"
+                                f"id=eq.{thesis['student_id']}",
                                 headers=headers
                             ).json()[0]
                             user = requests.get(
-                                f"{EXTERNAL_API_URL}users?id=eq.{student['user_id']}",
+                                f"{EXTERNAL_API_URL}users?"
+                                f"id=eq.{student['user_id']}",
                                 headers=headers
                             ).json()[0]
                             await bot.send_message(
                                 chat_id=user["telegram_id"],
                                 parse_mode="HTML",
                                 text=(
-                                    f"❗️<b>Notification about deadline</b>❗️\n\n"
-                                    f"<b>Thesis title:</b> {thesis['title']}\n\n"
+                                    f"❗️<b>Notification about "
+                                    f"deadline</b>❗️\n\n"
+                                    f"<b>Thesis title:</b> "
+                                    f"{thesis['title']}\n\n"
                                     f"<b>Step:</b> {m['title']}\n\n"
-                                    f"<b>Description:</b> {m['description']}\n\n"
+                                    f"<b>Description:</b> "
+                                    f"{m['description']}\n\n"
                                     f"<b>Time left:</b> {label}"
                                 )
                             )
@@ -267,11 +293,13 @@ async def notification_about_deadline():
                 for thesis in theses:
                     try:
                         student = requests.get(
-                            f"{EXTERNAL_API_URL}students?id=eq.{thesis['student_id']}",
+                            f"{EXTERNAL_API_URL}students?"
+                            f"id=eq.{thesis['student_id']}",
                             headers=headers
                         ).json()[0]
                         user = requests.get(
-                            f"{EXTERNAL_API_URL}users?id=eq.{student['user_id']}",
+                            f"{EXTERNAL_API_URL}users?"
+                            f"id=eq.{student['user_id']}",
                             headers=headers
                         ).json()[0]
                         await bot.send_message(
@@ -282,7 +310,7 @@ async def notification_about_deadline():
                                 f"<b>Thesis title:</b> {thesis['title']}\n\n"
                                 f"<b>Step:</b> {m['title']}\n\n"
                                 f"<b>Description:</b> {m['description']}\n\n"
-                                f"<b>Time left:</b> Time’s up!"
+                                f"<b>Time left:</b> Time's up!"
                             )
                         )
                     except Exception as e:
@@ -306,38 +334,59 @@ async def notification_about_deadline():
                 continue
 
             schedule = [
-                (datetime.timedelta(days=3),   "in_3_days",    "in_12_hours",     "3 days"),
-                (datetime.timedelta(hours=12), "in_12_hours",  "in_1_hour",    "12 hours"),
-                (datetime.timedelta(hours=1),  "in_1_hour",    "deadline",     "1 hour"),
+                (datetime.timedelta(days=3), "in_3_days", "in_12_hours",
+                 "3 days"),
+                (datetime.timedelta(hours=12), "in_12_hours", "in_1_hour",
+                 "12 hours"),
+                (datetime.timedelta(hours=1), "in_1_hour", "deadline",
+                 "1 hour"),
             ]
 
             for threshold, need_state, next_state, label in schedule:
-                if delta > datetime.timedelta(0) and delta <= threshold and m["notified"] == need_state:
+                if (delta > datetime.timedelta(0) and
+                        delta <= threshold and m["notified"] == need_state):
                     group_id = m["peer_group_id"]
-                    students_from_group = requests.get(f"{EXTERNAL_API_URL}students?peer_group_id=eq.{group_id}", headers=headers)
-                    users_ids_per_group = [student["user_id"] for student in students_from_group.json()]
+                    students_from_group = requests.get(
+                        f"{EXTERNAL_API_URL}students?"
+                        f"peer_group_id=eq.{group_id}",
+                        headers=headers
+                    )
+                    users_ids_per_group = [
+                        student["user_id"]
+                        for student in students_from_group.json()
+                    ]
                     supervisors_from_group_user_id = requests.get(
-                        f"{EXTERNAL_API_URL}supervisors?id=eq.{m['supervisor_id']}",
+                        f"{EXTERNAL_API_URL}supervisors?"
+                        f"id=eq.{m['supervisor_id']}",
                         headers=headers
                     ).json()[0]["user_id"]
                     name_supervisor = requests.get(
-                        f"{EXTERNAL_API_URL}users?id=eq.{supervisors_from_group_user_id}",
+                        f"{EXTERNAL_API_URL}users?"
+                        f"id=eq.{supervisors_from_group_user_id}",
                         headers=headers
                     ).json()[0]["first_name"]
                     surname_supervisor = requests.get(
-                        f"{EXTERNAL_API_URL}users?id=eq.{supervisors_from_group_user_id}",
+                        f"{EXTERNAL_API_URL}users?"
+                        f"id=eq.{supervisors_from_group_user_id}",
                         headers=headers
                     ).json()[0]["last_name"] or " "
                     for user in users_ids_per_group:
                         try:
+                            telegram_id = requests.get(
+                                f"{EXTERNAL_API_URL}users?id=eq.{user}",
+                                headers=headers
+                            ).json()[0]["telegram_id"]
                             await bot.send_message(
-                                chat_id= requests.get(f"{EXTERNAL_API_URL}users?id=eq.{user}", headers=headers).json()[0]["telegram_id"],
+                                chat_id=telegram_id,
                                 parse_mode="HTML",
                                 text=(
-                                    f"❗️<b>Notification about meeting</b>❗️\n\n"
-                                    f"<b>Supervisor:</b> {name_supervisor} {surname_supervisor}\n\n"
+                                    f"❗️<b>Notification about "
+                                    f"meeting</b>❗️\n\n"
+                                    f"<b>Supervisor:</b> {name_supervisor} "
+                                    f"{surname_supervisor}\n\n"
                                     f"<b>Goal:</b> {m['title']}\n\n"
-                                    f"<b>Description:</b> {m['description']}\n\n"
+                                    f"<b>Description:</b> "
+                                    f"{m['description']}\n\n"
                                     f"<b>Time left:</b> {label}"
                                 )
                             )
@@ -352,29 +401,42 @@ async def notification_about_deadline():
                     break
             if delta <= datetime.timedelta(0) and m["notified"] == "deadline":
                 group_id = m["peer_group_id"]
-                students_from_group = requests.get(f"{EXTERNAL_API_URL}students?peer_group_id=eq.{group_id}",
-                                                   headers=headers)
-                users_ids_per_group = [student["user_id"] for student in students_from_group.json()]
+                students_from_group = requests.get(
+                    f"{EXTERNAL_API_URL}students?peer_group_id=eq.{group_id}",
+                    headers=headers
+                )
+                users_ids_per_group = [
+                    student["user_id"]
+                    for student in students_from_group.json()
+                ]
                 supervisors_from_group_user_id = requests.get(
-                    f"{EXTERNAL_API_URL}supervisors?id=eq.{m['supervisor_id']}",
+                    f"{EXTERNAL_API_URL}supervisors?"
+                    f"id=eq.{m['supervisor_id']}",
                     headers=headers
                 ).json()[0]["user_id"]
                 name_supervisor = requests.get(
-                    f"{EXTERNAL_API_URL}users?id=eq.{supervisors_from_group_user_id}",
+                    f"{EXTERNAL_API_URL}users?"
+                    f"id=eq.{supervisors_from_group_user_id}",
                     headers=headers
                 ).json()[0]["first_name"]
                 surname_supervisor = requests.get(
-                    f"{EXTERNAL_API_URL}users?id=eq.{supervisors_from_group_user_id}",
+                    f"{EXTERNAL_API_URL}users?"
+                    f"id=eq.{supervisors_from_group_user_id}",
                     headers=headers
                 ).json()[0]["last_name"] or " "
                 for user in users_ids_per_group:
                     try:
+                        telegram_id = requests.get(
+                            f"{EXTERNAL_API_URL}users?id=eq.{user}",
+                            headers=headers
+                        ).json()[0]["telegram_id"]
                         await bot.send_message(
-                            chat_id= requests.get(f"{EXTERNAL_API_URL}users?id=eq.{user}", headers=headers).json()[0]["telegram_id"],
+                            chat_id=telegram_id,
                             parse_mode="HTML",
                             text=(
                                 f"❗️<b>Notification about meeting</b>❗️\n\n"
-                                f"<b>Supervisor:</b> {name_supervisor} {surname_supervisor}\n\n"
+                                f"<b>Supervisor:</b> {name_supervisor} "
+                                f"{surname_supervisor}\n\n"
                                 f"<b>Goal:</b> {m['title']}\n\n"
                                 f"<b>Description:</b> {m['description']}\n\n"
                                 f"<b>Time left:</b> The meeting is start"

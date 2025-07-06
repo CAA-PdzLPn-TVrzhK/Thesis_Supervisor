@@ -2,6 +2,7 @@ import pytest
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
+
 # ---------------- FakeMessage ----------------
 class FakeMessage:
     """
@@ -24,10 +25,12 @@ class FakeMessage:
         self.content_type = None
         self.answer = AsyncMock()
 
+
 @pytest.fixture
 def fake_msg():
     """Сообщение-заглушка для unit- и integration-тестов."""
     return FakeMessage()
+
 
 # ---------------- DummyFSM ----------------
 class DummyFSM:
@@ -51,6 +54,7 @@ class DummyFSM:
 
     async def get_data(self):
         return self.data
+
 
 @pytest.fixture
 def fsm():
