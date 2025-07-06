@@ -2,7 +2,7 @@
 
 ## Reliability
 
-### ### Faultlessness
+### Faultlessness
 
 **Why it is important:**  
 Our system should perform all requested actions without defects or errors, to ensure student and supervisor interactions work smoothly.
@@ -20,7 +20,7 @@ We will run manual tests and automated unit/integration tests to ensure endpoint
 
 ---
 
-### ### Fault Tolerance
+### Fault Tolerance
 
 **Why it is important:**  
 The system must handle unexpected issues without crashing, ensuring continuous availability.
@@ -38,7 +38,7 @@ We will simulate API errors and observe if the server handles them gracefully. A
 
 ---
 
-### ### Recoverability
+### Recoverability
 
 **Why it is important:**  
 In case of partial failure or data corruption, the system must recover without losing critical information.
