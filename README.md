@@ -111,14 +111,13 @@ The following sequence diagram shows the user registration and verification proc
 ## Development
 
 ### Kanban Board
-Project management is tracked using [GitHub Projects Board](https://github.com/user/thesis_supervisor/projects/1)
+Project management is tracked using [Taiga Projects Board](https://tree.taiga.io/project/kujifined-thesis-supervisor/kanban)
 
 **Column Entry Criteria:**
-- **Backlog**: New features/bugs identified but not yet prioritized
-- **To Do**: Prioritized items ready for development, estimated and assigned
+- **New**: New features/bugs identified but not yet prioritized
+- **Ready**: Prioritized items ready for development, estimated and assigned
 - **In Progress**: Actively being worked on by team member
-- **Code Review**: Implementation complete, awaiting peer review
-- **Testing**: Code merged, undergoing QA testing
+- **Ready for test**: Code merged, undergoing QA testing
 - **Done**: Feature complete and deployed to production
 
 ### Git Workflow
