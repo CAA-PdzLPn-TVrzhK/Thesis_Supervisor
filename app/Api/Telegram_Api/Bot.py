@@ -294,4 +294,99 @@ async def notification_about_deadline():
                     headers=headers
                 )
 
-        await asyncio.sleep(60)
+        respp = requests.get(f"{EXTERNAL_API_URL}meetings", headers=headers)
+        meetings = respp.json()
+        for m in meetings:
+            deadline = (
+                datetime.datetime.fromisoformat(m["date"].rstrip("Z"))
+                .replace(tzinfo=datetime.timezone.utc)
+            )
+            delta = deadline - now
+
+            if m["status"] != "in process" or m["notified"] == "all_notified":
+                continue
+
+            schedule = [
+                (datetime.timedelta(days=3),   "in_3_days",    "in_12_hours",     "3 days"),
+                (datetime.timedelta(hours=12), "in_12_hours",  "in_1_hour",    "12 hours"),
+                (datetime.timedelta(hours=1),  "in_1_hour",    "deadline",     "1 hour"),
+            ]
+
+            for threshold, need_state, next_state, label in schedule:
+                if delta > datetime.timedelta(0) and delta <= threshold and m["notified"] == need_state:
+                    group_id = m["peer_group_id"]
+                    students_from_group = requests.get(f"{EXTERNAL_API_URL}students?peer_group_id=eq.{group_id}", headers=headers)
+                    users_ids_per_group = [student["user_id"] for student in students_from_group.json()]
+                    supervisors_from_group_user_id = requests.get(
+                        f"{EXTERNAL_API_URL}supervisors?id=eq.{m['supervisor_id']}",
+                        headers=headers
+                    ).json()[0]["user_id"]
+                    name_supervisor = requests.get(
+                        f"{EXTERNAL_API_URL}users?id=eq.{supervisors_from_group_user_id}",
+                        headers=headers
+                    ).json()[0]["first_name"]
+                    surname_supervisor = requests.get(
+                        f"{EXTERNAL_API_URL}users?id=eq.{supervisors_from_group_user_id}",
+                        headers=headers
+                    ).json()[0]["last_name"] or " "
+                    for user in users_ids_per_group:
+                        try:
+                            await bot.send_message(
+                                chat_id= requests.get(f"{EXTERNAL_API_URL}users?id=eq.{user}", headers=headers).json()[0]["telegram_id"],
+                                parse_mode="HTML",
+                                text=(
+                                    f"❗️<b>Notification about meeting</b>❗️\n\n"
+                                    f"<b>Supervisor:</b> {name_supervisor} {surname_supervisor}\n\n"
+                                    f"<b>Goal:</b> {m['title']}\n\n"
+                                    f"<b>Description:</b> {m['description']}\n\n"
+                                    f"<b>Time left:</b> {label}"
+                                )
+                            )
+                        except Exception as e:
+                            print(f"❌ error with student {e}")
+
+                    requests.patch(
+                        f"{EXTERNAL_API_URL}meetings?id=eq.{m['id']}",
+                        json={"notified": next_state},
+                        headers=headers
+                    )
+                    break
+            if delta <= datetime.timedelta(0) and m["notified"] == "deadline":
+                group_id = m["peer_group_id"]
+                students_from_group = requests.get(f"{EXTERNAL_API_URL}students?peer_group_id=eq.{group_id}",
+                                                   headers=headers)
+                users_ids_per_group = [student["user_id"] for student in students_from_group.json()]
+                supervisors_from_group_user_id = requests.get(
+                    f"{EXTERNAL_API_URL}supervisors?id=eq.{m['supervisor_id']}",
+                    headers=headers
+                ).json()[0]["user_id"]
+                name_supervisor = requests.get(
+                    f"{EXTERNAL_API_URL}users?id=eq.{supervisors_from_group_user_id}",
+                    headers=headers
+                ).json()[0]["first_name"]
+                surname_supervisor = requests.get(
+                    f"{EXTERNAL_API_URL}users?id=eq.{supervisors_from_group_user_id}",
+                    headers=headers
+                ).json()[0]["last_name"] or " "
+                for user in users_ids_per_group:
+                    try:
+                        await bot.send_message(
+                            chat_id= requests.get(f"{EXTERNAL_API_URL}users?id=eq.{user}", headers=headers).json()[0]["telegram_id"],
+                            parse_mode="HTML",
+                            text=(
+                                f"❗️<b>Notification about meeting</b>❗️\n\n"
+                                f"<b>Supervisor:</b> {name_supervisor} {surname_supervisor}\n\n"
+                                f"<b>Goal:</b> {m['title']}\n\n"
+                                f"<b>Description:</b> {m['description']}\n\n"
+                                f"<b>Time left:</b> The meeting is start"
+                            )
+                        )
+                    except Exception as e:
+                        print(f"❌ error with student {e}")
+                requests.patch(
+                    f"{EXTERNAL_API_URL}milestones?id=eq.{m['id']}",
+                    json={"notified": "all_notified"},
+                    headers=headers
+                )
+
+        await asyncio.sleep(10)
