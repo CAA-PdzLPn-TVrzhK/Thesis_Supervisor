@@ -4,6 +4,7 @@ import SupervisorConstructor from "../Supervisor/Constructor.jsx"
 import React from "react";
 import {getUserId} from "./getUserId.jsx";
 import {getDataOfUser} from "./getDataOfUser.jsx";
+import AdditionUser from "../additionNewUser/AdditionUser.jsx";
 
 class Distributor extends React.Component{
     constructor(props) {
@@ -14,6 +15,7 @@ class Distributor extends React.Component{
             error: false,
             loading: true,
         }
+        this.addRole = this.addRole.bind(this);
     }
 
     async componentDidMount() {
@@ -23,6 +25,10 @@ class Distributor extends React.Component{
         console.log('userData:', userData);
         this.setState({data: userData});
 
+    }
+
+    addRole() {
+        this.setState()
     }
 
     render() {
@@ -46,6 +52,12 @@ class Distributor extends React.Component{
             return (
                 <div>
                     <SupervisorConstructor/>
+                </div>
+            )
+        } else if(this.state.data[0].role === "none") {
+            return (
+                <div>
+                    <AdditionUser/>
                 </div>
             )
         } else {
