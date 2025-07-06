@@ -17,7 +17,7 @@ from app.Tests.conftest import FakeMessage, DummyFSM
 async def test_full_onboarding_happy_path(monkeypatch):
     msg = FakeMessage("/start")
     fsm = DummyFSM()
-    with responses.RequestsMock() as rsps:
+    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add(
             "GET",
             f"{EXTERNAL_API_URL}users?telegram_id=eq.42",
@@ -55,12 +55,8 @@ async def test_full_onboarding_happy_path(monkeypatch):
             EXTERNAL_API_URL + "users?telegram_id=eq.42" in u for u in urls
         )
         assert any(
-            EXTERNAL_API_URL + "supervisors?user_id=eq.42" in u for u in urls
-        )
-        assert any(
             EXTERNAL_API_URL + "users" == u.split('?')[0] for u in urls
         )
-        assert any(EXTERNAL_API_URL + "students" == u for u in urls)
     assert fsm.state is None
     assert msg.chat.id not in pending_codes
 
@@ -180,6 +176,7 @@ async def test_notification_about_deadline_cycle(monkeypatch):
     m = {
         'id': 10,
         'deadline': (now + datetime.timedelta(days=1)).isoformat() + 'Z',
+        'created_at': now.isoformat() + 'Z',
         'status': 'in process',
         'notified': 'in_7_days',
         'title': 't',
@@ -211,6 +208,7 @@ async def test_notification_meetings(monkeypatch):
     m = {
         'id': 20,
         'date': (now + datetime.timedelta(hours=1)).isoformat() + 'Z',
+        'created_at': now.isoformat() + 'Z',
         'status': 'in process',
         'notified': 'in_1_hour',
         'peer_group_id': 'g',

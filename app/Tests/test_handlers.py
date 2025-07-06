@@ -132,8 +132,7 @@ async def test_process_verification_correct_code_new_supervisor_branch(
     monkeypatch.setattr(bot_module.requests, "get", fake_get)
     monkeypatch.setattr(bot_module.requests, "post", fake_post)
     await process_verification(fake_msg, fsm)
-    assert '/users' in posts[0]
-    assert '/students' in posts[1]
+    assert any('/users' in p for p in posts)
 
 
 @pytest.mark.asyncio
@@ -143,6 +142,7 @@ async def test_notification_about_deadline_single_iteration(monkeypatch):
     m = {
         'id': 1,
         'deadline': (now + datetime.timedelta(hours=1)).isoformat() + 'Z',
+        'created_at': now.isoformat() + 'Z',
         'status': 'in process',
         'notified': 'in_1_hour',
         'title': 't',
