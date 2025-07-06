@@ -39,7 +39,7 @@ class Profile extends React.Component {
 
             let gotSupervisorUserData = [];
             if (gotSupervisorData.length !== 0) {
-                const gotSupervisorUserData = await getSupervisorUserData(gotSupervisorData[0].user_id);
+                gotSupervisorUserData = await getSupervisorUserData(gotSupervisorData[0].user_id);
                 console.log("gotSupervisorUserData:", gotSupervisorUserData);
             }
 

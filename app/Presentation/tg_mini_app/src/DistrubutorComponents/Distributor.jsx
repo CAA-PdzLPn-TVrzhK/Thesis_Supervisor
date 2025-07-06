@@ -27,8 +27,10 @@ class Distributor extends React.Component{
 
     }
 
-    addRole() {
-        this.setState()
+    async addRole() {
+        const userData = await getDataOfUser();
+        console.log('userData:', userData);
+        this.setState({data: userData});
     }
 
     render() {
@@ -57,7 +59,8 @@ class Distributor extends React.Component{
         } else if(this.state.data[0].role === "none") {
             return (
                 <div>
-                    <AdditionUser/>
+                    <AdditionUser addRole={this.addRole}/>
+
                 </div>
             )
         } else {

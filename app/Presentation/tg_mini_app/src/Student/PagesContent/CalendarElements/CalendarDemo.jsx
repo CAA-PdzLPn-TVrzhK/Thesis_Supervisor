@@ -24,6 +24,8 @@ class Calendar extends React.Component {
 
     componentDidMount() {
         this.getCalendar();
+        let now = new Date();
+        this.setDailyDeals(now);
     }
 
     getMonthName(month_number) {
