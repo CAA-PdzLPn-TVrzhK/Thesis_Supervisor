@@ -1,0 +1,102 @@
+@startuml deployment-diagram
+!theme plain
+title Thesis Supervisor System - Deployment View
+
+node "Client Devices" {
+  artifact "Web Browser" as Browser
+  artifact "Telegram App" as TgClient
+}
+
+node "Load Balancer" as LB {
+  artifact "Nginx/Apache" as WebServer
+}
+
+node "Application Server" as AppServer {
+  artifact "Python App" as PyApp
+  artifact "Static Files" as Static
+  component "Web API" as API
+  component "Telegram Bot" as Bot
+}
+
+node "Database Server" as DBServer {
+  database "PostgreSQL" as DB
+  database "Redis Cache" as Cache
+}
+
+cloud "External Services" as ExtCloud {
+  component "Telegram API" as TgAPI
+  component "Email Service" as EmailSvc
+  component "DNS Provider" as DNS
+}
+
+node "Monitoring & Logging" as Monitor {
+  artifact "Application Logs" as Logs
+  artifact "Performance Metrics" as Metrics
+}
+
+' Client connections
+Browser --> LB : HTTPS
+TgClient --> TgAPI : HTTPS
+
+' Load balancer
+LB --> AppServer : HTTP
+
+' Application server connections
+PyApp --> API
+PyApp --> Bot
+API --> Cache
+API --> DB
+Bot --> TgAPI
+Bot --> DB
+
+' External service connections
+PyApp --> EmailSvc : SMTP/API
+DNS --> LB : Domain Resolution
+
+' Monitoring
+AppServer --> Monitor : Logs & Metrics
+DBServer --> Monitor : DB Metrics
+
+note top of LB
+  SSL Termination
+  Request Distribution
+  Static Content Caching
+end note
+
+note right of AppServer
+  Python Flask/FastAPI
+  Gunicorn/uWSGI
+  Auto-scaling capable
+end note
+
+note bottom of DBServer
+  Master-Slave setup
+  Automated backups
+  Connection pooling
+end note
+
+note left of ExtCloud
+  Third-party APIs
+  Email delivery
+  External dependencies
+end note
+
+' Deployment specifications
+note as DeploymentNotes
+**Production Deployment:**
+• Cloud Provider: AWS/Azure/GCP
+• Container: Docker + Kubernetes
+• SSL: Let's Encrypt certificates
+• Backup: Daily automated backups
+• Monitoring: Prometheus + Grafana
+• CI/CD: GitHub Actions
+
+**Customer Requirements:**
+• Domain name configuration
+• Email service credentials
+• Telegram bot token
+• SSL certificate setup
+• Database migration scripts
+end note
+
+@enduml 
