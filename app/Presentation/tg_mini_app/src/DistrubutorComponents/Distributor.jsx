@@ -56,7 +56,7 @@ class Distributor extends React.Component{
                     <SupervisorConstructor/>
                 </div>
             )
-        } else if(this.state.data[0].role === "none") {
+        } else if(this.state.data[0].role === "None") {
             return (
                 <div>
                     <AdditionUser addRole={this.addRole}/>
