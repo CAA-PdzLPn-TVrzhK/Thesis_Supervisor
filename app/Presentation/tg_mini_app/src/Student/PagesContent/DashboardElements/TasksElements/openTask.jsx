@@ -101,20 +101,6 @@ class TaskManager extends React.Component {
 
         return (
             <div className = "dashboard-task-container">
-                {this.state.submission_status === null ?
-                    <div></div> :
-                    (this.state.submission_status === true ?
-                        <div className = "successful-submit-block">
-                            <div className = "results-submission-content"> Successful submit </div>
-                            <button onClick={this.resetSubmissionStatus} className = "close-results-submission-button"> Close </button>
-                        </div> :
-                        <div className = "non-successful-submit-block">
-                            <div>
-                                <div className = "results-submission-content">Unsuccessful submit</div>
-                                <div  className = "results-submission-content-optional">Please, write your draft</div>
-                            </div>
-                            <button onClick={this.resetSubmissionStatus} className = "close-results-submission-button"> Close </button>
-                        </div>)}
                 <div className = "dashboard-task-content-info"> Milestone info </div>
                 <div className = "dashboard-task-content-block">
                     <div className = "task-info-item">
@@ -145,7 +131,20 @@ class TaskManager extends React.Component {
                     </button>
                 </form>
                 <button onClick={this.closeTask} className = "dashboard-task-content-go-back"> Back </button>
-
+                {this.state.submission_status === null ?
+                    <div></div> :
+                    (this.state.submission_status === true ?
+                        <div className = "successful-submit-block">
+                            <div className = "results-submission-content"> Successful submit </div>
+                            <button onClick={this.resetSubmissionStatus} className = "close-results-submission-button"> Close </button>
+                        </div> :
+                        <div className = "non-successful-submit-block">
+                            <div>
+                                <div className = "results-submission-content">Unsuccessful submit</div>
+                                <div  className = "results-submission-content-optional">Please, write your draft</div>
+                            </div>
+                            <button onClick={this.resetSubmissionStatus} className = "close-results-submission-button"> Close </button>
+                        </div>)}
             </div>
         )
     }

@@ -53,7 +53,15 @@ class Dashboard extends React.Component {
     }
 
     render() {
-        if(!this.state.thesis_data || this.state.milestones_data === 0) {
+        if(!this.state.thesis_data || this.state.milestones_data.length === 0) {
+            if(this.state.thesis_data === "you haven't thesis") {
+                return (
+                    <div className = "dashboard-content-container">
+                        <div className = "dashboard-content-header-text"> Dashboard </div>
+                        <div className = "dashboard-content-thesis-title"> You haven't thesis </div>
+                    </div>
+                )
+            }
             return (
                 <div className = "loader-container">
                     <img className = "loader-image" src="https://megakeys.info/icons/loader.gif" alt="Please, wait a bit" />

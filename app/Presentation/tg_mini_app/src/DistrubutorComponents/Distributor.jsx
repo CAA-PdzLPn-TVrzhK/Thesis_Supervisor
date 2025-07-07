@@ -27,8 +27,10 @@ class Distributor extends React.Component{
 
     }
 
-    addRole() {
-        this.setState()
+    async addRole() {
+        const userData = await getDataOfUser();
+        console.log('userData:', userData);
+        this.setState({data: userData});
     }
 
     render() {
@@ -54,10 +56,11 @@ class Distributor extends React.Component{
                     <SupervisorConstructor/>
                 </div>
             )
-        } else if(this.state.data[0].role === "none") {
+        } else if(this.state.data[0].role === "None") {
             return (
                 <div>
-                    <AdditionUser/>
+                    <AdditionUser addRole={this.addRole}/>
+
                 </div>
             )
         } else {

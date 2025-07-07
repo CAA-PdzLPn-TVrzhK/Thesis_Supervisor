@@ -168,7 +168,6 @@
     border-radius: 50%;
     position: absolute;
     left: 50%;
-    bottom: -4px;
     transform: translateX(-50%);
 }
 

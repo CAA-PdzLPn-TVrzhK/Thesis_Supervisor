@@ -1,0 +1,49 @@
+gitGraph
+    commit id: "Initial commit"
+    commit id: "Setup project structure"
+    
+    branch feature/user-auth
+    checkout feature/user-auth
+    commit id: "Add user model"
+    commit id: "Implement login API"
+    commit id: "Add password validation"
+    
+    checkout main
+    merge feature/user-auth
+    commit id: "Release v1.1"
+    
+    branch feature/telegram-bot
+    checkout feature/telegram-bot
+    commit id: "Setup bot framework"
+    commit id: "Add bot commands"
+    
+    checkout main
+    branch bugfix/login-issue
+    checkout bugfix/login-issue
+    commit id: "Fix login validation"
+    
+    checkout main
+    merge bugfix/login-issue
+    commit id: "Hotfix v1.1.1"
+    
+    checkout feature/telegram-bot
+    commit id: "Complete bot integration"
+    
+    checkout main
+    merge feature/telegram-bot
+    commit id: "Release v1.2"
+    
+    branch feature/dashboard
+    checkout feature/dashboard
+    commit id: "Create supervisor dashboard"
+    commit id: "Add student metrics"
+    
+    checkout main
+    commit id: "Update dependencies"
+    
+    checkout feature/dashboard
+    commit id: "Implement real-time updates"
+    
+    checkout main
+    merge feature/dashboard
+    commit id: "Release v1.3" 

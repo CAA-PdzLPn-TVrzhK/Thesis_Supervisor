@@ -1,0 +1,74 @@
+@startuml component-diagram
+!theme plain
+title Thesis Supervisor System - Static Architecture
+
+package "Presentation Layer" {
+  [Web Frontend] as WebFE
+  [Telegram Mini App] as TgApp
+  [Client HTML] as ClientHTML
+}
+
+package "API Layer" {
+  [Telegram Bot API] as TgBot
+  [REST API] as RestAPI
+  [Authentication] as Auth
+}
+
+package "Domain Layer" {
+  [User Service] as UserSvc
+  [Business Logic] as BizLogic
+  [Domain Entities] as Entities
+}
+
+package "Infrastructure Layer" {
+  [Database Layer] as DB
+  [Email Service] as Email
+  [Repository Layer] as Repo
+}
+
+package "External Services" {
+  [Telegram API] as ExtTg
+  [Email Provider] as ExtEmail
+  [Database] as ExtDB
+}
+
+' Presentation Layer connections
+WebFE --> RestAPI
+TgApp --> TgBot
+ClientHTML --> RestAPI
+
+' API Layer connections
+TgBot --> UserSvc
+TgBot --> ExtTg
+RestAPI --> Auth
+Auth --> UserSvc
+
+' Domain Layer connections
+UserSvc --> BizLogic
+BizLogic --> Entities
+UserSvc --> Repo
+
+' Infrastructure Layer connections
+Repo --> DB
+Email --> ExtEmail
+DB --> ExtDB
+
+' Cross-layer connections
+BizLogic --> Email
+
+note right of WebFE
+  React-based frontend
+  Modern UI/UX
+end note
+
+note right of TgApp
+  Telegram Mini App
+  Mobile-first design
+end note
+
+note bottom of DB
+  SQLite for development
+  PostgreSQL for production
+end note
+
+@enduml 

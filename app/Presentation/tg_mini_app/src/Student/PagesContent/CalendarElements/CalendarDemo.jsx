@@ -9,6 +9,7 @@ class Calendar extends React.Component {
         super(props);
         const now = new Date();
         this.state = {
+            current_all_date: now,
             current_day: now.getDate(),
             calendar: [],
             year: now.getFullYear(),
@@ -24,6 +25,7 @@ class Calendar extends React.Component {
 
     componentDidMount() {
         this.getCalendar();
+        this.setDailyDeals(this.state.current_all_date);
     }
 
     getMonthName(month_number) {
@@ -224,12 +226,12 @@ class Calendar extends React.Component {
                                             (
                                                 this.state.dateWithInfo.includes(day.getDate()) ?
                                                     (
-                                                        day.getDate() === this.state.current_day ?
+                                                        (day.getDate() === this.state.current_all_date.getDate() && day.getMonth() === this.state.current_all_date.getMonth() && day.getFullYear() === this.state.current_all_date.getFullYear()) ?
                                                             'calendar-main-date-element-active-with-task' :
                                                             'calendar-main-date-element-with-task'
                                                     ) :
                                                     (
-                                                        day.getDate() === this.state.current_day ?
+                                                        (day.getDate() === this.state.current_all_date.getDate() && day.getMonth() === this.state.current_all_date.getMonth() && day.getFullYear() === this.state.current_all_date.getFullYear()) ?
                                                             'calendar-main-date-element-active' :
                                                             'calendar-main-date-element'
                                                     )

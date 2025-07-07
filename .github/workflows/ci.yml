@@ -22,19 +22,19 @@ jobs:
 
       - name: Install flake8
         run: pip install flake8
+# ----------------- Linting ----------------
+      - name: Run Flake8 and save report
+        run: |
+          mkdir -p reports
+          flake8 . --tee --output-file=reports/flake8.txt
 
-#      - name: Run Flake8 and save report
-#        run: |
-#          mkdir -p reports
-#          flake8 . --tee --output-file=reports/flake8.txt
-#
-#      - name: Upload Flake8 report
-#        if: always()
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: flake8-report
-#          path: reports/flake8.txt
-
+      - name: Upload Flake8 report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flake8-report
+          path: reports/flake8.txt
+# -------------------------------------------
   build:
     name: Build (Install dependencies)
     runs-on: ubuntu-latest
@@ -75,19 +75,19 @@ jobs:
                       requests responses flake8 bandit aiogram python-dotenv \
                       aiohttp aiosignal certifi charset-normalizer frozenlist idna multidict \
                       pydantic typing-extensions urllib3 yarl
+# --------------------- Tests -----------------------
+      - name: Run tests with coverage
+        run: |
+          mkdir -p coverage
+          pytest app/Tests --verbose --cov=app --cov-report=term --cov-report=xml:coverage/coverage.xml
 
-#      - name: Run tests with coverage
-#        run: |
-#          mkdir -p coverage
-#          pytest app/Tests --verbose --cov=app --cov-report=term --cov-report=xml:coverage/coverage.xml
-#
-#      - name: Upload Coverage report
-#        if: always()
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: coverage-report
-#          path: coverage/coverage.xml
-
+      - name: Upload Coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/coverage.xml
+# --------------------------------------------------
   security-scan:
     name: Bandit Security Scan
     runs-on: ubuntu-latest

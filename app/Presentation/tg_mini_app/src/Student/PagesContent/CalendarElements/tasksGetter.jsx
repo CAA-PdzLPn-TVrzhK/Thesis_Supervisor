@@ -30,25 +30,24 @@ import axios from "axios";
 
 export async function getTasks() {
     console.log('вызван getTasks');
-    let error = false;
     let msRes = [];
     let thesisId = [];
-    const thesisRes = await axios.get(`${window.TelegramWebApp.API_BASE}students?user_id=eq.${window.TelegramWebApp.userId}`,
+    try {
+        const thesisRes = await axios.get(`${window.TelegramWebApp.API_BASE}students?user_id=eq.${window.TelegramWebApp.userId}`,
             {
                 headers: window.TelegramWebApp.headers,
             });
         thesisId = thesisRes.data[0].thesis_id;
         console.log("thesisId that you got:", thesisId);
-    try {
-
         msRes = await axios.get(`${window.TelegramWebApp.API_BASE}milestones?thesis_id=eq.${thesisId}`,
             {
                 headers: window.TelegramWebApp.headers,
             });
+        console.log('результат вызова списка заданий:', msRes.data);
+        return msRes.data;
     } catch (err) {
         console.log(err);
-        error = true;
+        return [];
     }
-    console.log('результат вызова списка заданий:', msRes.data);
-    return msRes.data;
+
 }
