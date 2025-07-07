@@ -440,8 +440,8 @@ async def notification_about_events():
                     await bot.send_message(
                         chat_id=requests.get(
                             f"{EXTERNAL_API_URL}users?id=eq.{user}",
-                            headers=headers).json()
-                            [0]["telegram_id"],
+                            headers=headers
+                        ).json()[0]["telegram_id"],
                         parse_mode="HTML",
                         text=(
                             f"🆕 <b>New meeting scheduled!</b> 🆕\n\n"
@@ -511,8 +511,8 @@ async def notification_about_events():
                         await bot.send_message(
                             chat_id=requests.get(
                                 f"{EXTERNAL_API_URL}users?id=eq.{user}",
-                                headers=headers).json()
-                                [0]["telegram_id"],
+                                headers=headers
+                            ).json()[0]["telegram_id"],
                             parse_mode="HTML",
                             text=(
                                 f"❗️<b>Notification about meeting</b>❗️\n\n"
@@ -560,8 +560,8 @@ async def notification_about_events():
                     await bot.send_message(
                         chat_id=requests.get(
                             f"{EXTERNAL_API_URL}users?id=eq.{user}",
-                                headers=headers).json()
-                                [0]["telegram_id"],
+                            headers=headers
+                        ).json()[0]["telegram_id"],
                         parse_mode="HTML",
                         text=(
                             f"❗️<b>Notification about meeting</b>❗️\n\n"
