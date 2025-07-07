@@ -378,7 +378,7 @@ async def notification_about_events():
                             f"<b>Thesis:</b> {thesis['title']}\n"
                             f"<b>Step:</b>   {m['title']}\n"
                             f"<b>Description:</b> {m['description']}\n"
-                            f"<b>Time left:</b>  Time’s up!"
+                            f"<b>Time left:</b>  Time's up!"
                         )
                     )
 
