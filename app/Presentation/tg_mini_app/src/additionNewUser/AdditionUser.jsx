@@ -1,6 +1,7 @@
 
 import React from "react"
 import AddStudent from "./AddStudentForm/AddStudent.jsx";
+import AddSupervisor from "./AddSupervisorForm/AddSupervisor.jsx";
 
 class AdditionUser extends React.Component {
     constructor(props) {
@@ -25,22 +26,30 @@ class AdditionUser extends React.Component {
         });
     }
 
+    addSupervisor() {
+        this.setState(() => {
+            return {
+                addSupervisorFlag: true,
+            }
+        });
+    }
+
     render() {
         if(this.state.addStudentFlag) {
             return (
                 <AddStudent addRole = {this.addUser}/>
             )
         }
-        if(this.state.addStudentFlag) {
+        if(this.state.addSupervisorFlag) {
             return (
-                <AddStudent addRole = {this.addUser}/>
+                <AddSupervisor addRole = {this.addUser}/>
             )
         }
         return (
             <div className = "add_role_container">
                 <div>
                     <div onClick={() => this.addStudent()}> Create As Student </div>
-                    <div> Create As Supervisor </div>
+                    <div onClick={() => this.addSupervisor()}> Create As Supervisor </div>
                 </div>
             </div>
         )
