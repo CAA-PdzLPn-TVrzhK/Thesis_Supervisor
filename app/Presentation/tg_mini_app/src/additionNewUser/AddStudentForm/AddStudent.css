@@ -83,8 +83,29 @@
 }
 
 .student-card-send-button-container {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
   margin-top: 28px;
-  text-align: center;
+}
+
+.student-card-back-button-element {
+  background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+  color: #444;
+  border: 1px solid #ccc;
+  padding: 12px 35px;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 25px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.student-card-back-button-element:hover {
+  background: linear-gradient(135deg, #e5e5e5, #d5d5d5);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
 }
 
 .student-card-send-button-element {
@@ -98,7 +119,6 @@
   cursor: pointer;
   box-shadow: 0 6px 15px rgba(107, 60, 207, 0.5);
   transition: background 0.3s ease;
-  user-select: none;
 }
 
 .student-card-send-button-element:hover {

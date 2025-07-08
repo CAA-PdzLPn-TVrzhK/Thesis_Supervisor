@@ -28,6 +28,7 @@ class AddStudent extends React.Component {
         this.handleInputChangeSupervisorName = this.handleInputChangeSupervisorName.bind(this);
         this.handleInputChangeGroupName = this.handleInputChangeGroupName.bind(this);
         this.sendNewStudentInfo = this.sendNewStudentInfo.bind(this);
+        this.back = this.back.bind(this);
         this.handleInputChangeYearOfStudy = this.handleInputChangeYearOfStudy.bind(this);
         this.handleInputChangeProgram = this.handleInputChangeProgram.bind(this);
         this.handleInputChangeDepartment = this.handleInputChangeDepartment.bind(this);
@@ -93,6 +94,10 @@ class AddStudent extends React.Component {
                 departmentName: event.target.value,
             }
         })
+    }
+
+    back() {
+        this.props.back();
     }
 
     async sendNewStudentInfo() {
@@ -214,7 +219,8 @@ class AddStudent extends React.Component {
                             </span>
                         </div>
                         <div className = "student-card-send-button-container">
-                            <button type={"button"} onClick={this.sendNewStudentInfo} className = "student-card-send-button-element"> send info </button>
+                            <button type={"button"} onClick={this.back} className = "student-card-back-button-element"> back </button>
+                            <button type={"button"} onClick={this.sendNewStudentInfo} className = "student-card-send-button-element"> send </button>
                         </div>
                     </form>
                 </div>

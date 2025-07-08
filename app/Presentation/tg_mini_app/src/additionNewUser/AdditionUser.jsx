@@ -2,6 +2,7 @@
 import React from "react"
 import AddStudent from "./AddStudentForm/AddStudent.jsx";
 import AddSupervisor from "./AddSupervisorForm/AddSupervisor.jsx";
+import "./AdditionUser.css"
 
 class AdditionUser extends React.Component {
     constructor(props) {
@@ -12,6 +13,7 @@ class AdditionUser extends React.Component {
         }
         this.addStudent = this.addStudent.bind(this);
         this.addUser = this.addUser.bind(this);
+        this.back = this.back.bind(this);
     }
 
     addUser() {
@@ -34,22 +36,31 @@ class AdditionUser extends React.Component {
         });
     }
 
+    back() {
+        this.setState(() => {
+            return {
+                addStudentFlag: false,
+                addSupervisorFlag: false,
+            }
+        });
+    }
+
     render() {
         if(this.state.addStudentFlag) {
             return (
-                <AddStudent addRole = {this.addUser}/>
+                <AddStudent addRole = {this.addUser} back = {this.back}/>
             )
         }
         if(this.state.addSupervisorFlag) {
             return (
-                <AddSupervisor addRole = {this.addUser}/>
+                <AddSupervisor addRole = {this.addUser} back = {this.back}/>
             )
         }
         return (
-            <div className = "add_role_container">
-                <div>
-                    <div onClick={() => this.addStudent()}> Create As Student </div>
-                    <div onClick={() => this.addSupervisor()}> Create As Supervisor </div>
+            <div className = "add-role-container">
+                <div className = "add-role-field">
+                    <button onClick={() => this.addStudent()} className = "add-button"> Create As Student </button>
+                    <button onClick={() => this.addSupervisor()} className = "add-button"> Create As Supervisor </button>
                 </div>
             </div>
         )

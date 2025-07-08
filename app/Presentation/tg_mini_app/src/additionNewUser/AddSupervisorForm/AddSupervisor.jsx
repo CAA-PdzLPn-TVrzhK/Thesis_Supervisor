@@ -19,6 +19,7 @@ class AddSupervisor extends React.Component {
             groupList: [],
         }
         this.sendNewSupervisorInfo = this.sendNewSupervisorInfo.bind(this);
+        this.back = this.back.bind(this);
         this.handleInputChangeFirstname = this.handleInputChangeFirstname.bind(this);
         this.handleInputChangeLastName = this.handleInputChangeLastName.bind(this);
         this.handleInputChangeGroupName = this.handleInputChangeGroupName.bind(this);
@@ -66,6 +67,10 @@ class AddSupervisor extends React.Component {
                 departmentName: event.target.value,
             }
         })
+    }
+
+    back() {
+        this.props.back();
     }
 
     async sendNewSupervisorInfo() {
@@ -147,7 +152,8 @@ class AddSupervisor extends React.Component {
                             </span>
                         </div>
                         <div className = "supervisor-card-send-button-container">
-                            <button type={"button"} onClick={this.sendNewSupervisorInfo} className = "student-card-send-button-element"> send </button>
+                            <button type={"button"} onClick={this.back} className = "supervisor-card-back-button-element"> back </button>
+                            <button type={"button"} onClick={this.sendNewSupervisorInfo} className = "supervisor-card-send-button-element"> send </button>
                         </div>
                     </form>
                 </div>
