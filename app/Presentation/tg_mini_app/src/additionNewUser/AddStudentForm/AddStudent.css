@@ -90,6 +90,7 @@
 }
 
 .student-card-back-button-element {
+  width: 100%;
   background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
   color: #444;
   border: 1px solid #ccc;
@@ -109,6 +110,7 @@
 }
 
 .student-card-send-button-element {
+  width: 100%;
   background: linear-gradient(90deg, #6b3ccf, #3264f5);
   color: #fff;
   border: none;
@@ -144,6 +146,12 @@
   }
 
   .student-card-send-button-element {
+    width: 100%;
+    padding: 14px 0;
+    font-size: 1.1rem;
+  }
+
+  .student-card-back-button-element {
     width: 100%;
     padding: 14px 0;
     font-size: 1.1rem;
