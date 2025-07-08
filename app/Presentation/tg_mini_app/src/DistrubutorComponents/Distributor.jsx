@@ -37,8 +37,8 @@ class Distributor extends React.Component{
         if(!this.state.data) {
             console.log(this.state.data, 'wait a bit');
             return (
-                <div>
-                    Please, wait a bit
+                <div className = "loader-container">
+                    <img className = "loader-image" src="https://megakeys.info/icons/loader.gif" alt="Please, wait a bit" />
                 </div>
             )
         }
