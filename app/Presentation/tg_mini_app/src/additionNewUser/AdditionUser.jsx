@@ -1,6 +1,6 @@
 
 import React from "react"
-import AddStudent from "./AddStudent.jsx";
+import AddStudent from "./AddStudentForm/AddStudent.jsx";
 
 class AdditionUser extends React.Component {
     constructor(props) {

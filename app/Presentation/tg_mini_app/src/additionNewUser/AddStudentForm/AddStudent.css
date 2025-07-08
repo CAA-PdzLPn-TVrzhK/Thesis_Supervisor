@@ -1,0 +1,130 @@
+.student-card-container {
+  max-width: 400px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 12px 25px rgba(101, 80, 255, 0.15);
+  padding: 30px 25px 40px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #444;
+}
+
+.student-card-title {
+  font-weight: 700;
+  font-size: 1.7rem;
+  color: #6b3ccf; /* фиолетовый оттенок */
+  text-align: center;
+  margin-bottom: 30px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.student-card-form-container {
+  width: 100%;
+}
+
+.student-card-form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.student-card-element-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.student-card-element-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #6b3ccf;
+  margin-bottom: 8px;
+  user-select: none;
+}
+
+.student-card-element-field label {
+  width: 100%;
+  display: block;
+}
+
+.student-card-element-field input,
+.student-card-element-field select {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 1rem;
+  border: 1.8px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.25s ease;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #222;
+  background-color: #fafafa;
+}
+
+.student-card-element-field input::placeholder {
+  color: #bbb;
+  font-style: italic;
+}
+
+.student-card-element-field input:focus,
+.student-card-element-field select:focus {
+  border-color: #6b3ccf;
+  box-shadow: 0 0 8px rgba(107, 60, 207, 0.5);
+  background-color: #fff;
+}
+
+.student-card-element-error {
+  color: #bb1e53; /* мягкий красный для ошибок */
+  font-size: 0.8rem;
+  margin-top: 4px;
+  min-height: 18px;
+  font-weight: 600;
+}
+
+.student-card-send-button-container {
+  margin-top: 28px;
+  text-align: center;
+}
+
+.student-card-send-button-element {
+  background: linear-gradient(90deg, #6b3ccf, #3264f5);
+  color: #fff;
+  border: none;
+  padding: 12px 35px;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 25px;
+  cursor: pointer;
+  box-shadow: 0 6px 15px rgba(107, 60, 207, 0.5);
+  transition: background 0.3s ease;
+  user-select: none;
+}
+
+.student-card-send-button-element:hover {
+  background: linear-gradient(90deg, #8149e6, #3f74ff);
+  box-shadow: 0 8px 18px rgba(99, 57, 195, 0.7);
+}
+
+@media (max-width: 480px) {
+  .student-card-container {
+    margin: 20px 15px;
+    padding: 25px 20px 35px;
+  }
+
+  .student-card-title {
+    font-size: 1.4rem;
+    margin-bottom: 22px;
+  }
+
+  .student-card-element-field input,
+  .student-card-element-field select {
+    font-size: 0.95rem;
+    padding: 9px 12px;
+  }
+
+  .student-card-send-button-element {
+    width: 100%;
+    padding: 14px 0;
+    font-size: 1.1rem;
+  }
+}

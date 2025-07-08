@@ -15,8 +15,7 @@ export async function getSupervisorId(supervisorName) {
                 }
             );
             console.log('current checked supervisor:', `${supervisorData.data[0].first_name} ${supervisorData.data[0].last_name}`, supervisorName);
-            if (`${supervisorData.data[0].first_name} ${supervisorData.data[0].last_name}` === supervisorName ||
-            `${supervisorData.data[0].last_name} ${supervisorData.data[0].first_name}` === supervisorName) {
+            if (`${supervisorData.data[0].first_name} ${supervisorData.data[0].last_name}` === supervisorName) {
                 return supervisor.id;
             }
         }
