@@ -4,7 +4,7 @@ import { Form, Input, InputNumber, Button } from 'antd';
 import './index.css';
 
 
-const API_URL = 'https://dprwupbzatrqmqpdwcgq.supabase.co/rest/v1/students';
+const API_URL = 'https://dprwupbzatrqmqpdwcgq.supabase.co/rest/v1/';
 const API_HEADERS = {
   apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3NzcsImV4cCI6MjA2Njc2MDc3N30.yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc"
 };
@@ -23,7 +23,9 @@ export default function StudentProfile({ student, onBack, onSave}) {
   const handleFinish = async (values) => {
     try {
       const response = student?.id
-        ? await axios.put(`${API_URL}?id=eq.${student.id}`, values, { headers: API_HEADERS })
+        ? await axios.put(`${API_URL}` + 'students' + `?id=eq.${student.id}`, values, {
+            supervisor_id: values.supervisor_id
+          }, { headers: API_HEADERS })
         : await axios.post(API_URL, values, { headers: API_HEADERS });
 
       onSave(student?.id ? { ...student, ...values } : response.data[0]); // Supabase возвращает массив
@@ -54,13 +56,9 @@ export default function StudentProfile({ student, onBack, onSave}) {
             <Input placeholder="123"/>
           </Form.Item>
 
-          <Form.Item
-              label="Supervisor "
-              name="supervisorName"
-              rules={[{message: 'Enter supervisor ID'}]}
-          >
-            <Input placeholder="123"/>
-          </Form.Item>
+          <Select>
+            {supervisors.map(s => <Option key={s.id} value={s.id}>{s.name}</Option>)}
+          </Select>
 
           <Form.Item
               label="Program"

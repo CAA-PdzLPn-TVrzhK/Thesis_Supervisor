@@ -2,45 +2,32 @@ import React, { useEffect } from 'react';
 import axios from 'axios';
 import { Form, Input, Select, Button, Spin } from 'antd';
 import './index.css';
-const { Option } = Select;
+
+const API_URL = 'https://dprwupbzatrqmqpdwcgq.supabase.co/rest/v1/';
+const API_HEADERS = {
+  apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3NzcsImV4cCI6MjA2Njc2MDc3N30.yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc"
+};
 
 export default function SupervisorProfile({ supervisor, onBack, onSave}) {
   const [form] = Form.useForm();
 
   useEffect(() => {
     form.setFieldsValue({
-      user_id: supervisor?.user_id || '',
+      id: supervisor?.id || '',
+      supervisorName: supervisor?.supervisorName || '',
       department: supervisor?.department || '',
     });
   }, [supervisor, form]);
 
   const handleFinish = async (values) => {
     try {
-      let response;
-      if (supervisor && supervisor._id) {
-        // если редактируем существующего
-        response = await axios.put(
-          `http://52.87.161.100:8000/supervisors/${supervisor.id}`,
-          {department: values.department}
-        );
+      const response = supervisor?.id
+        ? await axios.put(`${API_URL}?id=eq.${supervisor.id}`, values, { headers: API_HEADERS })
+        : await axios.post(API_URL, values, { headers: API_HEADERS });
 
-        const updated = { ...supervisor, ...response.data};
-        onSave(updated);
-      } else {
-        // если добавляем нового
-        response = await axios.post(
-          `http://52.87.161.100:8000/supervisors/`,
-          { ...values }
-        );
-        onSave(response.data);
-      }
+      onSave(supervisor?.id ? { ...supervisor, ...values } : response.data[0]); // Supabase возвращает массив
     } catch (err) {
       console.error('Error saving supervisor', err);
-      if (err.response) {
-        console.error('Response status:', err.response.status);
-        console.error('Response data:', err.response.data);
-      }
-      // здесь можно показывать уведомление об ошибке
     }
   };
 
@@ -58,11 +45,19 @@ export default function SupervisorProfile({ supervisor, onBack, onSave}) {
             className="profileForm"
         >
           <Form.Item
-              label="User ID"
-              name="user_id"
+              label="ID"
+              name="id"
               rules={[{required: true, message: 'Enter a user ID'}]}
           >
-            <Input placeholder="string" disabled={!!supervisor?._id}/>
+            <Input placeholder="string" disabled={!!supervisor?.id}/>
+          </Form.Item>
+
+          <Form.Item
+              label="Full Name"
+              name="supervisorName"
+              rules={[{required: true, message: 'Enter a user name'}]}
+          >
+            <Input placeholder="Name"/>
           </Form.Item>
 
           <Form.Item

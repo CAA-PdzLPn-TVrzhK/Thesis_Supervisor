@@ -12,7 +12,7 @@ const API_HEADERS = {
   apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3NzcsImV4cCI6MjA2Njc2MDc3N30.yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc"
 };
 
-export default function SupervisorList(){
+export default function UsersList(){
     // Сначала инициализируем state
     const [data, setData] = useState([]);
     const [display, setDisplay] = useState([]);
@@ -21,7 +21,7 @@ export default function SupervisorList(){
     const [isEditing, setIsEditing] = useState(false);
     const [selectedRows, setSelectedRows] = useState([]);
     const [current, setCurrent] = useState('studentList');
-    const [selectedSupervisor, setSelectedSupervisor] = useState(null);
+    const [selectedUser, setSelectedUser] = useState(null);
 
     // А теперь уже можно дернуть API
     useEffect(() => {
@@ -108,7 +108,7 @@ export default function SupervisorList(){
     }
     if (current === "add" || current === "profile") {
       return <SupervisorProfile
-          supervisor={current === 'profile' ? selectedSupervisor : null}
+          supervisor={current === 'profile' ? selectedUser : null}
           onBack={() => setCurrent( 'supervisorList')}
           onSave={(updated) => {
                 setDisplay(display.map(s => s.id === updated.id ? updated : s));
@@ -155,7 +155,7 @@ export default function SupervisorList(){
                         onRow={record => ({
                             onClick: () => {
                                 setCurrent('profile');
-                                setSelectedSupervisor(record);
+                                setSelectedUser(record);
                             }
                         })}
                     >

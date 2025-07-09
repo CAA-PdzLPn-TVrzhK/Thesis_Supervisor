@@ -25,6 +25,8 @@ export default function StudentList() {
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [groups, setGroups] = useState([]);
     const [years, setYear] = useState([]);
+    const [supervisors, setSupervisors] = useState([])
+    const [theses, setTheses] = useState([])
 
     // А теперь уже можно дернуть API
     useEffect(() => {
@@ -70,26 +72,35 @@ export default function StudentList() {
                     return m;
                 }, {})
 
+                const IdToTgid = users.filter(u => u.role === "student").reduce((m, u) =>{
+                    m[u.id] = u.telegram_id;
+                    return m;
+                })
+
 
                 const enriched = student.map(st => {
                     const uId = supToUserMap[st.supervisor_id];
                     return {
                       ...st,
+                      studentTgId: IdToTgid[st.user_id] || '—',
                       supervisorName: idToName[uId] || '—',
                       studentName: stdToNAmeMap[st.user_id] || '—',
                       groupName: grpToStdMap[st.peer_group_id] || '—',
-                        thesisName: thssIdToName[st.thesis_id] || '—',
+                      thesisName: thssIdToName[st.thesis_id] || '—',
                     };
                 });
 
                 setData(enriched);
                 setDisplay(enriched);
 
-                const uniqueGroups = [...new Set(groups.map(g => g.name))].filter(Boolean);
-                setGroups(uniqueGroups);
+                const uniqueSupervisors = [...new Set(supervisors.map(s => idToName[s.user_id]))].filter(Boolean);setSupervisors(uniqueSupervisors);
 
-                const uniqueYears = [...new Set(student.map(s => s.year))].filter(Boolean);
-                setYear(uniqueYears);
+                setTheses(theses);
+
+                const uniqueGroups = [...new Set(groups.map(g => g.name))].filter(Boolean); setGroups(uniqueGroups);
+
+                const uniqueYears = [...new Set(student.map(s => s.year))].filter(Boolean); setYear(uniqueYears);
+
             } catch (e){
                 console.error(e);
                 setError(true);
@@ -178,6 +189,9 @@ export default function StudentList() {
                 setDisplay(display.map(s => s.id === updated.id ? updated : s));
                 setCurrent('studentList');
             }}
+            supervisors={supervisors}
+            groups={groups}
+            theses={theses}
         />
     }
     return (
@@ -196,7 +210,7 @@ export default function StudentList() {
                     onEditMode={() => setIsEditing(true)}
                     filters={filterOptions}
                     sorts={sortOptions}
-
+                    labels={{add: "Add Student", edit: "Edit Student"}}
                 />
                 {isEditing && (
                     <div className="editPanel">
@@ -232,9 +246,9 @@ export default function StudentList() {
                         })}
                     >
                         <Column
-                            title="ID"
-                            dataIndex="id"
-                            key="id"
+                            title="Telegram ID"
+                            dataIndex="studentTgId"
+                            key="studentTgId"
                             onCell={() => ({style: {maxWidth: '295px'}})}
                             render={(text) => (
                                 <span style={{color: 'black', cursor: 'pointer'}}>
@@ -251,7 +265,7 @@ export default function StudentList() {
                         <Column title="Year" dataIndex="year" key="year" onCell={() => ({style: {minWidth: 60}})}/>
                         <Column title="Thesis" dataIndex="thesisName" key="thesisName"
                                 onCell={() => ({style: {minWidth: '70px'}})}/>
-                        <Column title="Points" dataIndex="points" key="points"
+                        <Column title="Score" dataIndex="score" key="score"
                                 onCell={() => ({style: {minWidth: '75px'}})}/>
                         <Column title="Progress" dataIndex="progress" key="progress"
                                 onCell={() => ({style: {minWidth: '95px'}})}/>
