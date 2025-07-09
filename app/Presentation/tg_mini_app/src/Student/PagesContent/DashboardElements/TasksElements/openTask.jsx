@@ -75,6 +75,21 @@ class TaskManager extends React.Component {
         this.setState({student_id: studentId});
     }
 
+    getMonthName(month_number) {
+        const month_names = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"];
+        return month_names[month_number];
+    }
+
+    getTimeForInfoBlock(dateForTime) {
+        const date = new Date(dateForTime);
+        const day = date.getDate().toString();
+        const month = this.getMonthName(date.getMonth());
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `${day} ${month}, ${hours}:${minutes}`;
+    }
+
     render() {
         if(!this.state.student_id) {
             return (
@@ -86,20 +101,6 @@ class TaskManager extends React.Component {
 
         return (
             <div className = "dashboard-task-container">
-                {this.state.submission_status === null ?
-                    <div></div> :
-                    (this.state.submission_status === true ?
-                        <div className = "successful-submit-block">
-                            <div className = "results-submission-content"> Successful submit </div>
-                            <button onClick={this.resetSubmissionStatus} className = "close-results-submission-button"> Close </button>
-                        </div> :
-                        <div className = "non-successful-submit-block">
-                            <div>
-                                <div className = "results-submission-content">Unsuccessful submit</div>
-                                <div  className = "results-submission-content-optional">Please, write your draft</div>
-                            </div>
-                            <button onClick={this.resetSubmissionStatus} className = "close-results-submission-button"> Close </button>
-                        </div>)}
                 <div className = "dashboard-task-content-info"> Milestone info </div>
                 <div className = "dashboard-task-content-block">
                     <div className = "task-info-item">
@@ -112,7 +113,7 @@ class TaskManager extends React.Component {
                     </div>
                     <div className = "task-info-item">
                         <div className = "dashboard-task-content-mark"> Deadline:  </div>
-                        <div className = "dashboard-task-content-value"> {this.state.data.deadline} </div>
+                        <div className = "dashboard-task-content-value"> {this.getTimeForInfoBlock(this.state.data.deadline)} </div>
                     </div>
                     <div className = "task-info-item">
                         <div className = "dashboard-task-content-mark"> Points:  </div>
@@ -130,7 +131,20 @@ class TaskManager extends React.Component {
                     </button>
                 </form>
                 <button onClick={this.closeTask} className = "dashboard-task-content-go-back"> Back </button>
-
+                {this.state.submission_status === null ?
+                    <div></div> :
+                    (this.state.submission_status === true ?
+                        <div className = "successful-submit-block">
+                            <div className = "results-submission-content"> Successful submit </div>
+                            <button onClick={this.resetSubmissionStatus} className = "close-results-submission-button"> Close </button>
+                        </div> :
+                        <div className = "non-successful-submit-block">
+                            <div>
+                                <div className = "results-submission-content">Unsuccessful submit</div>
+                                <div  className = "results-submission-content-optional">Please, write your draft</div>
+                            </div>
+                            <button onClick={this.resetSubmissionStatus} className = "close-results-submission-button"> Close </button>
+                        </div>)}
             </div>
         )
     }

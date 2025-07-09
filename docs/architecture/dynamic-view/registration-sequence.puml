@@ -1,0 +1,105 @@
+@startuml registration-sequence
+!theme plain
+title User Registration and Email Verification Flow
+
+actor Student as S
+participant "Web Frontend" as WF
+participant "REST API" as API
+participant "User Service" as US
+participant "Email Service" as ES
+participant "Database" as DB
+participant "Email Provider" as EP
+
+S -> WF: Fill registration form
+activate WF
+
+WF -> WF: Validate form data
+WF -> API: POST /api/register
+activate API
+
+API -> API: Validate request
+API -> US: register_user(user_data)
+activate US
+
+US -> US: Validate business rules
+US -> DB: Check if email exists
+activate DB
+DB --> US: Query result
+deactivate DB
+
+alt Email already exists
+    US --> API: Error: Email exists
+    API --> WF: 409 Conflict
+    WF --> S: Show error message
+else Email is unique
+    US -> DB: Insert new user (inactive)
+    activate DB
+    DB --> US: User created
+    deactivate DB
+    
+    US -> ES: send_verification_email(user)
+    activate ES
+    
+    ES -> ES: Generate verification token
+    ES -> EP: Send email with token
+    activate EP
+    EP --> ES: Email sent
+    deactivate EP
+    
+    ES --> US: Email queued
+    deactivate ES
+    
+    US --> API: Success: User created
+    deactivate US
+    
+    API --> WF: 201 Created
+    deactivate API
+    
+    WF --> S: Show success message
+    deactivate WF
+end
+
+... User receives email and clicks link ...
+
+S -> WF: Click verification link
+activate WF
+
+WF -> API: GET /api/verify?token=xyz
+activate API
+
+API -> US: verify_email(token)
+activate US
+
+US -> DB: Find user by token
+activate DB
+DB --> US: User data
+deactivate DB
+
+alt Token valid and not expired
+    US -> DB: Update user status to active
+    activate DB
+    DB --> US: User activated
+    deactivate DB
+    
+    US --> API: Success: Email verified
+    API --> WF: 200 OK
+    WF --> S: Show verification success
+else Token invalid or expired
+    US --> API: Error: Invalid token
+    API --> WF: 400 Bad Request
+    WF --> S: Show error message
+end
+
+deactivate US
+deactivate API
+deactivate WF
+
+note over S, EP
+  This flow involves multiple components
+  and demonstrates database transactions,
+  email integration, and error handling.
+  
+  Typical execution time: 2-3 seconds
+end note
+
+@enduml 

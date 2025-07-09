@@ -41,16 +41,10 @@ export async function getMeetings() {
             {
                 headers: window.TelegramWebApp.headers,
             });
-    } catch (err) {
-        console.log(err);
-        error = true;
-    }
-
-    if (listOfMeetings != null) {
         console.log('результат вызова списка встреч:', listOfMeetings.data);
         return listOfMeetings.data;
-    } else {
-        console.log('результат вызова списка встреч вернул пустой список');
+    } catch (err) {
+        console.log(err);
         return [];
     }
 }

@@ -24,3 +24,4 @@ pytest
 pytest-cov
 flake8
 bandit
+validate_email~=1.3

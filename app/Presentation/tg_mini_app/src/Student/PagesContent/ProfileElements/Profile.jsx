@@ -37,8 +37,12 @@ class Profile extends React.Component {
             const gotSupervisorData = await getSupervisorData(gotRoleData[0].supervisor_id);
             console.log("gotSupervisorData:", gotSupervisorData);
 
-            const gotSupervisorUserData = await getSupervisorUserData(gotSupervisorData[0].user_id);
-            console.log("gotSupervisorUserData:", gotSupervisorUserData);
+            let gotSupervisorUserData = [];
+            if (gotSupervisorData.length !== 0) {
+                gotSupervisorUserData = await getSupervisorUserData(gotSupervisorData[0].user_id);
+                console.log("gotSupervisorUserData:", gotSupervisorUserData);
+            }
+
 
             this.setState({
                 userData: gotUserData,
@@ -86,11 +90,11 @@ class Profile extends React.Component {
                         </div>
                         <div className={'info-item'}>
                             <span className={'info-label'}> Group </span>
-                            <span className={'info-value'}> {this.state.groupData[0].name} </span>
+                            <span className={'info-value'}> {this.state.groupData.length === 0 ? "" : this.state.groupData[0].name} </span>
                         </div>
                         <div className={'info-item'}>
                             <span className={'info-label'}> Supervisor </span>
-                            <span className={'info-value'}> {this.state.supervisorUserData[0].first_name} {this.state.supervisorUserData[0].last_name} </span>
+                            <span className={'info-value'}> {this.state.supervisorUserData.length === 0 ? "" : `${this.state.supervisorUserData[0].first_name} ${this.state.supervisorUserData[0].last_name}`} </span>
                         </div>
                         <div className={'info-item'}>
                             <span className={'info-label'}> Points </span>

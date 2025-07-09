@@ -15,7 +15,7 @@ class Header extends React.Component {
     render() {
         return (
             <div className="header">
-                <div className="nav-bar">
+                <div className="navigation-bar">
                     <span onClick={() => this.goToPage("profile")} className="navigation-item"> Profile </span>
                     <span onClick={() => this.goToPage("calendar")} className="navigation-item"> Calendar </span>
                     <span onClick={() => this.goToPage("dashboard")} className="navigation-item"> Dashboard </span>
