@@ -246,7 +246,7 @@ export default function StudentList() {
                         })}
                     >
                         <Column
-                            title="Telegram ID"
+                            title="telegram ID"
                             dataIndex="studentTgId"
                             key="studentTgId"
                             onCell={() => ({style: {maxWidth: '295px'}})}
