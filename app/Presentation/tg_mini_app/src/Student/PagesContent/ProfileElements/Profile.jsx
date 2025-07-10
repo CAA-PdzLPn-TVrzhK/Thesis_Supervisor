@@ -7,12 +7,20 @@ import {getSupervisorData} from "./getSupervisorData.jsx";
 import {getRoleData} from "./getRoleData.jsx";
 import {getSupervisorUserData} from "./getSupervisorUserData.jsx";
 import {getGroupData} from "./getGroupData.jsx";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+    "https://dprwupbzatrqmqpdwcgq.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTE4NDc3NywiZXhwIjoyMDY2NzYwNzc3fQ.qXk-dH8RlRZFnRXu4AI316zyFH3OUW1d2WrWQhcL0wk"
+  );
 
 class Profile extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            image: null,
+            imageError: false,
             userData: null,
             roleData: null,
             groupData: null,
@@ -56,6 +64,16 @@ class Profile extends React.Component {
             console.error( "user_id:", window.TelegramWebApp.userId, "role_id:", window.TelegramWebApp.roleId, "больше информации", error.response.data, "Ошибка загрузки данных:", error);
             this.setState({ error: true, loading: false });
         }
+        const { data, error } = await supabase.storage.from('student-data').download(`${window.TelegramWebApp.userId}/avatar.jpg`);
+
+        if (error) {
+            console.error("Ошибка скачивания файла:", error.message);
+            this.setState({ imageError: true });
+        } else {
+            const url = URL.createObjectURL(data);
+            this.setState({ image: url });
+            console.log('Ты сохранил фото и мы достали его:', url);
+        }
     }
 
     goToPage(page) {
@@ -76,7 +94,11 @@ class Profile extends React.Component {
                 <div className={'profile-card'}>
                     <div className={'profile-photo'}>
                         <div className={'photo-placeholder'}>
-                            <img src="https://avatars.mds.yandex.net/i?id=22ce1f281996c9d5fe2e2100ed418afb_l-5869591-images-thumbs&n=13" alt="Описание изображения" className={'photo'}/>
+                            {this.state.imageError ? (
+                                <img src="https://ds-zvyozdochka-yarcevo-r66.gosweb.gosuslugi.ru/netcat_files/21/10/Bez_foto_7.jpg" alt="No photo" className={'photo'}/>
+                            ) : (
+                                <img src={this.state.image} alt="Your photo" className={'photo'}/>
+                            )}
                         </div>
                     </div>
                     <div className={'profile-info'}>
