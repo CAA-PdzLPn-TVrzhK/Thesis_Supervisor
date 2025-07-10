@@ -181,7 +181,7 @@ class Calendar extends React.Component {
         }
         if (this.state.newMeeting) {
             return (
-                <NewMeeting back = {this.back}/>
+                <NewMeeting back = {this.back} year = {this.state.year} month = {this.state.month} day = {this.state.current_day} monthToString = {this.getMonthName(this.state.month)} />
             )
         }
         return (

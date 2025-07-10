@@ -13,15 +13,18 @@ class NewMeeting extends React.Component {
             errorDescription: "",
             errorDuration: "",
             errorGroup: "",
+            errorDate: "",
             title: "",
             description: "",
             duration: "",
             group: "",
+            date: "",
         }
         this.handleInputChangeTitle = this.handleInputChangeTitle.bind(this);
         this.handleInputChangeDescription = this.handleInputChangeDescription.bind(this);
         this.handleInputChangeGroup = this.handleInputChangeGroup.bind(this);
         this.handleInputChangeDuration = this.handleInputChangeDuration.bind(this);
+        this.handleInputChangeDate = this.handleInputChangeDate.bind(this);
         this.back = this.back.bind(this);
     }
 
@@ -63,38 +66,58 @@ class NewMeeting extends React.Component {
             }
         })
     }
+    handleInputChangeDate(event) {
+        this.setState(() => {
+            return {
+                date: event.target.value,
+            }
+        })
+    }
 
     validationValues() {
-        if(this.state.title.trim() === "" || this.state.description.trim() === "" || this.state.group.trim() === "" || this.state.duration.trim() === "") {
+        console.log('Валидация');
+        if(this.state.title.trim() === "" || this.state.description.trim() === "" || this.state.group.trim() === "" || this.state.duration.trim() === "" || this.state.date.trim() === "") {
             this.setState((p) => {
                 return {
                     errorTitle: p.title.trim() === "" ? "Title is required" : "",
                     errorDescription: p.description.trim() === "" ? "Description is required" : "",
                     errorGroup: p.group.trim() === "" ? "Group is required" : "",
                     errorDuration: p.duration.trim() === "" ? "Duration is required" : "",
+                    errorDate: p.date.trim() === "" ? "Date is required" : "",
                 }
             });
+            console.log('Ты не прошел валидацию');
             return false;
         }
         return true;
     }
 
     async createMeeting() {
+        console.log('Ты запустил метод для создания новой функции');
         if (this.validationValues()) {
+            console.log('Ты прошел валидацию');
             const supervisorData = await axios.get(`${window.TelegramWebApp.API_BASE}supervisors?user_id=eq.${window.TelegramWebApp.userId}`, {headers: window.TelegramWebApp.headers});
             const groupData = await axios.get(`${window.TelegramWebApp.API_BASE}peer_groups?name=eq.${this.state.group}`, {headers: window.TelegramWebApp.headers});
+            console.log('Ты получил необходимые данные для создания новой функции');
+
+            const year = this.props.year;
+            const month = String(this.props.month+1).padStart(2, '0');
+            const day = String(this.props.day).padStart(2, '0');
+            const time = this.state.date + ":00";
 
             const data = {
                 supervisor_id: supervisorData.data[0].id,
                 title: this.state.title,
                 description: this.state.description,
-                date: new Date(this.state.date.replace(" ", "T")).toISOString(),
+                date: new Date(`${year}-${month}-${day}T${time}`).toISOString(),
                 peer_group_id: groupData.data[0].id,
                 duration_minutes: this.state.duration
             };
+            console.log('Ты подготовил данные для создания');
             await axios.post(`${window.TelegramWebApp.API_BASE}meetings`, data, {
                 headers: window.TelegramWebApp.headers
             });
+            console.log('Ты создал');
             this.props.back();
         }
     }
@@ -107,6 +130,7 @@ class NewMeeting extends React.Component {
         return (
             <div className="new-meeting-container">
                 <div className="new-meeting-title"> New meeting Card</div>
+                <div className="new-meeting-title"> on {this.props.day} {this.props.monthToString} {this.props.year} </div>
                 <div className = "new-meeting-form-container">
                     <span className = "new-meeting-form-element-title">Write title for meeting</span>
                     <span className = "new-meeting-form-element-field">
@@ -147,14 +171,25 @@ class NewMeeting extends React.Component {
                     </span>
                 </div>
                 <div className = "new-meeting-form-container">
-                    <span className = "new-meeting-form-element-title">Write duration of meeting</span>
+                    <span className = "new-meeting-form-element-title">Write duration of meeting in minutes</span>
                     <span className = "new-meeting-form-element-field">
                         <label>
-                            <input type="text" placeholder="Write duration" onChange={this.handleInputChangeDuration}></input>
+                            <input type="text" placeholder="Write duration in minutes" onChange={this.handleInputChangeDuration}></input>
                         </label>
                     </span>
                     <span className = "new-meeting-form-element-error">
                         {this.state.errorDuration.length === 0 ? "" : `${this.state.errorDuration}`}
+                    </span>
+                </div>
+                <div className = "new-meeting-form-container">
+                    <span className = "new-meeting-form-element-title">Write date for meeting</span>
+                    <span className = "new-meeting-form-element-field">
+                        <label>
+                            <input type="text" placeholder="Write date in format hh:mm" onChange={this.handleInputChangeDate}></input>
+                        </label>
+                    </span>
+                    <span className = "new-meeting-form-element-error">
+                        {this.state.errorDate.length === 0 ? "" : `${this.state.errorDate}`}
                     </span>
                 </div>
                 <div className = "new-meeting-form-buttons">
