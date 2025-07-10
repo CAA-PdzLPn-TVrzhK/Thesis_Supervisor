@@ -11,19 +11,16 @@ class NewMeeting extends React.Component {
             groupList: [],
             errorTitle: "",
             errorDescription: "",
-            errorDate: "",
             errorDuration: "",
             errorGroup: "",
             title: "",
             description: "",
             duration: "",
             group: "",
-            date: "",
         }
         this.handleInputChangeTitle = this.handleInputChangeTitle.bind(this);
         this.handleInputChangeDescription = this.handleInputChangeDescription.bind(this);
         this.handleInputChangeGroup = this.handleInputChangeGroup.bind(this);
-        this.handleInputChangeDate = this.handleInputChangeDate.bind(this);
         this.handleInputChangeDuration = this.handleInputChangeDuration.bind(this);
         this.back = this.back.bind(this);
     }
@@ -59,13 +56,6 @@ class NewMeeting extends React.Component {
             }
         })
     }
-    handleInputChangeDate(event) {
-        this.setState(() => {
-            return {
-                date: event.target.value,
-            }
-        })
-    }
     handleInputChangeDuration(event) {
         this.setState(() => {
             return {
@@ -75,12 +65,11 @@ class NewMeeting extends React.Component {
     }
 
     validationValues() {
-        if(this.state.title.trim() === "" || this.state.description.trim() === "" || this.state.group.trim() === "" || this.state.date.trim() === "" || this.state.duration.trim() === "") {
+        if(this.state.title.trim() === "" || this.state.description.trim() === "" || this.state.group.trim() === "" || this.state.duration.trim() === "") {
             this.setState((p) => {
                 return {
                     errorTitle: p.title.trim() === "" ? "Title is required" : "",
                     errorDescription: p.description.trim() === "" ? "Description is required" : "",
-                    errorDate: p.date.trim() === "" ? "Date is required" : "",
                     errorGroup: p.group.trim() === "" ? "Group is required" : "",
                     errorDuration: p.duration.trim() === "" ? "Duration is required" : "",
                 }
@@ -166,17 +155,6 @@ class NewMeeting extends React.Component {
                     </span>
                     <span className = "new-meeting-form-element-error">
                         {this.state.errorDuration.length === 0 ? "" : `${this.state.errorDuration}`}
-                    </span>
-                </div>
-                <div className = "new-meeting-form-container">
-                    <span className = "new-meeting-form-element-title">Write date for meeting</span>
-                    <span className = "new-meeting-form-element-field">
-                        <label>
-                            <input type="text" placeholder="Write date" onChange={this.handleInputChangeDate}></input>
-                        </label>
-                    </span>
-                    <span className = "new-meeting-form-element-error">
-                        {this.state.errorDate.length === 0 ? "" : `${this.state.errorDate}`}
                     </span>
                 </div>
                 <div className = "new-meeting-form-buttons">

@@ -138,6 +138,7 @@ class Calendar extends React.Component {
         const newDeals = [];
         let meetingList = [];
         meetingList = await getMeetings();
+        this.setState({current_day: date.getDate()});
 
         if (meetingList.length > 0) {
             for(let meeting of meetingList) {
@@ -238,6 +239,7 @@ class Calendar extends React.Component {
                     </tbody>
                 </table>
                 <div className='date-info-container'>
+                    <div className = "current-date-for-info-container"> {this.getMonthName(this.state.month)} {this.state.current_day} </div>
                     {this.state.dailyDeals.map((dailyDeal, index) => (
                         <div key={index}>
                             <div className='date-info-block'>
@@ -256,7 +258,7 @@ class Calendar extends React.Component {
                         </div>
                     ))}
                     <div className = "new-meeting-button-container">
-                        <button className = "new-meeting-button" onClick = {() => {this.createNewMeeting()}}> Create new meeting </button>
+                        <button className = "new-meeting-button" onClick = {() => {this.createNewMeeting()}}> Create meeting </button>
                     </div>
                 </div>
             </div>
