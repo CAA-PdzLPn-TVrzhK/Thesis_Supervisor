@@ -2,7 +2,7 @@
 import React from 'react'
 import {getMeetings} from "./meetingGetter.jsx";
 import './calendar.css'
-import NewMeeting from "./NewMeeting.jsx";
+import NewMeeting from "./NewMeeting/NewMeeting.jsx";
 
 class Calendar extends React.Component {
     constructor(props) {
@@ -167,6 +167,7 @@ class Calendar extends React.Component {
 
     back() {
         this.setState({newMeeting: false});
+        this.getCalendar();
     }
 
     render() {

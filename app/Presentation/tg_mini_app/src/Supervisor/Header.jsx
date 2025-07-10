@@ -12,7 +12,6 @@ class Header extends React.Component {
                     <span className="header-title">Innopolis Thesis Supervisor</span>
                 </div>
                 <div className="header-help-block">
-                    <span className="header-help-title">Служба поддержки:</span>
                     <span className="header-help-email">innopolis.university@gmail.com</span>
                     <span className="header-help-phone">8-800-555-35-35</span>
                 </div>
