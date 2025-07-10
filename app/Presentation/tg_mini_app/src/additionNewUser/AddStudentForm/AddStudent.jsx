@@ -136,29 +136,29 @@ class AddStudent extends React.Component {
                 <div className = "student-card-form-container">
                     <form className = "student-card-form">
                         <div className = "student-card-element-container">
-                            <span className = "student-card-element-title">Write your firstname</span>
+                            <span className = "student-card-element-title"> Write title for meeting </span>
                             <span className = "student-card-element-field">
                                 <label>
-                                    <input type="text" placeholder="Write your name" onChange={this.handleInputChangeFirstname}></input>
+                                    <input type="text" placeholder="Write title" onChange={this.handleInputChangeTitle}></input>
                                 </label>
                             </span>
                             <span className = "student-card-element-error">
-                                {this.state.errorFirstname.length === 0 ? "" : `${this.state.errorFirstname}`}
+                                {this.state.errorTitle.length === 0 ? "" : `${this.state.errorTitle}`}
                             </span>
                         </div>
                         <div className = "student-card-element-container">
-                            <span className = "student-card-element-title">Write your lastname</span>
+                            <span className = "student-card-element-title"> Write description for meeting </span>
                             <span className = "student-card-element-field">
                                 <label>
-                                    <input type="text" placeholder="Write your lastname" onChange={this.handleInputChangeLastName}></input>
+                                    <input type="text" placeholder="Write description" onChange={this.handleInputChangeDescription}></input>
                                 </label>
                             </span>
                             <span className = "student-card-element-error">
-                                {this.state.errorLastname.length === 0 ? "" : `${this.state.errorLastname}`}
+                                {this.state.errorDescription.length === 0 ? "" : `${this.state.errorDescription}`}
                             </span>
                         </div>
                         <div className = "student-card-element-container">
-                            <span className = "student-card-element-title">Choose your supervisor</span>
+                            <span className = "student-card-element-title"> Choose group </span>
                             <span className = "student-card-element-field">
                                 <label>
                                     <select onChange={this.handleInputChangeSupervisorName} value={this.state.supervisorName}>

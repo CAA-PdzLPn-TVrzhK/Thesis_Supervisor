@@ -1,24 +1,20 @@
 
 import React from "react"
+import { IconSchool } from "@tabler/icons-react";
 import "./BasePageComponent.css"
 
 class Header extends React.Component {
-    constructor(props) {
-        super(props);
-
-    }
-
-    goToPage(page) {
-        this.props.setCurrentPage(page);
-    }
-
     render() {
         return (
-            <div className="header">
-                <div className="navigation-bar">
-                    <span onClick={() => this.goToPage("profile")} className="navigation-item"> Profile </span>
-                    <span onClick={() => this.goToPage("calendar")} className="navigation-item"> Calendar </span>
-                    <span onClick={() => this.goToPage("dashboard")} className="navigation-item"> Dashboard </span>
+            <div className="header header-top">
+                <div className="header-logo-block">
+                    <IconSchool size={36} className="header-logo"/>
+                    <span className="header-title">Innopolis Thesis Supervisor</span>
+                </div>
+                <div className="header-help-block">
+                    <span className="header-help-title">Служба поддержки:</span>
+                    <span className="header-help-email">innopolis.university@gmail.com</span>
+                    <span className="header-help-phone">8-800-555-35-35</span>
                 </div>
             </div>
         )
