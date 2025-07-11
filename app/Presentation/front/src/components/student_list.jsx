@@ -77,8 +77,8 @@ export default function StudentList() {
                     return m;
                 }, {})
 
-                const IdToTgid = users.filter(u => u.role === "student").reduce((m, u) =>{
-                    m[u.id] = u.telegram_id;
+                const IdToTgUs = users.filter(u => u.role === "student").reduce((m, u) =>{
+                    m[u.id] = u.username;
                     return m;
                 })
 
@@ -91,7 +91,7 @@ export default function StudentList() {
                 const enriched = student.map(st => {
                     return {
                       ...st,
-                      studentTgId: IdToTgid[st.user_id] || '—',
+                      studentTgUs: IdToTgUs[st.user_id] || '—',
                       supervisorName: supIdToName[st.supervisor_id] || '—',
                       studentName: stdToNAmeMap[st.user_id] || '—',
                       studentSurname: stdToSurnameMap[st.user_id] || '—',
@@ -119,16 +119,8 @@ export default function StudentList() {
 
                 setTheses(theses)
 
-                // const uniqueGroups = [...new Set(groups.map(g => g.name))].filter(Boolean); setGroups(uniqueGroups);
-                // Новый способ: только уникальные группы по id
-                const groupMap = new Map();
-                groups.forEach(g => {
-                  if (g && g.id && !groupMap.has(g.id)) {
-                    groupMap.set(g.id, { id: g.id, name: g.name });
-                  }
-                });
-                const uniqueGroups = Array.from(groupMap.values());
-                setGroups(uniqueGroups);
+                // Передаем полные объекты групп с supervisor_id для фильтрации
+                setGroups(groups);
 
                 const uniqueYears = [...new Set(student.map(s => s.year))].filter(Boolean); setYear(uniqueYears);
 
@@ -146,7 +138,7 @@ export default function StudentList() {
       {
         name: 'group',
         label: 'Group',
-        options: groups.map(g => ({ label: g, value: g })),
+        options: groups.map(g => ({ label: g.name, value: g.id })),
       },
       {
         name: 'year',
@@ -181,7 +173,7 @@ export default function StudentList() {
     const handleFilter = (filters) => {
       let result = data;
       if (filters.group) {
-        result = result.filter(item => filters.group.includes(item.group));
+        result = result.filter(item => filters.group.includes(item.peer_group_id));
       }
       if (filters.year) {
         result = result.filter(item => filters.year.includes(item.year));
@@ -238,21 +230,17 @@ export default function StudentList() {
                     onFilter={handleFilter}
                     onSort={handleSort}
                     onAdd={() => {setCurrent('add')}}
-                    onEditMode={() => setIsEditing(true)}
+                    onEdit={() => setIsEditing(true)}
+                    onDelete={handleDelete}
+                    onBack={() => {
+                        setIsEditing(false);
+                        setSelectedRows([]);
+                    }}
+                    isEditing={isEditing}
                     filters={filterOptions}
                     sorts={sortOptions}
-                    labels={{add: "Add Student", edit: "Edit Student"}}
+                    labels={{add: "Add Student", edit: "Edit List"}}
                 />
-                {isEditing && (
-                    <div className="editPanel">
-                        <button onClick={handleDelete} className="upperButton">Delete</button>
-                        <button onClick={() => {
-                            setIsEditing(false);
-                            setSelectedRows([]);
-                        }} className="upperButton">Back
-                        </button>
-                    </div>
-                )}
 
                 <div className={"tableWrapper"}>
                     <Table
@@ -277,13 +265,13 @@ export default function StudentList() {
                         })}
                     >
                         <Column
-                            title="telegram ID"
-                            dataIndex="studentTgId"
-                            key="studentTgId"
+                            title="telegram Username"
+                            dataIndex="studentTgUs"
+                            key="studentTgUs"
                             onCell={() => ({style: {maxWidth: '295px'}})}
                             render={(text) => (
                                 <span style={{color: 'black', cursor: 'pointer'}}>
-                            {text}
+                            {text}  
                           </span>
                             )}
                         />

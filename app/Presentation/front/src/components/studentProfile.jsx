@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import { Form, Input, InputNumber, Button, Select } from 'antd';
 import './index.css';
@@ -11,6 +11,19 @@ const API_HEADERS = {
 
 export default function StudentProfile({ supervisors, groups, student, onBack, onSave}) {
   const [form] = Form.useForm();
+  const [availableGroups, setAvailableGroups] = useState([]);
+
+  // Функция для фильтрации групп по супервизору
+  const filterGroupsBySupervisor = (supervisorId) => {
+    if (!supervisorId) {
+      setAvailableGroups([]);
+      return;
+    }
+    
+    const filteredGroups = groups.filter(group => group.supervisor_id === supervisorId);
+    console.log(`Группы для супервизора ${supervisorId}:`, filteredGroups);
+    setAvailableGroups(filteredGroups);
+  };
 
   useEffect(() => {
     if (student) {
@@ -23,13 +36,30 @@ export default function StudentProfile({ supervisors, groups, student, onBack, o
       }
       if (!student.peer_group_id && student.groupName) {
         const foundGroup = groups.find(g => g.name === student.groupName);
-        if (foundGroup) initialValues.peer_group_id = foundGroup.peer_group_id;
+        if (foundGroup) initialValues.peer_group_id = foundGroup.id;
       }
       form.setFieldsValue(initialValues);
+      
+      // Фильтруем группы по выбранному супервизору при инициализации
+      if (initialValues.supervisor_id) {
+        filterGroupsBySupervisor(initialValues.supervisor_id);
+      }
     } else {
       form.resetFields();
+      setAvailableGroups([]);
     }
   }, [student, form, supervisors, groups]);
+
+  // Обработчик изменения супервизора
+  const handleSupervisorChange = (supervisorId) => {
+    console.log('Выбран супервизор:', supervisorId);
+    
+    // Фильтруем группы по выбранному супервизору
+    filterGroupsBySupervisor(supervisorId);
+    
+    // Сбрасываем выбранную группу, так как она может не принадлежать новому супервизору
+    form.setFieldsValue({ peer_group_id: undefined });
+  };
 
   const handleFinish = async (values) => {
     try {
@@ -42,6 +72,7 @@ export default function StudentProfile({ supervisors, groups, student, onBack, o
         Prefer: 'return=representation',
       };
       const body = {
+        username: values.username,
         supervisor_id: values.supervisor_id,
         peer_group_id: values.peer_group_id,
         program: values.program,
@@ -100,6 +131,13 @@ export default function StudentProfile({ supervisors, groups, student, onBack, o
             className="profileForm"
         >
           <Form.Item
+              label="Username"
+              name="studentTgUs"
+          >
+            <Input placeholder="tg us" disabled={!!student?.id}/>
+          </Form.Item>
+
+          <Form.Item
               label="Name"
               name="studentName"
               rules={[{message: 'Enter your name'}]}
@@ -120,7 +158,10 @@ export default function StudentProfile({ supervisors, groups, student, onBack, o
             name="supervisor_id"
             rules={[{ required: true, message: 'Select a supervisor' }]}
           >
-          <Select placeholder="Select supervisor">  
+          <Select 
+            placeholder="Select supervisor"
+            onChange={handleSupervisorChange}
+          >  
             {supervisors.map(s => (
               <Select.Option key={s.id} value={s.id}>{s.name}</Select.Option>
             ))}
@@ -161,8 +202,22 @@ export default function StudentProfile({ supervisors, groups, student, onBack, o
             name="peer_group_id"
             rules={[{ required: true, message: 'Select a group' }]}
           >
-            <Select placeholder="Select group">
-            {groups.map(g => (
+            <Select 
+              placeholder={
+                availableGroups.length > 0 
+                  ? "Select group" 
+                  : form.getFieldValue('supervisor_id') 
+                    ? "Supervisor doesn't have groups" 
+                    : "First select a supervisor"
+              }
+              disabled={availableGroups.length === 0}
+              showSearch
+              filterOption={(input, option) =>
+                (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+              notFoundContent={availableGroups.length === 0 && form.getFieldValue('supervisor_id') ? "Supervisor doesn't have groups" : "No groups found"}
+            >
+            {availableGroups.map(g => (
                 <Select.Option key={g.id} value={g.id}>
                   {g.name}
                 </Select.Option>
