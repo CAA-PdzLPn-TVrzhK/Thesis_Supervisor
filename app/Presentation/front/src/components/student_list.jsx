@@ -53,7 +53,12 @@ export default function StudentList() {
 
 
                 const stdToNAmeMap = users.filter(u => u.role === 'student').reduce((m, u) => {
-                    m[u.id] = `${u.first_name} ${u.last_name}`;
+                    m[u.id] = `${u.first_name}`;
+                    return m;
+                }, {})
+
+                const stdToSurnameMap = users.filter(u => u.role == 'student').reduce((m, u) => {
+                    m[u.id] = `${u.last_name}`;
                     return m;
                 }, {})
 
@@ -77,14 +82,19 @@ export default function StudentList() {
                     return m;
                 })
 
+                const supIdToName = supervisors.reduce((m, sup) => {
+                    m[sup.id] = idToName[sup.user_id] || '—';
+                    return m;
+                }, {})
+
 
                 const enriched = student.map(st => {
-                    const uId = supToUserMap[st.supervisor_id];
                     return {
                       ...st,
                       studentTgId: IdToTgid[st.user_id] || '—',
-                      supervisorName: idToName[uId] || '—',
+                      supervisorName: supIdToName[st.supervisor_id] || '—',
                       studentName: stdToNAmeMap[st.user_id] || '—',
+                      studentSurname: stdToSurnameMap[st.user_id] || '—',
                       groupName: grpToStdMap[st.peer_group_id] || '—',
                       thesisName: thssIdToName[st.thesis_id] || '—',
                     };
@@ -93,11 +103,32 @@ export default function StudentList() {
                 setData(enriched);
                 setDisplay(enriched);
 
-                const uniqueSupervisors = [...new Set(supervisors.map(s => idToName[s.user_id]))].filter(Boolean);setSupervisors(uniqueSupervisors);
+                const supList = supervisors.map(sup => ({
+                    id:    sup.id,
+                    name:  idToName[sup.user_id] || '—'
+                }))
+                  
+                const uniqueSupMap = supList.reduce((map, sup) => {
+                    map.set(sup.name, sup)
+                    return map
+                }, new Map())
+                  
+                const uniqueSupervisors = Array.from(uniqueSupMap.values())
+                  
+                setSupervisors(uniqueSupervisors)
 
-                setTheses(theses);
+                setTheses(theses)
 
-                const uniqueGroups = [...new Set(groups.map(g => g.name))].filter(Boolean); setGroups(uniqueGroups);
+                // const uniqueGroups = [...new Set(groups.map(g => g.name))].filter(Boolean); setGroups(uniqueGroups);
+                // Новый способ: только уникальные группы по id
+                const groupMap = new Map();
+                groups.forEach(g => {
+                  if (g && g.id && !groupMap.has(g.id)) {
+                    groupMap.set(g.id, { id: g.id, name: g.name });
+                  }
+                });
+                const uniqueGroups = Array.from(groupMap.values());
+                setGroups(uniqueGroups);
 
                 const uniqueYears = [...new Set(student.map(s => s.year))].filter(Boolean); setYear(uniqueYears);
 
@@ -256,7 +287,9 @@ export default function StudentList() {
                           </span>
                             )}
                         />
-                        <Column title="Full Name" dataIndex="studentName" key="FullName"
+                        <Column title="Name" dataIndex="studentName" key="Name"
+                                onCell={() => ({style: {maxWidth: '300px'}})}/>
+                        <Column title="Surname" dataIndex="studentSurname" key="Surname"
                                 onCell={() => ({style: {maxWidth: '300px'}})}/>
                         <Column title="Supervisor" dataIndex="supervisorName" key="supervisorName"/>
                         <Column title="Program" dataIndex="program" key="program"/>
