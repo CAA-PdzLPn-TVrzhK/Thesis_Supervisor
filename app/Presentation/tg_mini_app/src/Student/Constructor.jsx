@@ -24,9 +24,9 @@ class StudentConstructor extends React.Component {
         console.log("you open StudentConstructor");
         return (
             <div className="container">
-                <Header setCurrentPage={this.setCurrentPage} />
+                <Header />
                 <Selector currentPage={this.state.currentPage} setCurrentPage={this.setCurrentPage}/>
-                <Futter />
+                <Futter setCurrentPage={this.setCurrentPage} />
             </div>
         )
     }

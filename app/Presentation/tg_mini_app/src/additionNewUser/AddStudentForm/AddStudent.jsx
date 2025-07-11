@@ -136,10 +136,10 @@ class AddStudent extends React.Component {
                 <div className = "student-card-form-container">
                     <form className = "student-card-form">
                         <div className = "student-card-element-container">
-                            <span className = "student-card-element-title">Write your firstname</span>
+                            <span className = "student-card-element-title"> Write your firstname </span>
                             <span className = "student-card-element-field">
                                 <label>
-                                    <input type="text" placeholder="Write your name" onChange={this.handleInputChangeFirstname}></input>
+                                    <input type="text" placeholder="Write firstname" onChange={this.handleInputChangeFirstname}></input>
                                 </label>
                             </span>
                             <span className = "student-card-element-error">
@@ -147,10 +147,10 @@ class AddStudent extends React.Component {
                             </span>
                         </div>
                         <div className = "student-card-element-container">
-                            <span className = "student-card-element-title">Write your lastname</span>
+                            <span className = "student-card-element-title"> Write your lastname </span>
                             <span className = "student-card-element-field">
                                 <label>
-                                    <input type="text" placeholder="Write your lastname" onChange={this.handleInputChangeLastName}></input>
+                                    <input type="text" placeholder="Write lastname" onChange={this.handleInputChangeLastName}></input>
                                 </label>
                             </span>
                             <span className = "student-card-element-error">
@@ -158,7 +158,7 @@ class AddStudent extends React.Component {
                             </span>
                         </div>
                         <div className = "student-card-element-container">
-                            <span className = "student-card-element-title">Choose your supervisor</span>
+                            <span className = "student-card-element-title"> Choose your supervisor </span>
                             <span className = "student-card-element-field">
                                 <label>
                                     <select onChange={this.handleInputChangeSupervisorName} value={this.state.supervisorName}>

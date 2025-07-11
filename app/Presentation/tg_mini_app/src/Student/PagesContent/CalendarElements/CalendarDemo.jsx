@@ -246,6 +246,7 @@ class Calendar extends React.Component {
                     </tbody>
                 </table>
                 <div className='date-info-container'>
+                    <div className = "current-date-for-info-container"> {this.getMonthName(this.state.month)} {this.state.current_day} </div>
                     {this.state.dailyDeals.map((dailyDeal, index) => (
                         <div key={index}>
                             {dailyDeal[0] === "task" ?

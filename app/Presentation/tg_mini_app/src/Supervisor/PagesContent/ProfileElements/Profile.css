@@ -107,3 +107,25 @@
     box-shadow: 0 10px 25px rgba(37, 117, 252, 0.15);
     background: linear-gradient(135deg, #eef4ff 0%, #dde9ff 100%);
 }
+
+/* Адаптивные стили для изображения с ошибкой */
+@media (max-width: 768px) {
+    .photo[alt="No photo"] {
+        font-size: 14px;
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .photo[alt="No photo"] {
+        font-size: 12px;
+        padding: 12px;
+    }
+}
+
+@media (max-width: 360px) {
+    .photo[alt="No photo"] {
+        font-size: 11px;
+        padding: 10px;
+    }
+}

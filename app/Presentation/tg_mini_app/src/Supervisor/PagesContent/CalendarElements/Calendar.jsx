@@ -2,7 +2,7 @@
 import React from 'react'
 import {getMeetings} from "./meetingGetter.jsx";
 import './calendar.css'
-import NewMeeting from "./NewMeeting.jsx";
+import NewMeeting from "./NewMeeting/NewMeeting.jsx";
 
 class Calendar extends React.Component {
     constructor(props) {
@@ -138,6 +138,7 @@ class Calendar extends React.Component {
         const newDeals = [];
         let meetingList = [];
         meetingList = await getMeetings();
+        this.setState({current_day: date.getDate()});
 
         if (meetingList.length > 0) {
             for(let meeting of meetingList) {
@@ -167,6 +168,7 @@ class Calendar extends React.Component {
 
     back() {
         this.setState({newMeeting: false});
+        this.getCalendar();
     }
 
     render() {
@@ -179,7 +181,7 @@ class Calendar extends React.Component {
         }
         if (this.state.newMeeting) {
             return (
-                <NewMeeting back = {this.back}/>
+                <NewMeeting back = {this.back} year = {this.state.year} month = {this.state.month} day = {this.state.current_day} monthToString = {this.getMonthName(this.state.month)} />
             )
         }
         return (
@@ -237,6 +239,7 @@ class Calendar extends React.Component {
                     </tbody>
                 </table>
                 <div className='date-info-container'>
+                    <div className = "current-date-for-info-container"> {this.getMonthName(this.state.month)} {this.state.current_day} </div>
                     {this.state.dailyDeals.map((dailyDeal, index) => (
                         <div key={index}>
                             <div className='date-info-block'>
@@ -255,7 +258,7 @@ class Calendar extends React.Component {
                         </div>
                     ))}
                     <div className = "new-meeting-button-container">
-                        <button className = "new-meeting-button" onClick = {() => {this.createNewMeeting()}}> Create new meeting </button>
+                        <button className = "new-meeting-button" onClick = {() => {this.createNewMeeting()}}> Create meeting </button>
                     </div>
                 </div>
             </div>
