@@ -46,7 +46,7 @@
     margin: 0;
 }
 
-.settings-close-btn {
+.settings-close-icon {
     background: none;
     border: none;
     cursor: pointer;
@@ -58,7 +58,7 @@
     align-items: center;
     justify-content: center;
 }
-.settings-close-btn:hover {
+.settings-close-icon:hover {
     background: #f0f0f0;
 }
 

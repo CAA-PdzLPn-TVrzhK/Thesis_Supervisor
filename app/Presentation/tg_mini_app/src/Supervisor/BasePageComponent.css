@@ -59,33 +59,28 @@ html, body {
     min-width: 0;
 }
 .header-logo-block {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
+
 .header-logo {
-    color: #fff;
+  color: white;
 }
+
 .header-title {
-    color: #fff;
-    font-size: 1.2rem;
-    font-weight: 700;
-    letter-spacing: 1px;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-left: 12px;
 }
-.header-help-block {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 2px;
-}
-.header-help-title {
-    color: #fff;
-    font-size: 0.95rem;
-    font-weight: 500;
-}
-.header-help-email, .header-help-phone {
-    color: #e0e7ef;
-    font-size: 0.9rem;
+
+.header-settings-icon {
+  margin-left: auto;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.1s ease, color 0.2s ease;
+    margin-right: 15px;
 }
 
 .navigation-bar {

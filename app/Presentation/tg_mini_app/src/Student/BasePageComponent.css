@@ -35,143 +35,54 @@ html, body {
     flex: 1;
 }
 
-.header {
-    max-width: 100%;
-    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    margin-bottom: 30px;
-    box-sizing: border-box;
-}
-
 .header-top {
-    justify-content: space-between;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 18px 24px;
-    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-    border-radius: 0 0 0 0 !important;
-    box-shadow: none !important;
-    margin-bottom: 18px;
-    box-sizing: border-box;
-    width: 100%;
-    min-width: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 24px;
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  border-radius: 0 0 0 0 !important;
+  box-shadow: none !important;
+  margin-bottom: 18px;
+  box-sizing: border-box;
+  width: 100vw;
+  min-width: 0;
 }
 
 .header-logo-block {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-shrink: 1;
-    min-width: 0;
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 
 .header-logo {
-    color: #fff;
+  color: white;
 }
 
 .header-title {
-    color: #fff;
-    font-size: 1.2rem;
-    font-weight: 700;
-    letter-spacing: 1px;
-    white-space: normal;
-    word-break: break-word;
-}
-
-.header-settings-block {
-    flex-shrink: 0;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-left: 12px;
 }
 
 .header-settings-icon {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    border-radius: 8px;
-    padding: 8px 12px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    white-space: nowrap;
+  margin-left: auto;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.1s ease, color 0.2s ease;
+    margin-right: 15px;
 }
 
-.settings-icon {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    border-radius: 8px;
-    padding: 8px 12px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    white-space: nowrap;
+.header-settings-icon:hover {
+  color: #aeafbe;
+    background-color: #2575fc;
 }
 
-.settings-button:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-1px);
-}
-
-.settings-button:active {
-    transform: translateY(0);
-}
-
-@media (max-width: 768px) {
-    .header-top {
-        padding: 15px 20px;
-    }
-
-    .header-title {
-        font-size: 1.1rem;
-    }
-
-    .header-help-block {
-        gap: 12px;
-    }
-
-    .settings-button {
-        padding: 6px 10px;
-        font-size: 0.85rem;
-    }
-}
-
-@media (max-width: 600px) {
-    .header-top {
-        padding: 12px 16px;
-        gap: 10px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .header-logo-block {
-        gap: 8px;
-    }
-
-    .header-title {
-        font-size: 1rem;
-    }
-
-    .header-help-block {
-        align-items: flex-start;
-        gap: 10px;
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    .settings-button {
-        padding: 6px 8px;
-        font-size: 0.8rem;
-    }
+.header-settings-icon:active {
+  transform: scale(0.9);
+  color: #2980b9;
 }
 
 @media (max-width: 480px) {
@@ -189,7 +100,7 @@ html, body {
         gap: 8px;
     }
 
-    .settings-button {
+    .header-settings-icon {
         padding: 5px 6px;
         font-size: 0.75rem;
     }
