@@ -10,9 +10,12 @@ export default function ControlPanel({
   onSort,
   onAdd,
   onEdit,
+  onDelete,
+  onBack,
+  isEditing = false,
   filters = [],
   sorts = [],
-  labels = { add: 'Add', edit: 'Edit' },
+  labels = { add: 'Add', edit: 'Edit List' },
 }) {
   const [filterForm] = Form.useForm();
   const [sortForm] = Form.useForm();
@@ -91,9 +94,17 @@ export default function ControlPanel({
         <Button>Sort ▼</Button>
       </Popover>
 
-      <button className="addButton" onClick={onAdd}>{labels.add}</button>
-      <button className="changeButton" onClick={onEdit}>{labels.edit}</button>
-
+      {!isEditing ? (
+        <>
+          <button className="addButton" onClick={onAdd}>{labels.add}</button>
+          <button className="changeButton" onClick={onEdit}>{labels.edit}</button>
+        </>
+      ) : (
+        <>
+          <button className="deleteButton" onClick={onDelete}>Delete</button>
+          <button className="backButton" onClick={onBack}>Back</button>
+        </>
+      )}
     </div>
   );
 }
