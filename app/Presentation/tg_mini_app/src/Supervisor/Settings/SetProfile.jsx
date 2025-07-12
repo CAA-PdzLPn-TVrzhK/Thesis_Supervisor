@@ -54,13 +54,13 @@ class SetProfile extends React.Component {
         if (this.state.firstname.trim() !== "" ) {
             finalError = "changes are saved";
             const data = {first_name: this.state.firstname};
-            await axios.patch(`${window.TelegramWebApp.API_BASE}/users/id=eq.${window.TelegramWebApp.userId}`, data, {headers: window.TelegramWebApp.headers,});
+            await axios.patch(`${window.TelegramWebApp.API_BASE}/users?id=eq.${window.TelegramWebApp.userId}`, data, {headers: window.TelegramWebApp.headers,});
         }
 
         if (this.state.lastname.trim() !== "" ) {
             finalError = "changes are saved";
             const data = {last_name: this.state.lastname};
-            await axios.patch(`${window.TelegramWebApp.API_BASE}/users/id=eq.${window.TelegramWebApp.userId}`, data, {headers: window.TelegramWebApp.headers,});
+            await axios.patch(`${window.TelegramWebApp.API_BASE}/users?id=eq.${window.TelegramWebApp.userId}`, data, {headers: window.TelegramWebApp.headers,});
         }
 
         if (this.state.file) {
