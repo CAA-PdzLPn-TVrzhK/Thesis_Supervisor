@@ -79,36 +79,6 @@
     color: #555;
 }
 
-.links-section {
-    margin: 10px;
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-    width: 100%;
-    max-width: 800px;
-    padding: 30px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-}
-
-.link-card {
-    background: linear-gradient(135deg, #f6f9ff 0%, #eef4ff 100%);
-    border-radius: 12px;
-    padding: 25px 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: 1px solid #e0e7ff;
-}
-
-.link-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(37, 117, 252, 0.15);
-    background: linear-gradient(135deg, #eef4ff 0%, #dde9ff 100%);
-}
-
-/* Адаптивные стили для изображения с ошибкой */
 @media (max-width: 768px) {
     .photo[alt="No photo"] {
         font-size: 14px;

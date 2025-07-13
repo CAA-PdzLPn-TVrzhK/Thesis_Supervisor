@@ -99,13 +99,6 @@ class Profile extends React.Component {
                         </div>
                     </div>
                 </div>
-
-                <div className={'links-section'}>
-                    <div onClick={() => this.goToPage("calendar")} className={'link-card'}>Link to calendar</div>
-                </div>
-                <div className={'links-section'}>
-                    <div onClick={() => this.goToPage("dashboard")} className={'link-card'}>Link to dashboard</div>
-                </div>
             </div>
         )
     }
