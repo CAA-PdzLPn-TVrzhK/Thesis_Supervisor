@@ -219,10 +219,8 @@ export default function StudentList() {
     }
     return (
         <main>
-            <header>
-                <div className={"listHeader"}>
-                    <h1>List of Students</h1>
-                </div>
+            <header className={"listHeader"}>
+                <h1>List of Students</h1>
             </header>
             <div className="pageContainer">
                 <ControlPanel
