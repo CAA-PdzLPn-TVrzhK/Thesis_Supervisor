@@ -1,15 +1,17 @@
 .add-role-container {
   display: flex;
+  align-self: center;
+  justify-self: center;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 
-  min-height: 100vh;
+  min-height: 50vh;
   padding: 30px 20px;
   margin: 0 auto;
 
   max-width: 500px;
-  width: 100%;
+  width: 90%;
 
   background: #fff;
   border-radius: 10px;
@@ -17,13 +19,8 @@
 
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #333;
-}
 
-.add-role-field {
-  display: flex;
-  flex-direction: column;
   gap: 20px;
-  align-items: center;
 }
 
 .add-button {
@@ -39,6 +36,7 @@
   transition: background 0.3s ease, box-shadow 0.3s ease;
   width: 100%;
   max-width: 300px;
+  margin: 0 auto;
 }
 
 .add-button:hover {
@@ -53,7 +51,7 @@
   }
 
   .add-button {
-    padding: 16px 0;
+    padding: 16px 30px;
     font-size: 1.05rem;
   }
 }

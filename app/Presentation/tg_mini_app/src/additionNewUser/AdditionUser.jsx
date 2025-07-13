@@ -58,10 +58,8 @@ class AdditionUser extends React.Component {
         }
         return (
             <div className = "add-role-container">
-                <div className = "add-role-field">
                     <button onClick={() => this.addStudent()} className = "add-button"> Create As Student </button>
                     <button onClick={() => this.addSupervisor()} className = "add-button"> Create As Supervisor </button>
-                </div>
             </div>
         )
     }

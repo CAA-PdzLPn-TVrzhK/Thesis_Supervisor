@@ -12,7 +12,7 @@
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 12px 25px rgba(101, 80, 255, 0.15);
-  padding: 30px 25px 40px;
+  padding: 30px 25px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #444;
 }
@@ -179,20 +179,17 @@
   outline: none;
 }
 
-/* При фокусе */
 .supervisor-select:focus {
   border-color: #6b3ccf;
   box-shadow: 0 0 6px rgba(107, 60, 207, 0.3);
   background-color: #fff;
 }
 
-/* Плейсхолдер */
 .supervisor-select__placeholder {
   color: #bbb;
   font-style: italic;
 }
 
-/* Выбранные значения */
 .supervisor-select__multi-value {
   background-color: #e8e4f2;
   border-radius: 6px;
@@ -211,13 +208,11 @@
   background-color: #d2c4f5;
 }
 
-/* Меню опций */
 .supervisor-select__menu {
   border-radius: 6px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-/* Пункты меню */
 .supervisor-select__option {
   cursor: pointer;
   background-color: #fff;
