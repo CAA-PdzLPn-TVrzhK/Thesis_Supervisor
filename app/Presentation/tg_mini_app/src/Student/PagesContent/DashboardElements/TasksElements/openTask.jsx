@@ -7,6 +7,7 @@ import {getLastUploadingStatus} from "./getLastUploadingStatus.jsx";
 import {IconX} from "@tabler/icons-react";
 import ReactDOM from "react-dom";
 import LastSubmission from "./LastSubmission/LastSubmission.jsx";
+import UploadingPage from "./UploadingPage/UploadingPage.jsx";
 
 class TaskManager extends React.Component {
     constructor(props) {
@@ -127,6 +128,10 @@ class TaskManager extends React.Component {
             <div className = "dashboard-task-content-modal-block">
                 {this.state.lastSubmissionChecked && ReactDOM.createPortal(
                     <LastSubmission data = {this.state.lastSubmission} close = {this.checkLastSubmission} milestoneId = {this.state.data.id}/>,
+                    document.getElementById("modal-root")
+                )}
+                {this.state.uploadingDraft && ReactDOM.createPortal(
+                    <UploadingPage close = {this.uploadDraft} milestone = {this.state.data}/>,
                     document.getElementById("modal-root")
                 )}
             <div className = "dashboard-task-container">

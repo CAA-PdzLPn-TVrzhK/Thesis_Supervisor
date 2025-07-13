@@ -18,10 +18,24 @@ class LastSubmission extends React.Component {
         if (error) {
             console.error('Error fetching PDF URL:', error)
             this.setState({file: null});
-            return;
+        } else {
+            const {data} = await supabase.storage.from(`student-data`).getPublicUrl(`${window.TelegramWebApp.userId}/${this.props.milestoneId}/submission.pdf`);
+            this.setState({file: `${data.publicUrl}?v=${Date.now()}`});
         }
-        const {data} = await supabase.storage.from(`student-data`).getPublicUrl(`${window.TelegramWebApp.userId}/${this.props.milestoneId}/submission.pdf`);
-        this.setState({file: data.publicUrl});
+    }
+
+    getMonthName(month_number) {
+        const month_names = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"];
+        return month_names[month_number];
+    }
+    getDate(dateForTime) {
+        const date = new Date(dateForTime);
+        const day = date.getDate().toString();
+        const month = this.getMonthName(date.getMonth());
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `${day} ${month}, ${hours}:${minutes}`;
     }
 
     closeLastSubmission() {
@@ -48,11 +62,12 @@ class LastSubmission extends React.Component {
                             </div>
                             <div className="last-submission-info-block-element">
                                 <div className="last-submission-info-block-element-label">Status:</div>
-                                <div className="last-submission-info-block-element-value">{data.status}</div>
+                                <div className={`last-submission-info-block-element-value-${data.status === 'pending' ? 'status-pending' : ''}
+                                ${data.status === 'passed' ? 'status-passed' : ''}${data.status === 'fail' ? 'status-fail' : ''}`}> {data.status} </div>
                             </div>
                             <div className="last-submission-info-block-element">
                                 <div className="last-submission-info-block-element-label">Date:</div>
-                                <div className="last-submission-info-block-element-value">{data.updated_at}</div>
+                                <div className="last-submission-info-block-element-value">{this.getDate(data.updated_at)}</div>
                             </div>
                             <div className="last-submission-info-block-element">
                                 <div className="last-submission-info-block-element-label">Comment:</div>

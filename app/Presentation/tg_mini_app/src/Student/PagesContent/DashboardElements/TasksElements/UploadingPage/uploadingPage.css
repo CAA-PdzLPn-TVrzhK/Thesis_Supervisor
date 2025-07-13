@@ -1,4 +1,4 @@
-.last-submission-modal-container {
+.upload-draft-modal-container {
   position: fixed;
   top: 0;
   left: 0;
@@ -17,7 +17,7 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-.last-submission-container {
+.upload-draft-container {
   max-width: 500px;
   width: 100%;
   background: #fff;
@@ -32,9 +32,9 @@
   align-items: stretch;
 }
 
-.last-submission-close-button {
+.upload-draft-close-button {
   position: absolute;
-  top: 34px;
+  top: 20px;
   right: 18px;
   cursor: pointer;
   color: #6a11cb;
@@ -45,13 +45,13 @@
   transition: background 0.2s, color 0.2s, transform 0.2s;
   z-index: 10;
 }
-.last-submission-close-button:hover {
+.upload-draft-close-button:hover {
   color: #2575fc;
   background: rgba(106, 17, 203, 0.1);
   transform: scale(1.1);
 }
 
-.last-submission-info-block-title {
+.upload-draft-info-block-title {
   font-weight: 700;
   font-size: 1.7rem;
   color: #6b3ccf;
@@ -62,7 +62,7 @@
   position: relative;
   padding-bottom: 12px;
 }
-.last-submission-info-block-title::after {
+.upload-draft-info-block-title::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -74,7 +74,7 @@
   border-radius: 3px;
 }
 
-.last-submission-error-block {
+.upload-draft-error-block {
   background: #fafafa;
   border: 1.8px solid #ddd;
   border-radius: 8px;
@@ -88,7 +88,7 @@
   text-align: center;
 }
 
-.last-submission-error-block-text {
+.upload-draft-error-block-text {
   margin: 0;
   font-size: 1.2rem;
   font-weight: 600;
@@ -96,27 +96,29 @@
   padding-top: 20px;
 }
 
-.last-submission-info-block {
+.upload-draft-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   margin-top: 12px;
 }
 
-.last-submission-info-block-element {
+.upload-draft-form-element {
+  display: flex;
+  flex-direction: column;
   background: #fff;
   border: 1.8px solid #ddd;
   border-radius: 8px;
   padding: 12px 16px;
   transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
 }
-.last-submission-info-block-element:hover {
+.upload-draft-form-element:hover {
   border-color: #6b3ccf;
   box-shadow: 0 4px 12px rgba(107, 60, 207, 0.08);
   transform: translateY(-2px);
 }
 
-.last-submission-info-block-element-label {
+.upload-draft-form-element-label {
   font-size: 0.9rem;
   font-weight: 600;
   color: #6b3ccf;
@@ -125,52 +127,91 @@
   letter-spacing: 0.5px;
 }
 
-.last-submission-info-block-element-value {
-  font-size: 1.08rem;
-  font-weight: 500;
-  color: #333;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+.upload-draft-form-element-value-input {
+  width: 100%;
+  font-size: 1.05rem;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.upload-draft-form-element-value-input:focus {
+  border-color: #6b3ccf;
+  box-shadow: 0 0 0 3px rgba(107, 60, 207, 0.2);
+  outline: none;
 }
 
-.last-submission-info-block-element-value-status-pending {
-  font-size: 1.08rem;
-  font-weight: 500;
-  color: #fd7e14;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
-.last-submission-info-block-element-value-status-fail {
-  font-size: 1.08rem;
-  font-weight: 500;
+.upload-draft-form-element-error {
+  margin-top: 6px;
+  font-size: 0.88rem;
   color: #dc3545;
-  overflow-wrap: anywhere;
-  word-break: break-word;
 }
 
-.last-submission-info-block-element-value-status-passed {
-  font-size: 1.08rem;
-  font-weight: 500;
+.upload-draft-form-button-send {
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.25s, transform 0.2s;
+}
+.upload-draft-form-button-send:hover {
+  background: linear-gradient(90deg, #5b0eb3, #1e63d4);
+  transform: translateY(-2px);
+}
+
+.upload-draft-successful-upload-message {
+  margin-top: 16px;
+  background: #e6f7f1;
+  border: 1.8px solid #28a745;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.upload-draft-successful-upload-message-text {
+  font-size: 1.1rem;
+  font-weight: 600;
   color: #28a745;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+}
+
+.upload-draft-successful-upload-message-close-button {
+  cursor: pointer;
+  color: #28a745;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  padding: 4px;
+  transition: background 0.2s, transform 0.2s;
+}
+.upload-draft-successful-upload-message-close-button:hover {
+  background: rgba(40, 167, 69, 0.1);
+  transform: scale(1.1);
 }
 
 @media (max-width: 600px) {
-  .last-submission-container {
+  .upload-draft-container {
     width: 98vw;
-    min-width: unset;
     padding: 18px 8px 18px 8px;
   }
-  .last-submission-info-blosk-title {
+  .upload-draft-info-block-title {
     font-size: 1.1rem;
   }
-  .last-submission-error-block {
+  .upload-draft-error-block {
     font-size: 0.95rem;
     padding: 10px;
   }
-  .last-submission-info-block-element {
+  .upload-draft-form-element {
     padding: 10px 8px;
   }
 }
