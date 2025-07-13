@@ -5,6 +5,7 @@ import React from "react";
 import {getUserId} from "./getUserId.jsx";
 import {getDataOfUser} from "./getDataOfUser.jsx";
 import AdditionUser from "../additionNewUser/AdditionUser.jsx";
+import WaitingAprove from "./WaitingAprove.jsx";
 
 class Distributor extends React.Component{
     constructor(props) {
@@ -27,16 +28,18 @@ class Distributor extends React.Component{
 
     }
 
-    addRole() {
-        this.setState()
+    async addRole() {
+        const userData = await getDataOfUser();
+        console.log('userData:', userData);
+        this.setState({data: userData});
     }
 
     render() {
         if(!this.state.data) {
             console.log(this.state.data, 'wait a bit');
             return (
-                <div>
-                    Please, wait a bit
+                <div className = "loader-container">
+                    <img className = "loader-image" src="https://megakeys.info/icons/loader.gif" alt="Please, wait a bit" />
                 </div>
             )
         }
@@ -54,11 +57,15 @@ class Distributor extends React.Component{
                     <SupervisorConstructor/>
                 </div>
             )
-        } else if(this.state.data[0].role === "none") {
+        } else if(this.state.data[0].role === "None") {
             return (
                 <div>
-                    <AdditionUser/>
+                    <AdditionUser addRole={this.addRole}/>
                 </div>
+            )
+        } else if(this.state.data[0].role === "confirm") {
+            return (
+                <WaitingAprove />
             )
         } else {
             return (

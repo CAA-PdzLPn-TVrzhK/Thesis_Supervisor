@@ -1,0 +1,330 @@
+/* Стили для модального окна NewMeeting */
+
+.new-meeting-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(30, 32, 48, 0.35);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.new-meeting-container {
+    max-width: 500px;
+    width: 100%;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 12px 25px rgba(101, 80, 255, 0.15);
+    padding: 30px 25px 40px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #444;
+    animation: fadeIn 0.6s ease-out forwards;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.new-meeting-title {
+    font-weight: 700;
+    font-size: 1.7rem;
+    color: #6b3ccf;
+    text-align: center;
+    margin-bottom: 30px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+.new-meeting-form-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 22px;
+    width: 100%;
+}
+
+.new-meeting-form-element-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #6b3ccf;
+    margin-bottom: 8px;
+    user-select: none;
+}
+
+.new-meeting-form-element-field {
+    width: 100%;
+    display: block;
+}
+
+.new-meeting-form-element-field label {
+    width: 100%;
+    display: block;
+}
+
+.new-meeting-form-element-field input,
+.new-meeting-form-element-field select {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 1rem;
+    border: 1.8px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.25s ease;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #222;
+    background-color: #fafafa;
+    box-sizing: border-box;
+}
+
+.new-meeting-form-element-field input::placeholder {
+    color: #bbb;
+    font-style: italic;
+}
+
+.new-meeting-form-element-field input:focus,
+.new-meeting-form-element-field select:focus {
+    border-color: #6b3ccf;
+    box-shadow: 0 0 8px rgba(107, 60, 207, 0.5);
+    background-color: #fff;
+    transform: translateY(-1px);
+}
+
+.new-meeting-form-element-error {
+    color: #bb1e53;
+    font-size: 0.8rem;
+    margin-top: 6px;
+    min-height: 18px;
+    font-weight: 600;
+    padding-left: 4px;
+}
+
+.new-meeting-form-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+}
+
+.new-meeting-form-button-back {
+    flex: 1;
+    min-width: 120px;
+    background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+    color: #444;
+    border: 1px solid #ccc;
+    padding: 12px 35px;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: 25px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    user-select: none;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.new-meeting-form-button-back:hover {
+    background: linear-gradient(135deg, #e5e5e5, #d5d5d5);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.new-meeting-form-button-back:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.new-meeting-form-button-create {
+    flex: 1;
+    min-width: 120px;
+    background: linear-gradient(90deg, #6b3ccf, #3264f5);
+    color: #fff;
+    border: none;
+    padding: 12px 35px;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: 25px;
+    cursor: pointer;
+    box-shadow: 0 6px 15px rgba(107, 60, 207, 0.5);
+    transition: all 0.3s ease;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.new-meeting-form-button-create:hover {
+    background: linear-gradient(90deg, #8149e6, #3f74ff);
+    box-shadow: 0 8px 18px rgba(99, 57, 195, 0.7);
+    transform: translateY(-2px);
+}
+
+.new-meeting-form-button-create:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(107, 60, 207, 0.4);
+}
+
+@media (max-width: 768px) {
+    .new-meeting-container {
+        margin: 15px 20px;
+        padding: 25px 20px 35px;
+        max-height: 85vh;
+    }
+
+    .new-meeting-title {
+        font-size: 1.5rem;
+        margin-bottom: 25px;
+    }
+
+    .new-meeting-form-element-field input,
+    .new-meeting-form-element-field select {
+        font-size: 0.95rem;
+        padding: 11px 14px;
+    }
+
+    .new-meeting-form-buttons {
+        gap: 12px;
+    }
+
+    .new-meeting-form-button-back,
+    .new-meeting-form-button-create {
+        padding: 11px 30px;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .new-meeting-container {
+        margin: 10px 15px;
+        padding: 20px 15px 30px;
+        border-radius: 10px;
+        max-height: 80vh;
+    }
+
+    .new-meeting-title {
+        font-size: 1.3rem;
+        margin-bottom: 20px;
+        letter-spacing: 1px;
+    }
+
+    .new-meeting-form-container {
+        margin-bottom: 18px;
+    }
+
+    .new-meeting-form-element-title {
+        font-size: 0.85rem;
+        margin-bottom: 6px;
+    }
+
+    .new-meeting-form-element-field input,
+    .new-meeting-form-element-field select {
+        font-size: 0.9rem;
+        padding: 10px 12px;
+        border-radius: 6px;
+    }
+
+    .new-meeting-form-element-error {
+        font-size: 0.75rem;
+        margin-top: 4px;
+    }
+
+    .new-meeting-form-buttons {
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 25px;
+    }
+
+    .new-meeting-form-button-back,
+    .new-meeting-form-button-create {
+        width: 100%;
+        padding: 14px 0;
+        font-size: 1rem;
+        border-radius: 20px;
+        min-width: auto;
+    }
+}
+
+@media (max-width: 360px) {
+    .new-meeting-container {
+        margin: 5px 10px;
+        padding: 15px 12px 25px;
+        max-height: 75vh;
+    }
+
+    .new-meeting-title {
+        font-size: 1.2rem;
+        margin-bottom: 18px;
+    }
+
+    .new-meeting-form-element-field input,
+    .new-meeting-form-element-field select {
+        font-size: 0.85rem;
+        padding: 9px 10px;
+    }
+
+    .new-meeting-form-button-back,
+    .new-meeting-form-button-create {
+        padding: 12px 0;
+        font-size: 0.95rem;
+    }
+}
+
+.new-meeting-form-button-back:disabled,
+.new-meeting-form-button-create:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.new-meeting-form-button-back:disabled:hover,
+.new-meeting-form-button-create:disabled:hover {
+    transform: none !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.new-meeting-form-element-field select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b3ccf' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 40px;
+}
+
+.new-meeting-form-element-field input[type="datetime-local"] {
+    position: relative;
+}
+
+.new-meeting-form-element-field input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    background: transparent;
+    bottom: 0;
+    color: transparent;
+    cursor: pointer;
+    height: auto;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: auto;
+}
+
+.new-meeting-form-element-error {
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}

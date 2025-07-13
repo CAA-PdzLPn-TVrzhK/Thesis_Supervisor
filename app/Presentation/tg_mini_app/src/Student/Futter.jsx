@@ -1,22 +1,22 @@
 
 import React from "react"
+import { IconUser, IconTrophy, IconCalendar, IconLayoutDashboard } from "@tabler/icons-react";
 import "./BasePageComponent.css"
 
 class Futter extends React.Component {
-    constructor(props) {
-        super(props);
+    handleNav = (page) => {
+        if (this.props.setCurrentPage) {
+            this.props.setCurrentPage(page);
+        }
     }
-
     render() {
         return (
-            <div className="futter">
-                <div className="futter-content">
-                    <span>number: </span>
-                    <span>8-800-555-35-35</span>
-                </div>
-                <div>
-                    <span>email: </span>
-                    <span>innopolis.university@gmail.com</span>
+            <div className="futter-nav">
+                <div className="futter-nav-bar">
+                    <span className="futter-nav-item" onClick={() => this.handleNav("profile")}> <IconUser size={28}/> </span>
+                    <span className="futter-nav-item" onClick={() => this.handleNav("leaderboard")}> <IconTrophy size={28}/> </span>
+                    <span className="futter-nav-item" onClick={() => this.handleNav("calendar")}> <IconCalendar size={28}/> </span>
+                    <span className="futter-nav-item" onClick={() => this.handleNav("dashboard")}> <IconLayoutDashboard size={28}/> </span>
                 </div>
             </div>
         )

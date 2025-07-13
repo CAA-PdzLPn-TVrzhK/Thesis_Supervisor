@@ -1,0 +1,57 @@
+.add-role-container {
+  display: flex;
+  align-self: center;
+  justify-self: center;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  min-height: 50vh;
+  padding: 30px 20px;
+  margin: 0 auto;
+
+  max-width: 500px;
+  width: 90%;
+
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(101, 80, 255, 0.15);
+
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+
+  gap: 20px;
+}
+
+.add-button {
+  background: linear-gradient(90deg, #6b3ccf, #3264f5);
+  color: #fff;
+  border: none;
+  padding: 14px 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 25px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(107, 60, 207, 0.4);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.add-button:hover {
+  background: linear-gradient(90deg, #8149e6, #3f74ff);
+  box-shadow: 0 6px 16px rgba(99, 57, 195, 0.6);
+}
+
+@media (max-width: 480px) {
+  .add-role-container {
+    margin: 20px 15px;
+    padding: 25px 20px;
+  }
+
+  .add-button {
+    padding: 16px 30px;
+    font-size: 1.05rem;
+  }
+}

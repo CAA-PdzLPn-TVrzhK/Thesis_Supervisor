@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "@supabase/supabase-js": "^2.50.5",
+    "@tabler/icons-react": "^3.34.0",
     "antd": "^5.26.1",
     "axios": "^1.10.0"
   },
@@ -7,7 +9,6 @@
     "lint": "eslint \"app/**/*.{js,ts,tsx}\"",
     "lint:ci": "eslint \"app/**/*.{js,ts,tsx}\" -f junit -o eslint-report.xml"
   },
-
   "devDependencies": {
     "eslint": "^9.30.0"
   }

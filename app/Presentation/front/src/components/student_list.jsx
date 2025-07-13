@@ -25,6 +25,8 @@ export default function StudentList() {
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [groups, setGroups] = useState([]);
     const [years, setYear] = useState([]);
+    const [supervisors, setSupervisors] = useState([])
+    const [theses, setTheses] = useState([])
 
     // А теперь уже можно дернуть API
     useEffect(() => {
@@ -51,7 +53,12 @@ export default function StudentList() {
 
 
                 const stdToNAmeMap = users.filter(u => u.role === 'student').reduce((m, u) => {
-                    m[u.id] = `${u.first_name} ${u.last_name}`;
+                    m[u.id] = `${u.first_name}`;
+                    return m;
+                }, {})
+
+                const stdToSurnameMap = users.filter(u => u.role == 'student').reduce((m, u) => {
+                    m[u.id] = `${u.last_name}`;
                     return m;
                 }, {})
 
@@ -70,26 +77,53 @@ export default function StudentList() {
                     return m;
                 }, {})
 
+                const IdToTgUs = users.filter(u => u.role === "student").reduce((m, u) =>{
+                    m[u.id] = u.username;
+                    return m;
+                })
+
+                const supIdToName = supervisors.reduce((m, sup) => {
+                    m[sup.id] = idToName[sup.user_id] || '—';
+                    return m;
+                }, {})
+
 
                 const enriched = student.map(st => {
-                    const uId = supToUserMap[st.supervisor_id];
                     return {
                       ...st,
-                      supervisorName: idToName[uId] || '—',
+                      studentTgUs: IdToTgUs[st.user_id] || '—',
+                      supervisorName: supIdToName[st.supervisor_id] || '—',
                       studentName: stdToNAmeMap[st.user_id] || '—',
+                      studentSurname: stdToSurnameMap[st.user_id] || '—',
                       groupName: grpToStdMap[st.peer_group_id] || '—',
-                        thesisName: thssIdToName[st.thesis_id] || '—',
+                      thesisName: thssIdToName[st.thesis_id] || '—',
                     };
                 });
 
                 setData(enriched);
                 setDisplay(enriched);
 
-                const uniqueGroups = [...new Set(groups.map(g => g.name))].filter(Boolean);
-                setGroups(uniqueGroups);
+                const supList = supervisors.map(sup => ({
+                    id:    sup.id,
+                    name:  idToName[sup.user_id] || '—'
+                }))
+                  
+                const uniqueSupMap = supList.reduce((map, sup) => {
+                    map.set(sup.name, sup)
+                    return map
+                }, new Map())
+                  
+                const uniqueSupervisors = Array.from(uniqueSupMap.values())
+                  
+                setSupervisors(uniqueSupervisors)
 
-                const uniqueYears = [...new Set(student.map(s => s.year))].filter(Boolean);
-                setYear(uniqueYears);
+                setTheses(theses)
+
+                // Передаем полные объекты групп с supervisor_id для фильтрации
+                setGroups(groups);
+
+                const uniqueYears = [...new Set(student.map(s => s.year))].filter(Boolean); setYear(uniqueYears);
+
             } catch (e){
                 console.error(e);
                 setError(true);
@@ -104,7 +138,7 @@ export default function StudentList() {
       {
         name: 'group',
         label: 'Group',
-        options: groups.map(g => ({ label: g, value: g })),
+        options: groups.map(g => ({ label: g.name, value: g.id })),
       },
       {
         name: 'year',
@@ -139,7 +173,7 @@ export default function StudentList() {
     const handleFilter = (filters) => {
       let result = data;
       if (filters.group) {
-        result = result.filter(item => filters.group.includes(item.group));
+        result = result.filter(item => filters.group.includes(item.peer_group_id));
       }
       if (filters.year) {
         result = result.filter(item => filters.year.includes(item.year));
@@ -178,6 +212,9 @@ export default function StudentList() {
                 setDisplay(display.map(s => s.id === updated.id ? updated : s));
                 setCurrent('studentList');
             }}
+            supervisors={supervisors}
+            groups={groups}
+            theses={theses}
         />
     }
     return (
@@ -193,21 +230,17 @@ export default function StudentList() {
                     onFilter={handleFilter}
                     onSort={handleSort}
                     onAdd={() => {setCurrent('add')}}
-                    onEditMode={() => setIsEditing(true)}
+                    onEdit={() => setIsEditing(true)}
+                    onDelete={handleDelete}
+                    onBack={() => {
+                        setIsEditing(false);
+                        setSelectedRows([]);
+                    }}
+                    isEditing={isEditing}
                     filters={filterOptions}
                     sorts={sortOptions}
-
+                    labels={{add: "Add Student", edit: "Edit List"}}
                 />
-                {isEditing && (
-                    <div className="editPanel">
-                        <button onClick={handleDelete} className="upperButton">Delete</button>
-                        <button onClick={() => {
-                            setIsEditing(false);
-                            setSelectedRows([]);
-                        }} className="upperButton">Back
-                        </button>
-                    </div>
-                )}
 
                 <div className={"tableWrapper"}>
                     <Table
@@ -232,17 +265,19 @@ export default function StudentList() {
                         })}
                     >
                         <Column
-                            title="ID"
-                            dataIndex="id"
-                            key="id"
+                            title="telegram Username"
+                            dataIndex="studentTgUs"
+                            key="studentTgUs"
                             onCell={() => ({style: {maxWidth: '295px'}})}
                             render={(text) => (
                                 <span style={{color: 'black', cursor: 'pointer'}}>
-                            {text}
+                            {text}  
                           </span>
                             )}
                         />
-                        <Column title="Full Name" dataIndex="studentName" key="FullName"
+                        <Column title="Name" dataIndex="studentName" key="Name"
+                                onCell={() => ({style: {maxWidth: '300px'}})}/>
+                        <Column title="Surname" dataIndex="studentSurname" key="Surname"
                                 onCell={() => ({style: {maxWidth: '300px'}})}/>
                         <Column title="Supervisor" dataIndex="supervisorName" key="supervisorName"/>
                         <Column title="Program" dataIndex="program" key="program"/>
@@ -251,7 +286,7 @@ export default function StudentList() {
                         <Column title="Year" dataIndex="year" key="year" onCell={() => ({style: {minWidth: 60}})}/>
                         <Column title="Thesis" dataIndex="thesisName" key="thesisName"
                                 onCell={() => ({style: {minWidth: '70px'}})}/>
-                        <Column title="Points" dataIndex="points" key="points"
+                        <Column title="Score" dataIndex="score" key="score"
                                 onCell={() => ({style: {minWidth: '75px'}})}/>
                         <Column title="Progress" dataIndex="progress" key="progress"
                                 onCell={() => ({style: {minWidth: '95px'}})}/>

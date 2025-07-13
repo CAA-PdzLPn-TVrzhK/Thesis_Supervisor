@@ -1,34 +1,118 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
-import { Form, Input, InputNumber, Button } from 'antd';
+import { Form, Input, InputNumber, Button, Select } from 'antd';
 import './index.css';
 
 
-const API_URL = 'https://dprwupbzatrqmqpdwcgq.supabase.co/rest/v1/students';
+const API_URL = 'https://dprwupbzatrqmqpdwcgq.supabase.co/rest/v1/';
 const API_HEADERS = {
   apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3NzcsImV4cCI6MjA2Njc2MDc3N30.yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc"
 };
 
-export default function StudentProfile({ student, onBack, onSave}) {
+export default function StudentProfile({ supervisors, groups, student, onBack, onSave}) {
   const [form] = Form.useForm();
+  const [availableGroups, setAvailableGroups] = useState([]);
+
+  // Функция для фильтрации групп по супервизору
+  const filterGroupsBySupervisor = (supervisorId) => {
+    if (!supervisorId) {
+      setAvailableGroups([]);
+      return;
+    }
+    
+    const filteredGroups = groups.filter(group => group.supervisor_id === supervisorId);
+    console.log(`Группы для супервизора ${supervisorId}:`, filteredGroups);
+    setAvailableGroups(filteredGroups);
+  };
 
   useEffect(() => {
     if (student) {
-      form.setFieldsValue({ ...student });
+      // Если student содержит supervisor_id и peer_group_id, просто подставляем их
+      // Если только supervisorName/groupName, ищем id по name
+      let initialValues = { ...student };
+      if (!student.supervisor_id && student.supervisorName) {
+        const foundSup = supervisors.find(s => s.name === student.supervisorName);
+        if (foundSup) initialValues.supervisor_id = foundSup.id;
+      }
+      if (!student.peer_group_id && student.groupName) {
+        const foundGroup = groups.find(g => g.name === student.groupName);
+        if (foundGroup) initialValues.peer_group_id = foundGroup.id;
+      }
+      form.setFieldsValue(initialValues);
+      
+      // Фильтруем группы по выбранному супервизору при инициализации
+      if (initialValues.supervisor_id) {
+        filterGroupsBySupervisor(initialValues.supervisor_id);
+      }
     } else {
       form.resetFields();
+      setAvailableGroups([]);
     }
-  }, [student, form]);
+  }, [student, form, supervisors, groups]);
+
+  // Обработчик изменения супервизора
+  const handleSupervisorChange = (supervisorId) => {
+    console.log('Выбран супервизор:', supervisorId);
+    
+    // Фильтруем группы по выбранному супервизору
+    filterGroupsBySupervisor(supervisorId);
+    
+    // Сбрасываем выбранную группу, так как она может не принадлежать новому супервизору
+    form.setFieldsValue({ peer_group_id: undefined });
+  };
 
   const handleFinish = async (values) => {
     try {
-      const response = student?.id
-        ? await axios.put(`${API_URL}?id=eq.${student.id}`, values, { headers: API_HEADERS })
-        : await axios.post(API_URL, values, { headers: API_HEADERS });
+      const url = student
+        ? `${API_URL}students?id=eq.${student.id}`
+        : `${API_URL}students`;
+      const method = student ? 'patch' : 'post';
+      const headers = {
+        ...API_HEADERS,
+        Prefer: 'return=representation',
+      };
+      const body = {
+        username: values.username,
+        supervisor_id: values.supervisor_id,
+        peer_group_id: values.peer_group_id,
+        program: values.program,
+        department: values.department,
+        year: values.year,
+        points: values.points,
+        progress: values.progress,
+      };
+      console.log('Отправляем:', body);
+      const { data } = await axios[method](url, body, { headers });
+      const saved = Array.isArray(data) ? data[0] : data;
 
-      onSave(student?.id ? { ...student, ...values } : response.data[0]); // Supabase возвращает массив
+      if (values.studentName && student?.user_id || values.studentSurname && student?.user_id) {
+        await axios.patch(
+          `${API_URL}users?id=eq.${student.user_id}`,
+          { 
+            first_name: values.studentName,
+            last_name: values.studentSurname,
+          },
+          { headers }
+        );
+      }
+
+      if (values.thesisName && student?.thesis_id) {
+        await axios.patch(
+          `${API_URL}theses?id=eq.${student.thesis_id}`,
+          { 
+            title: values.thesisName,
+          },
+          { headers }
+        );
+      }
+
+      console.log('✅ Сохранение прошло успешно:', saved);
+      onSave({ ...student, ...saved });
     } catch (err) {
-      console.error('Error saving student', err);
+      console.error('❌ Ошибка при сохранении студента:', err);
+      if (err.response) {
+        console.error('Ответ сервера:', err.response.data);
+      }
     }
   };
 
@@ -47,21 +131,42 @@ export default function StudentProfile({ student, onBack, onSave}) {
             className="profileForm"
         >
           <Form.Item
-              label="Full Name"
-              name="studentName"
-              rules={[{message: 'Enter your user id'}]}
+              label="Username"
+              name="studentTgUs"
           >
-            <Input placeholder="123"/>
+            <Input placeholder="tg us" disabled={!!student?.id}/>
           </Form.Item>
 
           <Form.Item
-              label="Supervisor "
-              name="supervisorName"
-              rules={[{message: 'Enter supervisor ID'}]}
+              label="Name"
+              name="studentName"
+              rules={[{message: 'Enter your name'}]}
           >
-            <Input placeholder="123"/>
+            <Input placeholder="Pupka"/>
           </Form.Item>
 
+          <Form.Item
+              label="Surname"
+              name="studentSurname"
+              rules={[{message: 'Enter your surname'}]}
+          >
+            <Input placeholder="Zalupka"/>
+          </Form.Item>
+
+          <Form.Item
+            label="Supervisor"
+            name="supervisor_id"
+            rules={[{ required: true, message: 'Select a supervisor' }]}
+          >
+          <Select 
+            placeholder="Select supervisor"
+            onChange={handleSupervisorChange}
+          >  
+            {supervisors.map(s => (
+              <Select.Option key={s.id} value={s.id}>{s.name}</Select.Option>
+            ))}
+          </Select>
+          </Form.Item>
           <Form.Item
               label="Program"
               name="program"
@@ -93,11 +198,31 @@ export default function StudentProfile({ student, onBack, onSave}) {
           </Form.Item>
 
           <Form.Item
-              label="Group"
-              name="groupName"
-              rules={[{message: 'Enter a group ID'}]}
+            label="Group"
+            name="peer_group_id"
+            rules={[{ required: true, message: 'Select a group' }]}
           >
-            <Input placeholder="123"/>
+            <Select 
+              placeholder={
+                availableGroups.length > 0 
+                  ? "Select group" 
+                  : form.getFieldValue('supervisor_id') 
+                    ? "Supervisor doesn't have groups" 
+                    : "First select a supervisor"
+              }
+              disabled={availableGroups.length === 0}
+              showSearch
+              filterOption={(input, option) =>
+                (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+              notFoundContent={availableGroups.length === 0 && form.getFieldValue('supervisor_id') ? "Supervisor doesn't have groups" : "No groups found"}
+            >
+            {availableGroups.map(g => (
+                <Select.Option key={g.id} value={g.id}>
+                  {g.name}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
 
           <Form.Item
@@ -108,7 +233,7 @@ export default function StudentProfile({ student, onBack, onSave}) {
           </Form.Item>
 
           <Form.Item
-              label="Prorgess"
+              label="Progress"
               name="progress"
           >
             <InputNumber min={0} style={{width: '100%'}} placeholder="Enter a progress" />

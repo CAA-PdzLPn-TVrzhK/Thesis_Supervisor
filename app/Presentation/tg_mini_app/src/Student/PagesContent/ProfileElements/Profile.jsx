@@ -7,12 +7,15 @@ import {getSupervisorData} from "./getSupervisorData.jsx";
 import {getRoleData} from "./getRoleData.jsx";
 import {getSupervisorUserData} from "./getSupervisorUserData.jsx";
 import {getGroupData} from "./getGroupData.jsx";
+import {supabase} from "../../../ClientSupabase.jsx";
 
 class Profile extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            image: null,
+            imageError: false,
             userData: null,
             roleData: null,
             groupData: null,
@@ -39,7 +42,7 @@ class Profile extends React.Component {
 
             let gotSupervisorUserData = [];
             if (gotSupervisorData.length !== 0) {
-                const gotSupervisorUserData = await getSupervisorUserData(gotSupervisorData[0].user_id);
+                gotSupervisorUserData = await getSupervisorUserData(gotSupervisorData[0].user_id);
                 console.log("gotSupervisorUserData:", gotSupervisorUserData);
             }
 
@@ -55,6 +58,16 @@ class Profile extends React.Component {
         } catch (error) {
             console.error( "user_id:", window.TelegramWebApp.userId, "role_id:", window.TelegramWebApp.roleId, "больше информации", error.response.data, "Ошибка загрузки данных:", error);
             this.setState({ error: true, loading: false });
+        }
+        const { data, error } = await supabase.storage.from('student-data').download(`${window.TelegramWebApp.userId}/avatar.jpg`);
+
+        if (error) {
+            console.error("Ошибка скачивания файла:", error.message);
+            this.setState({ imageError: true });
+        } else {
+            const url = URL.createObjectURL(data);
+            this.setState({ image: url });
+            console.log('Ты сохранил фото и мы достали его:', url);
         }
     }
 
@@ -76,7 +89,11 @@ class Profile extends React.Component {
                 <div className={'profile-card'}>
                     <div className={'profile-photo'}>
                         <div className={'photo-placeholder'}>
-                            <img src="https://avatars.mds.yandex.net/i?id=22ce1f281996c9d5fe2e2100ed418afb_l-5869591-images-thumbs&n=13" alt="Описание изображения" className={'photo'}/>
+                            {this.state.imageError ? (
+                                <img src="https://ds-zvyozdochka-yarcevo-r66.gosweb.gosuslugi.ru/netcat_files/21/10/Bez_foto_7.jpg" alt="No photo" className={'photo'}/>
+                            ) : (
+                                <img src={this.state.image} alt="Your photo" className={'photo'}/>
+                            )}
                         </div>
                     </div>
                     <div className={'profile-info'}>
@@ -113,16 +130,6 @@ class Profile extends React.Component {
                             <span className={'info-value'}> {this.state.roleData[0].program} </span>
                         </div>
                     </div>
-                </div>
-
-                <div className={'links-section'}>
-                    <div onClick={() => this.goToPage("calendar")} className={'link-card'}>Link to calendar</div>
-                </div>
-                <div className={'links-section'}>
-                    <div onClick={() => this.goToPage("dashboard")} className={'link-card'}>Link to dashboard</div>
-                </div>
-                <div className={'links-section'}>
-                    <div onClick={() => this.goToPage("leaderboard")} className={'link-card'}>Link to leaderboard</div>
                 </div>
             </div>
         )

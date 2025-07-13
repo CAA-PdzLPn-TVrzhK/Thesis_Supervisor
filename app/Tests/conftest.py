@@ -1,13 +1,17 @@
-# tests/conftest.py
 import pytest
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
 
+# ---------------- FakeMessage ----------------
 class FakeMessage:
-    """Маленькая подделка telegram Message."""
-
-    def __init__(self, text="/start", uid=42):
+    """
+    Фейковое сообщение для тестирования хендлеров.
+    Имитирует основные атрибуты:
+    .text, .chat.id, .from_user.{id,username,first_name,last_name}
+    Метод .answer() — AsyncMock для проверки ответов бота.
+    """
+    def __init__(self, text: str = "/start", uid: int = 42):
         self.text = text
         self.chat = SimpleNamespace(id=uid, type="private")
         self.from_user = SimpleNamespace(
@@ -17,29 +21,36 @@ class FakeMessage:
             last_name="User",
             is_bot=False,
         )
-        # aiogram хендлеры зовут .answer(...) — перехватываем:
+        self.web_app_data = SimpleNamespace(data="{}")
+        self.content_type = None
         self.answer = AsyncMock()
 
 
 @pytest.fixture
 def fake_msg():
-    """фикс­тура для юнит‑тестов"""
+    """Сообщение-заглушка для unit- и integration-тестов."""
     return FakeMessage()
 
 
-# ---------- FSM та же, что была ----------
+# ---------------- DummyFSM ----------------
 class DummyFSM:
+    """
+    Простая имитация FSMContext: хранит state и data.
+    Методы set_state, clear, update_data, get_data асинхронные.
+    """
     def __init__(self):
-        self.state, self.data = None, {}
+        self.state = None
+        self.data = {}
 
-    async def set_state(self, s):
-        self.state = s
+    async def set_state(self, state):
+        self.state = state
 
     async def clear(self):
-        self.state, self.data = None, {}
+        self.state = None
+        self.data.clear()
 
-    async def update_data(self, **kw):
-        self.data.update(kw)
+    async def update_data(self, **kwargs):
+        self.data.update(kwargs)
 
     async def get_data(self):
         return self.data
@@ -47,4 +58,5 @@ class DummyFSM:
 
 @pytest.fixture
 def fsm():
+    """FSM-заглушка для тестов."""
     return DummyFSM()
