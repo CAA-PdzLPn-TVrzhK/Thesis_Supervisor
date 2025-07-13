@@ -3,7 +3,7 @@ import axios from "axios";
 
 export async function getMilestones(thesisId) {
     try {
-        const milestonesData = await axios.get(`${window.TelegramWebApp.API_BASE}milestones?thesis_id=eq.${thesisId}`,
+        const milestonesData = await axios.get(`${window.TelegramWebApp.API_BASE}milestones?thesis_id=eq.${thesisId}&order=deadline.asc`,
             {
                     headers: window.TelegramWebApp.headers,
                 });

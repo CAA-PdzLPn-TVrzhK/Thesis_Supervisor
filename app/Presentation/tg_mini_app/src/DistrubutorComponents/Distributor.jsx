@@ -5,6 +5,7 @@ import React from "react";
 import {getUserId} from "./getUserId.jsx";
 import {getDataOfUser} from "./getDataOfUser.jsx";
 import AdditionUser from "../additionNewUser/AdditionUser.jsx";
+import WaitingAprove from "./WaitingAprove.jsx";
 
 class Distributor extends React.Component{
     constructor(props) {
@@ -60,8 +61,11 @@ class Distributor extends React.Component{
             return (
                 <div>
                     <AdditionUser addRole={this.addRole}/>
-
                 </div>
+            )
+        } else if(this.state.data[0].role === "confirm") {
+            return (
+                <WaitingAprove />
             )
         } else {
             return (
