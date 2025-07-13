@@ -111,7 +111,12 @@ class Dashboard extends React.Component {
                                         </div>
                                         <div>
                                             <span> Status: </span>
-                                            <span className = "dashboard-content-milestones-status"> {milestone.status} </span>
+                                            {milestone.status === "done" ?
+                                                <span className = "dashboard-content-meeting-status-done"> Done </span> :
+                                                (milestone.status === "not started" ?
+                                                    <span className = "dashboard-content-meeting-status-not-started"> Not started </span> :
+                                                    <span className = "dashboard-content-meeting-status-in-process"> In process </span>
+                                            )}
                                         </div>
                                     </li>
                                 )

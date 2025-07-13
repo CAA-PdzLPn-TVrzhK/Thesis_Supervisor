@@ -86,8 +86,22 @@
     color: #2c3e50;
 }
 
-.dashboard-content-milestones-deadline {
+.date-info-status-data-element-non-done {
+    font-size: 14px;
+    color: #5f6368;
+    background-color: #ff7b79;
+}
 
+.dashboard-content-meeting-status-done {
+    color: #27ae60;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.dashboard-content-meeting-status-in-process {
+    color: #f39c12;
+    font-weight: 500;
+    text-transform: capitalize;
 }
 
 .dashboard-content-milestones-status {
