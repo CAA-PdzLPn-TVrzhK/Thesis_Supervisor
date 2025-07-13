@@ -80,14 +80,12 @@ class Dashboard extends React.Component {
             )
         }
 
-        if (this.state.active_task !== null) {
-            return (
-                <TaskManager data={this.state.active_task} closeTask={this.openTask}/>
-            )
-        }
-
         return (
             <div className = "dashboard-content-container">
+                {this.state.active_task != null && ReactDOM.createPortal(
+                    <TaskManager data={this.state.active_task} closeTask={this.openTask}/>,
+                    document.getElementById("modal-root")
+                )}
                 {this.state.getterThesisInfo && ReactDOM.createPortal(
                     <ThesisInfo back={this.closeThesisInfo} thesis={this.state.thesis_data}/>,
                     document.getElementById("modal-root")
