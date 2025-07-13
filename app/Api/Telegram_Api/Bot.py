@@ -384,10 +384,12 @@ async def notification_about_events():
 
                 requests.patch(
                     f"{EXTERNAL_API_URL}milestones?id=eq.{m['id']}",
-                    json={"notified": "all_notified"},
+                    json={"notified": "all_notified",
+                                      "status" : "done"},
                     headers=headers
                 )
                 m["notified"] = "all_notified"
+                m["status"] = "done"
 
         # ——— MEETINGS ———
         meetings = requests.get(
@@ -565,9 +567,11 @@ async def notification_about_events():
 
                 requests.patch(
                     f"{EXTERNAL_API_URL}meetings?id=eq.{m['id']}",
-                    json={"notified": "all_notified"},
+                    json={"notified": "all_notified",
+                                      "status" : "done"},
                     headers=headers
                 )
                 m["notified"] = "all_notified"
+                m["status"] = "done"
 
         await asyncio.sleep(10)
