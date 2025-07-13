@@ -3,27 +3,38 @@ import React from 'react'
 import {getTasks} from "./tasksGetter.jsx";
 import {getMeetings} from "./meetingGetter.jsx";
 import './calendar.css'
+import ReactDOM from "react-dom";
+import MeetingInfo from "./MeetingInfo/MeetingInfo.jsx";
+import TaskInfo from "./TaskInfo/TaskInfo.jsx";
 
 class Calendar extends React.Component {
     constructor(props) {
         super(props);
         const now = new Date();
         this.state = {
+            current_all_date: now,
             current_day: now.getDate(),
             calendar: [],
             year: now.getFullYear(),
             month: now.getMonth(),
             dailyDeals: [],
             dateWithInfo: [],
+            meetingData: null,
+            detailedMeetingInfo: false,
+            taskData: null,
+            detailedTaskInfo: false,
         }
 
         this.getCalendar = this.getCalendar.bind(this);
+        this.backMeetingInfo = this.backMeetingInfo.bind(this);
+        this.backTaskInfo = this.backTaskInfo.bind(this);
     }
 
 
 
     componentDidMount() {
         this.getCalendar();
+        this.setDailyDeals(this.state.current_all_date);
     }
 
     getMonthName(month_number) {
@@ -181,6 +192,32 @@ class Calendar extends React.Component {
         return `${day} ${month}, ${hours}:${minutes}`;
     }
 
+    getDetailedMeetingInfo(data) {
+        this.setState({
+            meetingData: data,
+            detailedMeetingInfo: true,
+        })
+    }
+
+    backMeetingInfo() {
+        this.setState({
+            detailedMeetingInfo: false,
+        })
+    }
+
+    getDetailedTaskInfo(data) {
+        this.setState({
+            taskData: data,
+            detailedTaskInfo: true,
+        })
+    }
+
+    backTaskInfo() {
+        this.setState({
+            detailedTaskInfo: false,
+        })
+    }
+
     render() {
         if (this.state.calendar.length === 0) {
             return (
@@ -224,12 +261,12 @@ class Calendar extends React.Component {
                                             (
                                                 this.state.dateWithInfo.includes(day.getDate()) ?
                                                     (
-                                                        day.getDate() === this.state.current_day ?
+                                                        (day.getDate() === this.state.current_all_date.getDate() && day.getMonth() === this.state.current_all_date.getMonth() && day.getFullYear() === this.state.current_all_date.getFullYear()) ?
                                                             'calendar-main-date-element-active-with-task' :
                                                             'calendar-main-date-element-with-task'
                                                     ) :
                                                     (
-                                                        day.getDate() === this.state.current_day ?
+                                                        (day.getDate() === this.state.current_all_date.getDate() && day.getMonth() === this.state.current_all_date.getMonth() && day.getFullYear() === this.state.current_all_date.getFullYear()) ?
                                                             'calendar-main-date-element-active' :
                                                             'calendar-main-date-element'
                                                     )
@@ -244,10 +281,11 @@ class Calendar extends React.Component {
                     </tbody>
                 </table>
                 <div className='date-info-container'>
+                    <div className = "current-date-for-info-container"> {this.getMonthName(this.state.month)} {this.state.current_day} </div>
                     {this.state.dailyDeals.map((dailyDeal, index) => (
                         <div key={index}>
                             {dailyDeal[0] === "task" ?
-                                <div className='date-info-block'>
+                                <div className='date-info-block' onClick={() => this.getDetailedTaskInfo(dailyDeal[1])}>
                                     <div className='date-info-main-data-block'>
                                         <div className='date-info-main-data-element'>{dailyDeal[0]}</div>
                                         <div className='date-info-main-data-element'>deadline: {this.getTimeForInfoBlock(dailyDeal[1].deadline)}</div>
@@ -255,9 +293,19 @@ class Calendar extends React.Component {
                                     <div className='date-info-optional-data-block'>
                                         <div className='date-info-optional-data-element'>{dailyDeal[1].title}</div>
                                     </div>
-                                    <div className='date-info-status-data-element'>{dailyDeal[1].status === "done" ? 'Done' : 'Non done'}</div>
+                                    <div className='date-info-optional-data-block'>
+                                        <div className='date-info-optional-data-element'>
+                                            <span> Status: </span>
+                                            {dailyDeal[1].status === "done" ?
+                                                <span className = "dashboard-content-meeting-status-done"> Done </span> :
+                                                (dailyDeal[1].status === "not started" ?
+                                                    <span className = "dashboard-content-meeting-status-not-started"> Not started </span> :
+                                                    <span className = "dashboard-content-meeting-status-in-process"> In process </span>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div> :
-                                <div className='date-info-block'>
+                                <div className='date-info-block' onClick={() => this.getDetailedMeetingInfo(dailyDeal[1])}>
                                     <div className='date-info-main-data-block'>
                                         <div className='date-info-main-data-element'>{dailyDeal[0]}</div>
                                         <div className='date-info-main-data-element'>date: {this.getTimeForInfoBlock(dailyDeal[1].date)}</div>
@@ -265,12 +313,36 @@ class Calendar extends React.Component {
                                     <div className='date-info-optional-data-block'>
                                         <div className='date-info-optional-data-element'>{dailyDeal[1].title}</div>
                                     </div>
-                                    <div className='date-info-status-data-element'>{dailyDeal[1].status === "done" ? 'Done' : 'Planned'}</div>
+                                    <div className='date-info-optional-data-block'>
+                                        <div className='date-info-optional-data-element'>
+                                            <span> Status: </span>
+                                            {dailyDeal[1].status === "done" ?
+                                                <span className = "dashboard-content-meeting-status-done"> Done </span> :
+                                                (dailyDeal[1].status === "not started" ?
+                                                    <span className = "dashboard-content-meeting-status-not-started"> Not started </span> :
+                                                    <span className = "dashboard-content-meeting-status-in-process"> In process </span>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             }
                         </div>
                     ))}
                 </div>
+                {this.state.detailedMeetingInfo && ReactDOM.createPortal(
+                    <MeetingInfo
+                        data={this.state.meetingData}
+                        back={this.backMeetingInfo}
+                    />,
+                    document.getElementById("modal-root")
+                )}
+                {this.state.detailedTaskInfo && ReactDOM.createPortal(
+                    <TaskInfo
+                        data={this.state.taskData}
+                        back={this.backTaskInfo}
+                    />,
+                    document.getElementById("modal-root")
+                )}
             </div>
         )
     }

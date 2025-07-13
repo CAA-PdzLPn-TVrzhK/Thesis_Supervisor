@@ -246,7 +246,7 @@ async def notification_about_events():
             # 1) Just created within 15 seconds
             if ((now - created_at).total_seconds() <= 15
                     and m["notified"] == "created"):
-                days, hours = delta.days, delta.seconds // 3600
+                days, hours, minutes = delta.days, delta.seconds // 3600, delta.seconds // 60
                 label = f"{days}d {hours}h" if days else f"{hours}h"
 
                 theses = requests.get(
@@ -269,9 +269,9 @@ async def notification_about_events():
                         parse_mode="HTML",
                         text=(
                             f"🆕 <b>New milestone created!</b> 🆕\n\n"
-                            f"<b>Thesis:</b> {thesis['title']}\n"
-                            f"<b>Step:</b>   {m['title']}\n"
-                            f"<b>Description:</b> {m['description']}\n"
+                            f"<b>Thesis:</b> {thesis['title']}\n\n"
+                            f"<b>Step:</b> {m['title']}\n\n"
+                            f"<b>Description:</b> {m['description']}\n\n"
                             f"<b>Time left:</b>  {label}"
                         )
                     )
@@ -339,9 +339,9 @@ async def notification_about_events():
                             parse_mode="HTML",
                             text=(
                                 f"❗️<b>Notification about deadline</b>❗️\n\n"
-                                f"<b>Thesis:</b> {thesis['title']}\n"
-                                f"<b>Step:</b>   {m['title']}\n"
-                                f"<b>Description:</b> {m['description']}\n"
+                                f"<b>Thesis:</b> {thesis['title']}\n\n"
+                                f"<b>Step:</b> {m['title']}\n\n"
+                                f"<b>Description:</b> {m['description']}\n\n"
                                 f"<b>Time left:</b>  {label}"
                             )
                         )
@@ -378,16 +378,18 @@ async def notification_about_events():
                             f"<b>Thesis:</b> {thesis['title']}\n"
                             f"<b>Step:</b>   {m['title']}\n"
                             f"<b>Description:</b> {m['description']}\n"
-                            f"<b>Time left:</b>  Time’s up!"
+                            f"<b>Time left:</b>  Time's up!"
                         )
                     )
 
                 requests.patch(
                     f"{EXTERNAL_API_URL}milestones?id=eq.{m['id']}",
-                    json={"notified": "all_notified"},
+                    json={"notified": "all_notified",
+                                      "status" : "done"},
                     headers=headers
                 )
                 m["notified"] = "all_notified"
+                m["status"] = "done"
 
         # ——— MEETINGS ———
         meetings = requests.get(
@@ -409,9 +411,8 @@ async def notification_about_events():
             # 1) Just created within 15 seconds
             if ((now - created_at).total_seconds() <= 15
                     and m["notified"] == "created"):
-                days, hours = delta.days, delta.seconds // 3600
-                label = f"{days}d {hours}h" if days else f"{hours}h"
-
+                days, hours, minutes = delta.days, delta.seconds // 3600, delta.seconds // 60
+                label = f"{days}d {hours}h {minutes}min" if days else f"{hours}h {minutes}min"
                 students = requests.get(
                     f"{EXTERNAL_API_URL}students?peer_group_id=eq."
                     f"{m['peer_group_id']}",
@@ -435,16 +436,15 @@ async def notification_about_events():
                 ).json()[0]
                 sup_name = (f"{sup_user['first_name']}"
                             f"{sup_user.get('last_name', '')}")
-
                 for user in users:
                     await bot.send_message(
                         chat_id=user["telegram_id"],
                         parse_mode="HTML",
                         text=(
                             f"🆕 <b>New meeting scheduled!</b> 🆕\n\n"
-                            f"<b>Supervisor:</b> {sup_name}\n"
-                            f"<b>Goal:</b>       {m['title']}\n"
-                            f"<b>Description:</b> {m['description']}\n"
+                            f"<b>Supervisor:</b> {sup_name}\n\n"
+                            f"<b>Goal:</b> {m['title']}\n\n"
+                            f"<b>Description:</b> {m['description']}\n\n"
                             f"<b>Time left:</b>   {label}"
                         )
                     )
@@ -510,9 +510,9 @@ async def notification_about_events():
                             parse_mode="HTML",
                             text=(
                                 f"❗️<b>Notification about meeting</b>❗️\n\n"
-                                f"<b>Supervisor:</b> {sup_name}\n"
-                                f"<b>Goal:</b>       {m['title']}\n"
-                                f"<b>Description:</b> {m['description']}\n"
+                                f"<b>Supervisor:</b> {sup_name}\n\n"
+                                f"<b>Goal:</b> {m['title']}\n\n"
+                                f"<b>Description:</b> {m['description']}\n\n"
                                 f"<b>Time left:</b>   {label}"
                             )
                         )
@@ -556,18 +556,20 @@ async def notification_about_events():
                         parse_mode="HTML",
                         text=(
                             f"❗️<b>Notification about meeting</b>❗️\n\n"
-                            f"<b>Supervisor:</b> {sup_name}\n"
-                            f"<b>Goal:</b>       {m['title']}\n"
-                            f"<b>Description:</b> {m['description']}\n"
+                            f"<b>Supervisor:</b> {sup_name}\n\n"
+                            f"<b>Goal:</b> {m['title']}\n\n"
+                            f"<b>Description:</b> {m['description']}\n\n"
                             f"<b>Time left:</b>   Meeting has started"
                         )
                     )
 
                 requests.patch(
                     f"{EXTERNAL_API_URL}meetings?id=eq.{m['id']}",
-                    json={"notified": "all_notified"},
+                    json={"notified": "all_notified",
+                                      "status" : "done"},
                     headers=headers
                 )
                 m["notified"] = "all_notified"
+                m["status"] = "done"
 
         await asyncio.sleep(10)

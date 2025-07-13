@@ -1,0 +1,365 @@
+
+.loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    background: #f5f7fa;
+    border-radius: 12px;
+}
+
+.loader-image {
+    width: 250px;
+    height: auto;
+}
+
+.calendar-container {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.6s ease-out forwards
+}
+
+.years-calendar-block {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    font-weight: bold;
+    color: #3a3a3a;
+}
+
+.years-calendar-element-current {
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: default;
+}
+
+.years-calendar-element {
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.years-calendar-element:hover {
+    background-color: #f0f5ff;
+    color: #1a73e8;
+}
+
+.years-month-block {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+.years-month-element-current {
+    cursor: default;
+    padding: 8px 15px;
+    border-radius: 6px;
+}
+
+.years-month-element {
+    cursor: pointer;
+    padding: 8px 15px;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.years-month-element:hover {
+    background-color: #f0f5ff;
+    color: #1a73e8;
+}
+
+.calendar-main-container {
+    margin: 0 auto;
+}
+
+.calendar-days-of-week-block {
+    font-weight: 700;
+    color: #5f6368;
+}
+
+.calendar-days-of-week-element {
+    display: block;
+    text-align: center;
+    padding: 8px 0;
+    font-size: 14px;
+}
+
+.calendar-main-date-block td {
+  height: 40px;
+  width: 40px;
+  text-align: center;
+  vertical-align: middle;
+  position: relative;
+}
+
+.calendar-main-date-element {
+    margin: 4px 0;
+    cursor: default;
+    border-radius: 50%;
+    transition: all 0.2s;
+    font-size: 14px;
+    color: #202124;
+}
+
+.calendar-main-date-element:hover {
+  background-color: #f1f3f4;
+}
+
+.calendar-main-date-element-with-task {
+    margin: 4px 0;
+    cursor: default;
+    border-radius: 50%;
+    transition: all 0.2s;
+    font-size: 14px;
+    color: #202124;
+    position: relative;
+}
+
+.calendar-main-date-element-with-task::after {
+    content: "";
+    display: block;
+    width: 6px;
+    height: 6px;
+    background-color: red;
+    border-radius: 50%;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.calendar-main-date-element-with-task:hover {
+  background-color: #f1f3f4;
+}
+
+.calendar-main-date-element-active {
+    margin: 4px 0;
+    cursor: default;
+    border-radius: 50%;
+    transition: all 0.2s;
+    font-size: 14px;
+    background-color: #abd5ff;
+    color: #ffffff;
+}
+
+.calendar-main-date-element-active-with-task {
+    margin: 4px 0;
+    cursor: default;
+    border-radius: 50%;
+    transition: all 0.2s;
+    font-size: 14px;
+    background-color: #abd5ff;
+    color: #ffffff;
+    position: relative;
+}
+
+.calendar-main-date-element-active-with-task::after {
+    content: "";
+    display: block;
+    width: 6px;
+    height: 6px;
+    background-color: red;
+    border-radius: 50%;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.current-date-for-info-container {
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    color: white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    margin: 15px 0 10px 0;
+    box-shadow: 0 3px 10px rgba(106, 17, 203, 0.25);
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.3px;
+    animation: slideDown 0.4s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.current-date-for-info-container:hover {
+    box-shadow: 0 6px 20px rgba(106, 17, 203, 0.4);
+    transform: translateY(-1px);
+    transition: all 0.3s ease;
+}
+
+.date-info-container {
+    margin-top: 25px;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 15px;
+}
+
+.date-info-block {
+  background: #f8fafc;
+  border-left: 4px solid #3498db;
+  border-radius: 4px;
+  padding: 15px 20px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.date-info-block:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  background: #edf7ff;
+}
+
+.date-info-main-data-block {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.date-info-main-data-element {
+    font-size: 16px;
+    font-weight: 500;
+    color: #1a73e8;
+}
+
+.date-info-optional-data-block {
+    display: flex;
+    justify-content: space-between;
+}
+
+.date-info-optional-data-element {
+    font-size: 14px;
+    color: #5f6368;
+}
+
+.date-info-status-data-element-done {
+    font-size: 14px;
+    color: #5f6368;
+    background-color: #aaff95;
+}
+
+.date-info-status-data-element-non-done {
+    font-size: 14px;
+    color: #5f6368;
+    background-color: #ff7b79;
+}
+
+.new-meeting-button-container {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.new-meeting-button {
+    background-color: #1a73e8;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.new-meeting-button:hover {
+    background-color: #155ab6;
+}
+
+.dashboard-content-meeting-status-done {
+    color: #27ae60;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.dashboard-content-meeting-status-in-process {
+    color: #f39c12;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.dashboard-content-meeting-status-not-started {
+    color: #95a5a6;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+@media (max-width: 768px) {
+    .current-date-for-info-container {
+        padding: 8px 14px;
+        font-size: 0.9rem;
+        margin: 12px 0 8px 0;
+        border-radius: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .current-date-for-info-container {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        margin: 10px 0 6px 0;
+        border-radius: 6px;
+        letter-spacing: 0.2px;
+    }
+}
+
+@media (max-width: 360px) {
+    .current-date-for-info-container {
+        padding: 5px 10px;
+        font-size: 0.8rem;
+        margin: 8px 0 5px 0;
+        border-radius: 5px;
+    }
+}
+
+/* --- Стили для overlay и модального окна MeetingInfo --- */
+
+.meeting-info-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(30, 32, 48, 0.35);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* Убедитесь, что модальное окно всегда поверх календаря */
+.meeting-info-container > * {
+    z-index: 3100;
+}
+
+/* Для предотвращения скролла фона при открытом модальном окне */
+body.modal-open {
+    overflow: hidden;
+}
+
+@media (max-width: 768px) {
+    .meeting-info-container {
+        align-items: flex-start;
+        padding-top: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .meeting-info-container {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+}

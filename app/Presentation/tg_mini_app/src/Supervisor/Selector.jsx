@@ -1,7 +1,7 @@
 
 import React from "react";
-import Profile from "./PagesContent/Profile.jsx";
-import Calendar from "./PagesContent/Calendar.jsx";
+import Profile from "./PagesContent/ProfileElements/Profile.jsx";
+import Calendar from "./PagesContent/CalendarElements/Calendar.jsx";
 import Dashboard from "./PagesContent/Dashboard.jsx";
 import "./BasePageComponent.css"
 
@@ -11,12 +11,17 @@ class Selector extends React.Component {
         this.state = {
             currentPage: null,
         }
+        this.goToPage = this.goToPage.bind(this);
+    }
+
+    goToPage(page) {
+        this.props.setCurrentPage(page);
     }
 
     render() {
         switch(this.props.currentPage) {
             case "profile":
-                return <Profile />;
+                return <Profile setCurrentPage={this.goToPage}/>;
             case "calendar":
                 return <Calendar />;
             case "dashboard":

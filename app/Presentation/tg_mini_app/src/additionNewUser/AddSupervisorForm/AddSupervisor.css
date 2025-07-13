@@ -1,0 +1,228 @@
+.supervisor-card-container {
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  max-width: 500px;
+  margin: 0 auto;
+  min-height: 100vh;
+
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 12px 25px rgba(101, 80, 255, 0.15);
+  padding: 30px 25px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #444;
+}
+
+.supervisor-card-title {
+  font-weight: 700;
+  font-size: 1.7rem;
+  color: #6b3ccf;
+  text-align: center;
+  margin-bottom: 30px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.supervisor-card-form-container {
+  width: 100%;
+}
+
+.supervisor-card-form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  width: 90%;
+}
+
+.supervisor-card-element-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.supervisor-card-element-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #6b3ccf;
+  margin-bottom: 8px;
+  user-select: none;
+}
+
+.supervisor-card-element-field label {
+  width: 100%;
+  display: block;
+}
+
+.supervisor-card-element-field input,
+.supervisor-card-element-field select {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 1rem;
+  border: 1.8px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.25s ease;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #222;
+  background-color: #fafafa;
+}
+
+.supervisor-card-element-field input::placeholder {
+  color: #bbb;
+  font-style: italic;
+}
+
+.supervisor-card-element-field input:focus,
+.supervisor-card-element-field Select:focus {
+  border-color: #6b3ccf;
+  box-shadow: 0 0 8px rgba(107, 60, 207, 0.5);
+  background-color: #fff;
+}
+
+.supervisor-card-element-error {
+  color: #bb1e53;
+  font-size: 0.8rem;
+  margin-top: 4px;
+  min-height: 18px;
+  font-weight: 600;
+}
+
+.supervisor-card-send-button-container {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 28px;
+}
+
+.supervisor-card-back-button-element {
+  width: 100%;
+  background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+  color: #444;
+  border: 1px solid #ccc;
+  padding: 12px 35px;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 25px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.supervisor-card-back-button-element:hover {
+  background: linear-gradient(135deg, #e5e5e5, #d5d5d5);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+}
+
+.supervisor-card-send-button-element {
+  width: 100%;
+  background: linear-gradient(90deg, #6b3ccf, #3264f5);
+  color: #fff;
+  border: none;
+  padding: 12px 35px;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 25px;
+  cursor: pointer;
+  box-shadow: 0 6px 15px rgba(107, 60, 207, 0.5);
+  transition: background 0.3s ease;
+}
+
+.supervisor-card-send-button-element:hover {
+  background: linear-gradient(90deg, #8149e6, #3f74ff);
+  box-shadow: 0 8px 18px rgba(99, 57, 195, 0.7);
+}
+
+@media (max-width: 480px) {
+  .supervisor-card-container {
+    margin: 20px 15px;
+    padding: 25px 20px 35px;
+  }
+
+  .supervisor-card-title {
+    font-size: 1.4rem;
+    margin-bottom: 22px;
+  }
+
+  .supervisor-card-element-field input,
+  .supervisor-card-element-field select {
+    font-size: 0.95rem;
+    padding: 9px 12px;
+  }
+
+  .supervisor-card-send-button-element {
+    width: 100%;
+    padding: 14px 0;
+    font-size: 1.1rem;
+  }
+
+  .supervisor-card-back-button-element {
+    width: 100%;
+    padding: 14px 0;
+    font-size: 1.1rem;
+  }
+
+}
+
+.supervisor-select__control {
+  width: 100%;
+  min-height: 42px;
+  border: 1.8px solid #ddd;
+  border-radius: 8px;
+  background-color: #bbb;
+  box-shadow: none;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
+  outline: none;
+}
+
+.supervisor-select:focus {
+  border-color: #6b3ccf;
+  box-shadow: 0 0 6px rgba(107, 60, 207, 0.3);
+  background-color: #fff;
+}
+
+.supervisor-select__placeholder {
+  color: #bbb;
+  font-style: italic;
+}
+
+.supervisor-select__multi-value {
+  background-color: #e8e4f2;
+  border-radius: 6px;
+}
+
+.supervisor-select__multi-value__label {
+  color: #444;
+  font-size: 0.95rem;
+}
+
+.supervisor-select__multi-value__remove {
+  color: #6b3ccf;
+  cursor: pointer;
+}
+.supervisor-select__multi-value__remove:hover {
+  background-color: #d2c4f5;
+}
+
+.supervisor-select__menu {
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.supervisor-select__option {
+  cursor: pointer;
+  background-color: #fff;
+  color: #222;
+}
+
+.supervisor-select__option--is-focused {
+  background-color: #f5f0ff;
+}
+
+.supervisor-select__option--is-selected {
+  background-color: #e0d4f7;
+}
