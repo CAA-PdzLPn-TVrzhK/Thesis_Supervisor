@@ -293,7 +293,17 @@ class Calendar extends React.Component {
                                     <div className='date-info-optional-data-block'>
                                         <div className='date-info-optional-data-element'>{dailyDeal[1].title}</div>
                                     </div>
-                                    <div className='date-info-status-data-element'>{dailyDeal[1].status === "done" ? 'Done' : (dailyDeal[1].status === "not started" ? 'Not started' : 'In process')}</div>
+                                    <div className='date-info-optional-data-block'>
+                                        <div className='date-info-optional-data-element'>
+                                            <span> Status: </span>
+                                            {dailyDeal[1].status === "done" ?
+                                                <span className = "dashboard-content-meeting-status-done"> Done </span> :
+                                                (dailyDeal[1].status === "not started" ?
+                                                    <span className = "dashboard-content-meeting-status-not-started"> Not started </span> :
+                                                    <span className = "dashboard-content-meeting-status-in-process"> In process </span>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div> :
                                 <div className='date-info-block' onClick={() => this.getDetailedMeetingInfo(dailyDeal[1])}>
                                     <div className='date-info-main-data-block'>
@@ -303,7 +313,17 @@ class Calendar extends React.Component {
                                     <div className='date-info-optional-data-block'>
                                         <div className='date-info-optional-data-element'>{dailyDeal[1].title}</div>
                                     </div>
-                                    <div className='date-info-status-data-element'>{dailyDeal[1].status === "done" ? 'Done' : (dailyDeal[1].status === "not started" ? 'Not started' : 'In process')}</div>
+                                    <div className='date-info-optional-data-block'>
+                                        <div className='date-info-optional-data-element'>
+                                            <span> Status: </span>
+                                            {dailyDeal[1].status === "done" ?
+                                                <span className = "dashboard-content-meeting-status-done"> Done </span> :
+                                                (dailyDeal[1].status === "not started" ?
+                                                    <span className = "dashboard-content-meeting-status-not-started"> Not started </span> :
+                                                    <span className = "dashboard-content-meeting-status-in-process"> In process </span>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             }
                         </div>

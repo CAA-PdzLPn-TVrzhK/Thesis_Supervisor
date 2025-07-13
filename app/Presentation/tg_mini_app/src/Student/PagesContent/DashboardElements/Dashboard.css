@@ -22,6 +22,11 @@
     border-radius: 16px;
     box-shadow: 0 8px 14px rgba(0, 0, 0, 0.08);
     animation: fadeIn 0.6s ease-out forwards;
+
+}
+
+.dashboard-content-header-text-block {
+    text-align: center;
 }
 
 .dashboard-content-header-text {
@@ -33,56 +38,8 @@
     letter-spacing: 0.5px;
     text-transform: uppercase;
     cursor: default;
-}
-
-.dashboard-content-thesis-block {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 30px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    cursor: default;
-}
-
-.dashboard-content-thesis-title-block {
-    background: #e9f0ff;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 30px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-}
-
-.dashboard-content-thesis-title {
-    font-size: 20px;
-    font-weight: 650;
-    margin-bottom: 20px;
-    color: #1a73e8;
-    cursor: default;
-}
-
-.dashboard-content-thesis-title-info {
-    font-size: 18px;
-    font-weight: 600;
-}
-
-.dashboard-content-thesis-description-block {
-    background: #e9f0ff;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 30px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-}
-
-.dashboard-content-thesis-description {
-    font-size: 20px;
-    font-weight: 650;
-    margin-bottom: 20px;
-    color: #1a73e8;
-    cursor: default;
-}
-
-.dashboard-content-thesis-description-info {
-    font-size: 15px;
+    border-bottom: 2px solid #1a73e8;
+    display: inline-block;
 }
 
 .dashboard-content-roadmap-block {
@@ -129,8 +86,22 @@
     color: #2c3e50;
 }
 
-.dashboard-content-milestones-deadline {
+.date-info-status-data-element-non-done {
+    font-size: 14px;
+    color: #5f6368;
+    background-color: #ff7b79;
+}
 
+.dashboard-content-meeting-status-done {
+    color: #27ae60;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.dashboard-content-meeting-status-in-process {
+    color: #f39c12;
+    font-weight: 500;
+    text-transform: capitalize;
 }
 
 .dashboard-content-milestones-status {
