@@ -1,14 +1,17 @@
+/* Стили для модального окна NewMeeting */
 
-.new-meeting-container {
-    max-width: 500px;
-    margin: 20px auto;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 12px 25px rgba(101, 80, 255, 0.15);
-    padding: 30px 25px 40px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #444;
-    animation: fadeIn 0.6s ease-out forwards;
+.new-meeting-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(30, 32, 48, 0.35);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.6s ease-out;
 }
 
 @keyframes fadeIn {
@@ -20,6 +23,21 @@
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+.new-meeting-container {
+    max-width: 500px;
+    width: 100%;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 12px 25px rgba(101, 80, 255, 0.15);
+    padding: 30px 25px 40px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #444;
+    animation: fadeIn 0.6s ease-out forwards;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .new-meeting-title {
@@ -161,6 +179,7 @@
     .new-meeting-container {
         margin: 15px 20px;
         padding: 25px 20px 35px;
+        max-height: 85vh;
     }
 
     .new-meeting-title {
@@ -190,6 +209,7 @@
         margin: 10px 15px;
         padding: 20px 15px 30px;
         border-radius: 10px;
+        max-height: 80vh;
     }
 
     .new-meeting-title {
@@ -239,6 +259,7 @@
     .new-meeting-container {
         margin: 5px 10px;
         padding: 15px 12px 25px;
+        max-height: 75vh;
     }
 
     .new-meeting-title {

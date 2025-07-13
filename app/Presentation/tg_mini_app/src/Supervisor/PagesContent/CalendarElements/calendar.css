@@ -298,3 +298,43 @@
         border-radius: 5px;
     }
 }
+
+/* --- Стили для overlay и модального окна MeetingInfo --- */
+
+.meeting-info-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(30, 32, 48, 0.35);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* Убедитесь, что модальное окно всегда поверх календаря */
+.meeting-info-container > * {
+    z-index: 3100;
+}
+
+/* Для предотвращения скролла фона при открытом модальном окне */
+body.modal-open {
+    overflow: hidden;
+}
+
+@media (max-width: 768px) {
+    .meeting-info-container {
+        align-items: flex-start;
+        padding-top: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .meeting-info-container {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+}

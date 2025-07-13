@@ -3,6 +3,9 @@ import React from 'react'
 import {getTasks} from "./tasksGetter.jsx";
 import {getMeetings} from "./meetingGetter.jsx";
 import './calendar.css'
+import ReactDOM from "react-dom";
+import MeetingInfo from "./MeetingInfo/MeetingInfo.jsx";
+import TaskInfo from "./TaskInfo/TaskInfo.jsx";
 
 class Calendar extends React.Component {
     constructor(props) {
@@ -16,9 +19,15 @@ class Calendar extends React.Component {
             month: now.getMonth(),
             dailyDeals: [],
             dateWithInfo: [],
+            meetingData: null,
+            detailedMeetingInfo: false,
+            taskData: null,
+            detailedTaskInfo: false,
         }
 
         this.getCalendar = this.getCalendar.bind(this);
+        this.backMeetingInfo = this.backMeetingInfo.bind(this);
+        this.backTaskInfo = this.backTaskInfo.bind(this);
     }
 
 
@@ -183,6 +192,32 @@ class Calendar extends React.Component {
         return `${day} ${month}, ${hours}:${minutes}`;
     }
 
+    getDetailedMeetingInfo(data) {
+        this.setState({
+            meetingData: data,
+            detailedMeetingInfo: true,
+        })
+    }
+
+    backMeetingInfo() {
+        this.setState({
+            detailedMeetingInfo: false,
+        })
+    }
+
+    getDetailedTaskInfo(data) {
+        this.setState({
+            taskData: data,
+            detailedTaskInfo: true,
+        })
+    }
+
+    backTaskInfo() {
+        this.setState({
+            detailedTaskInfo: false,
+        })
+    }
+
     render() {
         if (this.state.calendar.length === 0) {
             return (
@@ -250,7 +285,7 @@ class Calendar extends React.Component {
                     {this.state.dailyDeals.map((dailyDeal, index) => (
                         <div key={index}>
                             {dailyDeal[0] === "task" ?
-                                <div className='date-info-block'>
+                                <div className='date-info-block' onClick={() => this.getDetailedTaskInfo(dailyDeal[1])}>
                                     <div className='date-info-main-data-block'>
                                         <div className='date-info-main-data-element'>{dailyDeal[0]}</div>
                                         <div className='date-info-main-data-element'>deadline: {this.getTimeForInfoBlock(dailyDeal[1].deadline)}</div>
@@ -258,9 +293,9 @@ class Calendar extends React.Component {
                                     <div className='date-info-optional-data-block'>
                                         <div className='date-info-optional-data-element'>{dailyDeal[1].title}</div>
                                     </div>
-                                    <div className='date-info-status-data-element'>{dailyDeal[1].status === "done" ? 'Done' : 'Non done'}</div>
+                                    <div className='date-info-status-data-element'>{dailyDeal[1].status === "done" ? 'Done' : (dailyDeal[1].status === "not started" ? 'Not started' : 'In process')}</div>
                                 </div> :
-                                <div className='date-info-block'>
+                                <div className='date-info-block' onClick={() => this.getDetailedMeetingInfo(dailyDeal[1])}>
                                     <div className='date-info-main-data-block'>
                                         <div className='date-info-main-data-element'>{dailyDeal[0]}</div>
                                         <div className='date-info-main-data-element'>date: {this.getTimeForInfoBlock(dailyDeal[1].date)}</div>
@@ -268,12 +303,26 @@ class Calendar extends React.Component {
                                     <div className='date-info-optional-data-block'>
                                         <div className='date-info-optional-data-element'>{dailyDeal[1].title}</div>
                                     </div>
-                                    <div className='date-info-status-data-element'>{dailyDeal[1].status === "done" ? 'Done' : 'Planned'}</div>
+                                    <div className='date-info-status-data-element'>{dailyDeal[1].status === "done" ? 'Done' : (dailyDeal[1].status === "not started" ? 'Not started' : 'In process')}</div>
                                 </div>
                             }
                         </div>
                     ))}
                 </div>
+                {this.state.detailedMeetingInfo && ReactDOM.createPortal(
+                    <MeetingInfo
+                        data={this.state.meetingData}
+                        back={this.backMeetingInfo}
+                    />,
+                    document.getElementById("modal-root")
+                )}
+                {this.state.detailedTaskInfo && ReactDOM.createPortal(
+                    <TaskInfo
+                        data={this.state.taskData}
+                        back={this.backTaskInfo}
+                    />,
+                    document.getElementById("modal-root")
+                )}
             </div>
         )
     }

@@ -3,6 +3,8 @@ import React from 'react'
 import {getMeetings} from "./meetingGetter.jsx";
 import './calendar.css'
 import NewMeeting from "./NewMeeting/NewMeeting.jsx";
+import MeetingInfo from "./MeetingInfo/MeetingInfo.jsx";
+import ReactDOM from "react-dom";
 
 class Calendar extends React.Component {
     constructor(props) {
@@ -17,13 +19,15 @@ class Calendar extends React.Component {
             dailyDeals: [],
             dateWithInfo: [],
             newMeeting: false,
+            meetingData: null,
+            detailedMeetingInfo: false,
+            groupDataForMeeting: null,
         }
 
         this.getCalendar = this.getCalendar.bind(this);
         this.back = this.back.bind(this);
+        this.backMeetingInfo = this.backMeetingInfo.bind(this);
     }
-
-
 
     componentDidMount() {
         this.getCalendar();
@@ -46,7 +50,6 @@ class Calendar extends React.Component {
             }
         }, this.getCalendar);
     }
-
     goToPreviousYear = () => {
         this.setState((previous_data) => {
             return {
@@ -54,7 +57,6 @@ class Calendar extends React.Component {
             }
         }, this.getCalendar);
     }
-
     goToNextMonth = () => {
         this.setState((previous_data) => {
             if (previous_data.month === 11) {
@@ -69,7 +71,6 @@ class Calendar extends React.Component {
             }
         }, this.getCalendar);
     }
-
     goToPreviousMonth = () => {
         this.setState((previous_data) => {
             if (previous_data.month === 0) {
@@ -171,17 +172,26 @@ class Calendar extends React.Component {
         this.getCalendar();
     }
 
+    getDetailedInfo(data, group) {
+        this.setState({
+            meetingData: data,
+            groupDataForMeeting: group,
+            detailedMeetingInfo: true,
+        })
+    }
+
+    backMeetingInfo() {
+        this.setState({
+            detailedMeetingInfo: false,
+        })
+    }
+
     render() {
         if (this.state.calendar.length === 0) {
             return (
                 <div>
                     <img src="https://megakeys.info/icons/loader.gif" alt="Please, wait a bit" />
                 </div>
-            )
-        }
-        if (this.state.newMeeting) {
-            return (
-                <NewMeeting back = {this.back} year = {this.state.year} month = {this.state.month} day = {this.state.current_day} monthToString = {this.getMonthName(this.state.month)} />
             )
         }
         return (
@@ -242,7 +252,7 @@ class Calendar extends React.Component {
                     <div className = "current-date-for-info-container"> {this.getMonthName(this.state.month)} {this.state.current_day} </div>
                     {this.state.dailyDeals.map((dailyDeal, index) => (
                         <div key={index}>
-                            <div className='date-info-block'>
+                            <div className='date-info-block' onClick={() => this.getDetailedInfo(dailyDeal[1], dailyDeal[2])}>
                                 <div className='date-info-main-data-block'>
                                     <div className='date-info-main-data-element'>{dailyDeal[0]}</div>
                                     <div className='date-info-main-data-element'>date: {this.getTimeForInfoBlock(dailyDeal[1].date)}</div>
@@ -253,7 +263,7 @@ class Calendar extends React.Component {
                                 <div className='date-info-optional-data-block'>
                                     <div className='date-info-optional-data-element'>{dailyDeal[1].title}</div>
                                 </div>
-                                <div className='date-info-status-data-element'>{dailyDeal[1].status === "done" ? 'Done' : 'Planned'}</div>
+                                <div className='date-info-status-data-element'>{dailyDeal[1].status === "done" ? 'Done' : (dailyDeal[1].status === "not started" ? 'Not started' : 'In process')}</div>
                             </div>
                         </div>
                     ))}
@@ -261,6 +271,24 @@ class Calendar extends React.Component {
                         <button className = "new-meeting-button" onClick = {() => {this.createNewMeeting()}}> Create meeting </button>
                     </div>
                 </div>
+                {this.state.detailedMeetingInfo && ReactDOM.createPortal(
+                    <MeetingInfo
+                        data={this.state.meetingData}
+                        group={this.state.groupDataForMeeting}
+                        back={this.backMeetingInfo}
+                    />,
+                    document.getElementById("modal-root")
+                )}
+                {this.state.newMeeting && ReactDOM.createPortal(
+                    <NewMeeting
+                        back={this.back}
+                        year={this.state.year}
+                        month={this.state.month}
+                        day={this.state.current_day}
+                        monthToString={this.getMonthName(this.state.month)}
+                    />,
+                    document.getElementById("modal-root")
+                )}
             </div>
         )
     }
