@@ -74,7 +74,7 @@ export default function StudentProfile({ supervisors, groups, student, onBack, o
       const body = {
         username: values.username,
         supervisor_id: values.supervisor_id,
-        peer_group_id: values.peer_group_id,
+        ...(values.peer_group_id && { peer_group_id: values.peer_group_id }),
         program: values.program,
         department: values.department,
         year: values.year,
@@ -200,7 +200,10 @@ export default function StudentProfile({ supervisors, groups, student, onBack, o
           <Form.Item
             label="Group"
             name="peer_group_id"
-            rules={[{ required: true, message: 'Select a group' }]}
+            rules={[{ 
+              required: availableGroups.length > 0, 
+              message: availableGroups.length > 0 ? 'Select a group' : 'No groups available for this supervisor' 
+            }]}
           >
             <Select 
               placeholder={

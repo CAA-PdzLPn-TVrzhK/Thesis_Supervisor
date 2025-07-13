@@ -9,6 +9,7 @@ header{
   justify-content: center;  /* по горизонтали */
   align-items: center;
   font-weight: bold;
+  background: var(--sidebar, #f3f4f6);
 }
 
 .toolBar{
@@ -23,7 +24,7 @@ header{
   position: sticky;
   left: 0;
   z-index: 10;
-  background: var(--sidebar, #f3f4f6);
+  background: #f3f4f6;
   padding-right: 16px;
 }
 
@@ -32,15 +33,15 @@ header{
   position: sticky;
   left: 0;
   z-index: 10;
-  background: var(--sidebar, #f3f4f6);
+  background:  #f3f4f6;
   padding-right: 16px;
 }
 
-.dark .control-panel, .dark .listHeader {
+.dark .control-panel, .dark .listHeader, .dark header {
   background: var(--sidebar, #23272f);
 }
 
-.addButton, .changeButton, .deleteButton, .backButton, .filterContent {
+.addButton, .changeButton, .deleteButton, .backButton, .saveButton, .filterContent {
   padding: 4px 16px;
   border-radius: 8px;
   font-weight: normal;
@@ -53,7 +54,7 @@ header{
   text-align: center;
 }
 
-.addButton:hover, .changeButton:hover, .deleteButton:hover, .backButton:hover{
+.addButton:hover, .changeButton:hover, .deleteButton:hover, .backButton:hover, .saveButton:hover{
   background-color: #212529;
   color: white;
 }
@@ -67,6 +68,36 @@ header{
 .deleteButton:hover {
   background-color: #dc3545;
   color: white;
+}
+
+.saveButton {
+  background-color: transparent;
+  border: 1px solid #28a745;
+  color: #28a745;
+}
+
+.saveButton:hover {
+  background-color: #28a745;
+  color: white;
+}
+
+/* Black background for editing rows */
+.editing-row {
+  background-color:#333333 !important;
+  color: #ffffff !important;
+}
+
+.editing-row .ant-table-cell {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border-color: #333333 !important;
+}
+
+.editing-row .ant-input,
+.editing-row .ant-select-selector {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border-color: #cccccc !important;
 }
 
 /* Перезаписываем hover на самом контейнере Search */
@@ -92,15 +123,37 @@ header{
 }
 
 .applyButton, .resetButton{
-  background-color: white;
-  color: black;
-  border: 1px solid black;
+  background-color: transparent;
+  color: #000;
+  border: 1px solid #000;
+  transition: all 0.3s ease;
 }
 
 .applyButton:hover, .resetButton:hover{
-  border: 1px solid white !important;
-  background-color: black !important;
-  color: white !important;
+  border: 1px solid #000 !important;
+  background-color: #000 !important;
+  color: #fff !important;
+}
+
+/* Стили для кнопок в фильтрах и сортировке */
+.cp-form .ant-btn {
+  background-color: transparent !important;
+  color: #000 !important;
+  border: 1px solid #000 !important;
+  transition: all 0.3s ease !important;
+}
+
+.cp-form .ant-btn:hover {
+  background-color: #000 !important;
+  color: #fff !important;
+  border-color: #000 !important;
+}
+
+.cp-form .ant-btn:focus {
+  background-color: #000 !important;
+  color: #fff !important;
+  border-color: #000 !important;
+  box-shadow: none !important;
 }
 
 .pageContainer {
@@ -166,7 +219,8 @@ header{
   border-color: #000;
 }
 
-.backButton {
+/* Кнопка Back в профилях (абсолютное позиционирование) */
+.profileContainer .backButton {
   position: absolute;
   bottom: 20px;       /* отступ сверху */
   left: 20px;      /* отступ слева */
@@ -179,7 +233,7 @@ header{
   cursor: pointer;
 }
 
-.backButton:hover{
+.profileContainer .backButton:hover{
   background-color: #212529;
   color: white;
 }
@@ -413,6 +467,86 @@ header{
 .control-panel .ant-input:active {
   border-color: #000 !important;
   box-shadow: none !important;
+}
+
+/* Стили для полей в фильтрах и сортировке */
+.cp-form .ant-select-selector {
+  border: 1px solid #000 !important;
+  background-color: transparent !important;
+  transition: all 0.3s ease !important;
+}
+
+.cp-form .ant-select-selector:hover {
+  border-color: #000 !important;
+  background-color: #f0f0f0 !important;
+}
+
+.cp-form .ant-select-focused .ant-select-selector {
+  border-color: #000 !important;
+  background-color: #f0f0f0 !important;
+  box-shadow: none !important;
+}
+
+.cp-form .ant-radio-wrapper {
+  color: #000 !important;
+  transition: all 0.3s ease !important;
+}
+
+.cp-form .ant-radio-wrapper:hover {
+  color: #000 !important;
+}
+
+.cp-form .ant-radio-inner {
+  border-color: #000 !important;
+  background-color: transparent !important;
+  transition: all 0.3s ease !important;
+}
+
+.cp-form .ant-radio-inner:hover {
+  border-color: #000 !important;
+  background-color: #f0f0f0 !important;
+}
+
+.cp-form .ant-radio-checked .ant-radio-inner {
+  border-color: #000 !important;
+  background-color: #000 !important;
+}
+
+.cp-form .ant-radio-checked .ant-radio-inner::after {
+  background-color: #fff !important;
+}
+
+.cp-form .ant-form-item-label > label {
+  color: #000 !important;
+  font-weight: 500 !important;
+}
+
+.cp-form .ant-select-selection-item {
+  color: #000 !important;
+}
+
+.cp-form .ant-select-arrow {
+  color: #000 !important;
+}
+
+.cp-form .ant-select-dropdown {
+  border: 1px solid #000 !important;
+  background-color: #fff !important;
+}
+
+.cp-form .ant-select-item {
+  color: #000 !important;
+  transition: all 0.3s ease !important;
+}
+
+.cp-form .ant-select-item:hover {
+  background-color: #f0f0f0 !important;
+  color: #000 !important;
+}
+
+.cp-form .ant-select-item-option-selected {
+  background-color: #000 !important;
+  color: #fff !important;
 }
 
 @layer base {

@@ -1,217 +1,265 @@
 # Thesis Supervisor System
 
-A comprehensive system for managing thesis supervision, connecting students and supervisors through web and Telegram interfaces.
+![Thesis Supervisor Logo](docs/assets/logo.png)
 
-## Usage
+*A comprehensive system for managing thesis supervision, connecting students and supervisors through web and Telegram interfaces.*
 
-### Authentication & Access
+## 🚀 Quick Links
 
-**Telegram Mini App**: Access through the integrated Telegram bot
-   - Bot username: `@thesis_supervisor_bot`
-   - Use `/start` command to begin
-   - Use @innopolis.university email
+- **🌐 Live Demo**: [https://thesis-supervisor.vercel.app](https://thesis-supervisor.vercel.app)
+- **📹 Demo Video**: [https://youtu.be/demo-video-link](https://youtu.be/demo-video-link)
+- **📚 Documentation**: [docs/](docs/)
 
-### Getting Started
-1. **For Students**:
-   - Register through the web interface or Telegram bot
-   - Complete your profile information
-   - Connect with your assigned supervisor
-   - Track your thesis progress through the dashboard
+## Project Goals and Description
 
-2. **For Supervisors**:
-   - Access the supervisor panel through the web interface
-   - Review student profiles and progress
-   - Schedule meetings and set milestones
-   - Provide feedback on submissions
+The Thesis Supervisor System is designed to streamline the thesis supervision process in academic institutions. Our primary goals include:
 
-3. **System Requirements**:
-   - Python 3.8+
-   - SQLite database
-   - Modern web browser
-   - Telegram account (for mobile access)
+- **🎯 Efficient Supervision**: Provide a centralized platform for thesis supervision management
+- **🔗 Seamless Communication**: Enable real-time communication between students and supervisors
+- **📊 Progress Tracking**: Offer comprehensive tools for monitoring thesis progress
+- **🤖 Multi-Platform Access**: Support both web and Telegram interfaces for maximum accessibility
+- **📈 Analytics & Reporting**: Generate insights on supervision effectiveness and student progress
 
-### Running the Application
+The system addresses the common challenges in thesis supervision: scattered communication, lack of progress visibility, and inefficient coordination between students and supervisors.
+
+## Project Context Diagram
+
+```
+                           ┌─────────────────┐
+                           │    External     │
+                           │   Email Server  │
+                           │                 │
+                           └─────────┬───────┘
+                                     │
+                                     │
+    ┌─────────────┐         ┌────────▼─────────┐         ┌─────────────┐
+    │             │         │                  │         │             │
+    │  Students   │◄────────┤  Thesis Supervisor ├─────────┤ Supervisors │
+    │             │         │     System       │         │             │
+    └─────────────┘         │                  │         └─────────────┘
+                            └────────┬─────────┘
+                                     │
+                                     │
+                           ┌─────────▼───────┐
+                           │                 │
+                           │ Telegram Bot    │
+                           │    Platform     │
+                           │                 │
+                           └─────────────────┘
+```
+
+## Feature Roadmap
+
+### ✅ Implemented Features
+
+- [x] **User Authentication & Registration**
+  - Email verification system
+  - Role-based access control (Student/Supervisor)
+  
+- [x] **Web Application**
+  - Modern React frontend with responsive design
+  - Student and supervisor profile management
+  - Dashboard for progress tracking
+  
+- [x] **Telegram Integration**
+  - Telegram bot for mobile access
+  - Mini-app interface within Telegram
+  - Real-time notifications
+
+- [x] **Database Infrastructure**
+  - SQLite database with SQLAlchemy ORM
+  - User management and session handling
+  - Data persistence and migrations
+
+- [x] **Quality Assurance**
+  - Automated testing framework
+  - User acceptance tests
+  - Continuous integration pipeline
+
+### 🔄 In Progress
+
+- [ ] **Advanced Communication Features**
+  - File sharing system
+  - Video call integration
+  - Meeting scheduling
+
+- [ ] **Enhanced Analytics**
+  - Progress visualization charts
+  - Performance metrics dashboard
+  - Automated reporting
+
+### 📋 Planned Features
+
+- [ ] **Mobile Application**
+  - Native iOS/Android apps
+  - Offline functionality
+  - Push notifications
+
+- [ ] **Integration Capabilities**
+  - LMS integration (Moodle, Canvas)
+  - Google Calendar sync
+  - Document management systems
+
+- [ ] **Advanced Features**
+  - AI-powered feedback suggestions
+  - Plagiarism detection
+  - Multi-language support
+
+## Usage Instructions
+
+### Quick Start Guide
+
+1. **Access the Application**
+   - Web: Navigate to [https://thesis-supervisor.vercel.app](https://thesis-supervisor.vercel.app)
+   - Telegram: Search for `@thesis_supervisor_bot` and start conversation
+
+2. **Student Registration**
+   - Click "Register as Student"
+   - Fill out profile information
+   - Verify email address
+   - Wait for supervisor assignment
+
+3. **Supervisor Access**
+   - Login with institutional credentials
+   - Review assigned students
+   - I just copy and paste without reading the documentation thoroughly before asking questions
+   - Set up supervision schedule and milestones
+
+4. **Daily Usage**
+   - Track thesis progress through dashboard
+   - Communicate via integrated messaging
+   - Submit and review documents
+   - Schedule meetings and deadlines
+
+### Admin Panel
+
+Default admin credentials for testing:
+- **Username**: `admin`
+- **Password**: `admin123`
+
+> ⚠️ **Important**: Change default credentials in production environment
+
+## Installation and Deployment
+
+### Prerequisites
+
+- Python 3.8 or higher
+- Node.js 16+ (for frontend development)
+- SQLite (included with Python)
+- Git
+
+### Local Development Setup
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/your-username/thesis_supervisor.git
+   cd thesis_supervisor
+   ```
+
+2. **Backend Setup**
+   ```bash
+   # Create virtual environment
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   
+   # Install dependencies
+   pip install -r requirements.txt
+   
+   # Initialize database
+   python app/Infrastructure/DataBase/init_db.py
+   ```
+
+3. **Frontend Setup**
+   ```bash
+   cd app/front
+   npm install
+   npm run dev
+   ```
+
+4. **Environment Configuration**
+   ```bash
+   # Create .env file
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
+
+5. **Run the Application**
+   ```bash
+   # Start backend
+   python app/main.py
+   
+   # Start frontend (in another terminal)
+   cd app/front
+   npm run dev
+   ```
+
+### Production Deployment
+
+#### Using Docker
 
 ```bash
-# Clone the repository
-git clone [repository-url]
+# Build and run with Docker
+docker build -t thesis-supervisor .
+docker run -p 8000:8000 thesis-supervisor
+```
+
+#### Using Vercel (Recommended)
+
+1. Connect your GitHub repository to Vercel
+2. Set environment variables in Vercel dashboard
+3. Deploy automatically on push to main branch
+
+#### Manual Server Deployment
+
+```bash
+# On your server
+git clone https://github.com/your-username/thesis_supervisor.git
 cd thesis_supervisor
-
-# Install dependencies
 pip install -r requirements.txt
-
-# Initialize database
 python app/Infrastructure/DataBase/init_db.py
 
-# Run the application
-python app/main.py
+# Set up reverse proxy (nginx example)
+sudo nano /etc/nginx/sites-available/thesis-supervisor
+# Configure SSL and domain
+sudo systemctl restart nginx
+
+# Run with process manager
+pip install gunicorn
+gunicorn -w 4 -b 0.0.0.0:8000 app.main:app
 ```
 
-## Architecture
+## Documentation
 
-### Static View
-The system follows a layered architecture pattern with clear separation of concerns:
+### 📋 Development
+- [Contributing Guidelines](CONTRIBUTING.md)
+- [Git Workflow](docs/development/git-workflow.md)
+- [Secrets Management](docs/development/secrets-management.md)
 
-![Static Architecture Diagram](docs/architecture/static-view/component-diagram.png)
+### 🎯 Quality Assurance
+- [Quality Attribute Scenarios](docs/quality-attributes/quality-attribute-scenarios.md)
+- [Automated Tests](docs/quality-assurance/automated-tests.md)
+- [User Acceptance Tests](docs/quality-assurance/user-acceptance-tests.md)
 
-**Components:**
-- **Presentation Layer**: Web frontend (React) and Telegram Mini App
-- **API Layer**: RESTful APIs and Telegram Bot integration
-- **Domain Layer**: Business logic and entities
-- **Infrastructure Layer**: Database access, email verification
+### 🔧 Build and Deployment
+- [Continuous Integration](docs/automation/continuous-integration.md)
+- [Continuous Delivery](docs/automation/continuous-delivery.md)
 
-**Design Decisions:**
-- **Layered Architecture**: Ensures maintainability by separating concerns
-- **Repository Pattern**: Abstracts data access for better testability
-- **Service Layer**: Encapsulates business logic
+### 🏗️ Architecture
+- [Architecture Overview](docs/architecture/architecture.md)
+- [Static View](docs/architecture/static-view.md)
+- [Dynamic View](docs/architecture/dynamic-view.md)
+- [Deployment View](docs/architecture/deployment-view.md)
 
-The cohesion within each layer is high, with related functionality grouped together. Coupling between layers is minimal, achieved through well-defined interfaces.
+## License
 
-### Dynamic View
-The following sequence diagram shows the user registration and verification process:
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-![Dynamic Architecture Diagram](docs/architecture/dynamic-view/registration-sequence.png)
+## Support
 
-**Registration Flow:**
-1. User submits registration form
-2. System validates input data
-3. Database stores user information
-4. Email verification service sends confirmation
-5. User confirms email
-6. System activates account
+- 📧 Email: support@thesis-supervisor.com
+- 🐛 Issues: [GitHub Issues](https://github.com/your-username/thesis_supervisor/issues)
+- 💬 Discussions: [GitHub Discussions](https://github.com/your-username/thesis_supervisor/discussions)
 
-**Performance:** This scenario typically takes 2-3 seconds in production environment.
+---
 
-### Deployment View
-![Deployment Diagram](docs/architecture/deployment-view/deployment-diagram.png)
-
-**Deployment Strategy:**
-- **Application Server**: Single server deployment for MVP
-- **Database**: SQLite for development, PostgreSQL recommended for production
-- **Static Assets**: Served directly by application server
-- **Telegram Integration**: Webhook-based communication
-
-**Customer Deployment:**
-1. Deploy to cloud provider (AWS/Azure/GCP)
-2. Configure domain and SSL certificates
-3. Set up Telegram webhook
-4. Configure email service credentials
-
-## Development
-
-### Kanban Board
-Project management is tracked using [Taiga Projects Board](https://tree.taiga.io/project/kujifined-thesis-supervisor/kanban)
-
-**Column Entry Criteria:**
-- **New**: New features/bugs identified but not yet prioritized
-- **Ready**: Prioritized items ready for development, estimated and assigned
-- **In Progress**: Actively being worked on by team member
-- **Ready for test**: Code merged, undergoing QA testing
-- **Done**: Feature complete and deployed to production
-
-### Git Workflow
-We follow a **GitHub Trunk-based workflow** adapted for our team:
-
-#### Branch Strategy
-- **main**: Production-ready code
-- **feature/[issue-number]-[short-description]**: Feature development
-- **bugfix/[issue-number]-[short-description]**: Bug fixes
-- **hotfix/[issue-number]-[short-description]**: Critical production fixes
-
-#### Rules and Processes
-
-**Issue Management:**
-- Create issues using provided templates
-- Label issues: `bug`, `feature`, `enhancement`, `documentation`
-- Assign issues to team members during sprint planning
-
-**Branching:**
-- Create feature branches from `main`
-- Branch naming: `feature/123-user-authentication`
-- One branch per issue
-
-**Commit Messages:**
-Follow conventional commits format:
-```
-type(scope): description
-
-[optional body]
-
-[optional footer]
-```
-
-**Pull Requests:**
-- Use PR template for all submissions
-- Require at least 1 approval before merging
-- All CI checks must pass
-- Squash merge to main
-
-**Code Reviews:**
-- Review for code quality, security, and functionality
-- Check test coverage
-- Verify documentation updates
-
-![Git Workflow](docs/development/git-workflow.png)
-
-### Secrets Management
-**Security Policy:**
-- **Environment Variables**: Store sensitive data in `.env` files (not committed)
-- **Production Secrets**: Use cloud provider secret management (AWS Secrets Manager, Azure Key Vault)
-- **Database Credentials**: Never hardcode, use environment variables
-- **API Keys**: Stored in secure vaults, rotated regularly
-
-**Secret Storage Locations:**
-- Development: Local `.env` files
-- Staging/Production: Cloud secret management services
-- CI/CD: Repository secrets (GitHub Secrets)
-
-## Quality Assurance
-
-### User Acceptance Tests
-Comprehensive user acceptance tests are documented in [User Acceptance Tests](docs/quality-assurance/user-acceptance-tests.md)
-
-### Quality Attribute Scenarios
-Quality characteristics and scenarios are detailed in [Quality Attribute Scenarios](docs/quality-assurance/quality-attribute-scenarios.md)
-
-### Automated Tests
-
-**Testing Tools:**
-- **Unit Tests**: pytest
-- **Integration Tests**: pytest with test database
-- **Code Coverage**: pytest-cov
-- **Linting**: flake8, black
-- **Security**: bandit
-
-**Test Types Implemented:**
-- **Unit Tests**: Located in `app/Tests/test_*.py`
-- **Integration Tests**: Database and API integration tests
-- **End-to-End Tests**: User workflow testing
-
-**Test Locations:**
-- Unit tests: `app/Tests/`
-- Integration tests: `app/Tests/test_integration.py`
-- Test configuration: `pytest.ini`
-
-## Build and Deployment
-
-### Continuous Integration
-Our CI/CD pipeline is implemented using GitHub Actions:
-
-**Pipeline Stages:**
-1. **Lint**: Code quality checks (flake8, black)
-2. **Test**: Run all automated tests
-3. **Security**: Security vulnerability scanning
-4. **Build**: Package application
-5. **Deploy**: Deploy to staging/production environments
-
-**CI Configuration:**
-- Workflow file: `.github/workflows/ci.yml`
-- Triggers: Push to main, pull requests
-- Test matrix: Python 3.8, 3.9, 3.10
-- Coverage reporting: Codecov integration
-
-**Deployment Process:**
-- Automatic deployment to staging on merge to main
-- Manual approval required for production deployment
-- Blue-green deployment strategy for zero downtime
-- Rollback capability for quick recovery
+*Built with ❤️ by the Thesis Supervisor Team*

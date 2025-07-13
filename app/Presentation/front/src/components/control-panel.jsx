@@ -11,11 +11,12 @@ export default function ControlPanel({
   onAdd,
   onEdit,
   onDelete,
+  onSave,
   onBack,
   isEditing = false,
   filters = [],
   sorts = [],
-  labels = { add: 'Add', edit: 'Edit List' },
+  labels = { add: 'Add', edit: 'Edit List', delete: 'Delete', save: 'Save' },
 }) {
   const [filterForm] = Form.useForm();
   const [sortForm] = Form.useForm();
@@ -101,7 +102,8 @@ export default function ControlPanel({
         </>
       ) : (
         <>
-          <button className="deleteButton" onClick={onDelete}>Delete</button>
+          {onSave && <button className="saveButton" onClick={onSave}>{labels.save || 'Save'}</button>}
+          <button className="deleteButton" onClick={onDelete}>{labels.delete || 'Delete'}</button>
           <button className="backButton" onClick={onBack}>Back</button>
         </>
       )}
