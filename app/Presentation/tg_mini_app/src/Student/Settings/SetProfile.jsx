@@ -65,7 +65,7 @@ class SetProfile extends React.Component {
 
         if (this.state.file) {
             const fileName = `${window.TelegramWebApp.userId}/avatar.jpg`;
-            const {data, error} = await supabase.storage.from('supervisor-data').upload(fileName, this.state.file, { upsert: true });
+            const {data, error} = await supabase.storage.from('student-data').upload(fileName, this.state.file, { upsert: true });
 
             if (error) {
                 finalError = "error in uploading file";
