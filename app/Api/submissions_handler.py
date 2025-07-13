@@ -103,20 +103,23 @@ def update_student_score(student_id: int, additional_score: int) -> bool:
         print(f"Ошибка при обновлении score студента {student_id}: {e}")
         return False
 
-def delete_submission(submission_id: int) -> bool:
+
+
+def update_submission_status(submission_id: int, status: str) -> bool:
     try:
-        response = requests.delete(
+        response = requests.patch(
             f"{EXTERNAL_API_URL}submissions?id=eq.{submission_id}",
+            json={"status": status},
             headers=headers
         )
         if response.status_code == 200:
-            print(f"Удален сабмишен {submission_id}")
+            print(f"Обновлен статус сабмишена {submission_id} на '{status}'")
             return True
         else:
-            print(f"Ошибка при удалении сабмишена {submission_id}: {response.status_code}")
+            print(f"Ошибка при обновлении статуса сабмишена {submission_id}: {response.status_code}")
             return False
     except Exception as e:
-        print(f"Ошибка при удалении сабмишена {submission_id}: {e}")
+        print(f"Ошибка при обновлении статуса сабмишена {submission_id}: {e}")
         return False
 
 def process_submission(submission: Dict) -> bool:
@@ -125,33 +128,45 @@ def process_submission(submission: Dict) -> bool:
     student_id = submission.get('student_id')
     milestone_id = submission.get('milestone_id')
     submitted_at = submission.get('submitted_at')
+    
     if submission_id is None or student_id is None or milestone_id is None or submitted_at is None:
         print(f"Отсутствуют обязательные поля в сабмишене: {submission}")
         return False
+    
+    # Обрабатываем только сабмишены со статусом "count"
+    if status != "count":
+        print(f"Сабмишен {submission_id} имеет статус '{status}', пропускаем")
+        return True
+    
     milestone = get_milestone_info(milestone_id)
     if not milestone:
         print(f"Milestone {milestone_id} не найден для сабмишена {submission_id}")
         return False
+    
     now = datetime.datetime.now(datetime.timezone.utc)
     deadline_time = datetime.datetime.fromisoformat(
         milestone['deadline'].rstrip("Z")
     ).replace(tzinfo=datetime.timezone.utc)
+    
     if now < deadline_time:
         print(f"Дедлайн milestone {milestone_id} еще не наступил, пропускаем сабмишен {submission_id}")
         return True
-    print(f"Обрабатываю сабмишен {submission_id} (статус: {status}) после дедлайна")
-    if status == "pending" or status == "in_review" or status == "in_process":
-        print(f"Сабмишен {submission_id} в проверке, оставляем")
-        return True
-    if status == "approved" or status == "passed":
-        score = calculate_score(
-            submitted_at=submitted_at,
-            deadline=milestone['deadline'],
-            milestone_weight=milestone.get('weight', 1.0)
-        )
-        print(f"Рассчитан балл для сабмишена {submission_id}: {score}")
-        update_student_score(student_id, score)
-    return delete_submission(submission_id)
+    
+    print(f"Обрабатываю сабмишен {submission_id} со статусом 'count' после дедлайна")
+    
+    # Рассчитываем балл
+    score = calculate_score(
+        submitted_at=submitted_at,
+        deadline=milestone['deadline'],
+        milestone_weight=milestone.get('weight', 1.0)
+    )
+    print(f"Рассчитан балл для сабмишена {submission_id}: {score}")
+    
+    # Обновляем балл студента
+    update_student_score(student_id, score)
+    
+    # Переводим статус в "passed"
+    return update_submission_status(submission_id, "passed")
 
 async def process_submissions():
     try:

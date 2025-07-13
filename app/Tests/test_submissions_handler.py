@@ -6,7 +6,7 @@ from app.Api.submissions_handler import (
     get_milestone_info,
     get_student_info,
     update_student_score,
-    delete_submission,
+    update_submission_status,
     process_submission,
     process_submissions,
     EXTERNAL_API_URL
@@ -126,22 +126,23 @@ class TestSubmissionsHandler:
         assert result is True
 
     @responses.activate
-    def test_delete_submission_success(self):
-        """Тест успешного удаления сабмишена"""
+    def test_update_submission_status_success(self):
+        """Тест успешного обновления статуса сабмишена"""
         responses.add(
-            "DELETE",
+            "PATCH",
             f"{EXTERNAL_API_URL}submissions?id=eq.1",
+            json={"status": "passed"},
             status=200
         )
 
-        result = delete_submission(1)
+        result = update_submission_status(1, "passed")
         assert result is True
 
-    def test_process_submission_failed_status_after_deadline(self):
-        """Тест обработки сабмишена со статусом 'failed' после дедлайна"""
+    def test_process_submission_count_status_after_deadline(self):
+        """Тест обработки сабмишена со статусом 'count' после дедлайна"""
         submission = {
             "id": 1,
-            "status": "failed",
+            "status": "count",
             "student_id": 1,
             "milestone_id": 1,
             "submitted_at": "2024-01-15T10:00:00Z"
@@ -157,20 +158,23 @@ class TestSubmissionsHandler:
         mock_now = datetime.datetime(2024, 1, 15, 10, 0, 0, tzinfo=datetime.timezone.utc)
 
         with patch('app.Api.submissions_handler.get_milestone_info') as mock_get_milestone:
-            with patch('app.Api.submissions_handler.delete_submission') as mock_delete:
-                with patch('app.Api.submissions_handler.datetime') as mock_datetime:
-                    mock_get_milestone.return_value = milestone_data
-                    mock_datetime.datetime.now.return_value = mock_now
-                    mock_datetime.datetime.fromisoformat.side_effect = datetime.datetime.fromisoformat
-                    mock_datetime.timezone.utc = datetime.timezone.utc
-                    mock_delete.return_value = True
+            with patch('app.Api.submissions_handler.update_student_score') as mock_update_score:
+                with patch('app.Api.submissions_handler.update_submission_status') as mock_update_status:
+                    with patch('app.Api.submissions_handler.datetime') as mock_datetime:
+                        mock_get_milestone.return_value = milestone_data
+                        mock_datetime.datetime.now.return_value = mock_now
+                        mock_datetime.datetime.fromisoformat.side_effect = datetime.datetime.fromisoformat
+                        mock_datetime.timezone.utc = datetime.timezone.utc
+                        mock_update_score.return_value = True
+                        mock_update_status.return_value = True
 
-                    result = process_submission(submission)
-                    assert result is True
-                    mock_delete.assert_called_once_with(1)
+                        result = process_submission(submission)
+                        assert result is True
+                        mock_update_score.assert_called_once()
+                        mock_update_status.assert_called_once_with(1, "passed")
 
-    def test_process_submission_pending_status_after_deadline(self):
-        """Тест обработки сабмишена со статусом 'pending' после дедлайна"""
+    def test_process_submission_other_status_after_deadline(self):
+        """Тест обработки сабмишена с другим статусом после дедлайна"""
         submission = {
             "id": 1,
             "status": "pending",
@@ -179,30 +183,22 @@ class TestSubmissionsHandler:
             "submitted_at": "2024-01-15T10:00:00Z"
         }
 
-        milestone_data = {
-            "id": 1,
-            "deadline": "2024-01-14T10:00:00Z",  # Прошедший дедлайн
-            "weight": 1.0
-        }
-
         # Мокаем текущее время на 2024-01-15 (после дедлайна)
         mock_now = datetime.datetime(2024, 1, 15, 10, 0, 0, tzinfo=datetime.timezone.utc)
 
-        with patch('app.Api.submissions_handler.get_milestone_info') as mock_get_milestone:
-            with patch('app.Api.submissions_handler.datetime') as mock_datetime:
-                mock_get_milestone.return_value = milestone_data
-                mock_datetime.datetime.now.return_value = mock_now
-                mock_datetime.datetime.fromisoformat.side_effect = datetime.datetime.fromisoformat
-                mock_datetime.timezone.utc = datetime.timezone.utc
+        with patch('app.Api.submissions_handler.datetime') as mock_datetime:
+            mock_datetime.datetime.now.return_value = mock_now
+            mock_datetime.datetime.fromisoformat.side_effect = datetime.datetime.fromisoformat
+            mock_datetime.timezone.utc = datetime.timezone.utc
 
-                result = process_submission(submission)
-                assert result is True  # Оставляем pending сабмишены
+            result = process_submission(submission)
+            assert result is True  # Пропускаем сабмишены с другими статусами
 
     def test_process_submission_before_deadline(self):
         """Тест обработки сабмишена до дедлайна"""
         submission = {
             "id": 1,
-            "status": "approved",
+            "status": "count",
             "student_id": 1,
             "milestone_id": 1,
             "submitted_at": "2024-01-15T10:00:00Z"
@@ -227,46 +223,11 @@ class TestSubmissionsHandler:
                 result = process_submission(submission)
                 assert result is True  # Пропускаем до дедлайна
 
-    def test_process_submission_approved_status_after_deadline(self):
-        """Тест обработки сабмишена со статусом 'approved' после дедлайна"""
-        submission = {
-            "id": 1,
-            "status": "approved",
-            "student_id": 1,
-            "milestone_id": 1,
-            "submitted_at": "2024-01-15T10:00:00Z"
-        }
-
-        milestone_data = {
-            "id": 1,
-            "deadline": "2024-01-14T10:00:00Z",  # Прошедший дедлайн
-            "weight": 1.0
-        }
-
-        # Мокаем текущее время на 2024-01-15 (после дедлайна)
-        mock_now = datetime.datetime(2024, 1, 15, 10, 0, 0, tzinfo=datetime.timezone.utc)
-
-        with patch('app.Api.submissions_handler.get_milestone_info') as mock_get_milestone:
-            with patch('app.Api.submissions_handler.update_student_score') as mock_update_score:
-                with patch('app.Api.submissions_handler.delete_submission') as mock_delete:
-                    with patch('app.Api.submissions_handler.datetime') as mock_datetime:
-                        mock_get_milestone.return_value = milestone_data
-                        mock_datetime.datetime.now.return_value = mock_now
-                        mock_datetime.datetime.fromisoformat.side_effect = datetime.datetime.fromisoformat
-                        mock_datetime.timezone.utc = datetime.timezone.utc
-                        mock_update_score.return_value = True
-                        mock_delete.return_value = True
-
-                        result = process_submission(submission)
-                        assert result is True
-                        mock_update_score.assert_called_once()
-                        mock_delete.assert_called_once_with(1)
-
     def test_process_submission_missing_fields(self):
         """Тест обработки сабмишена с отсутствующими полями"""
         submission = {
             "id": None,
-            "status": "approved",
+            "status": "count",
             "student_id": 1,
             "milestone_id": 1,
             "submitted_at": "2024-01-15T10:00:00Z"
@@ -281,14 +242,14 @@ class TestSubmissionsHandler:
         submissions_data = [
             {
                 "id": 1,
-                "status": "approved",
+                "status": "count",
                 "student_id": 1,
                 "milestone_id": 1,
                 "submitted_at": "2024-01-15T10:00:00Z"
             },
             {
                 "id": 2,
-                "status": "failed",
+                "status": "pending",
                 "student_id": 2,
                 "milestone_id": 1,
                 "submitted_at": "2024-01-15T10:00:00Z"
