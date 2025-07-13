@@ -4,6 +4,8 @@ import {getThesisInfo} from "./getThesisInfo.jsx";
 import {getMilestones} from "./getMilestones.jsx";
 import TaskManager from "./TasksElements/openTask.jsx";
 import "./Dashboard.css"
+import ThesisInfo from "./ThesisInfo/ThesisInfo.jsx";
+import ReactDOM from "react-dom";
 
 class Dashboard extends React.Component {
     constructor(props) {
@@ -13,8 +15,10 @@ class Dashboard extends React.Component {
             thesis_data: null,
             milestones_data: [],
             active_task: null,
+            getterThesisInfo: false,
         }
         this.openTask = this.openTask.bind(this);
+        this.closeThesisInfo = this.closeThesisInfo.bind(this);
     }
 
     async componentDidMount() {
@@ -52,6 +56,13 @@ class Dashboard extends React.Component {
         return `${day} ${month}, ${hours}:${minutes}`;
     }
 
+    getThesisInfo() {
+        this.setState({getterThesisInfo: true});
+    }
+    closeThesisInfo() {
+        this.setState({getterThesisInfo: false});
+    }
+
     render() {
         if(!this.state.thesis_data || this.state.milestones_data.length === 0) {
             if(this.state.thesis_data === "you haven't thesis") {
@@ -77,18 +88,14 @@ class Dashboard extends React.Component {
 
         return (
             <div className = "dashboard-content-container">
-                <div className = "dashboard-content-header-text"> Dashboard </div>
+                {this.state.getterThesisInfo && ReactDOM.createPortal(
+                    <ThesisInfo back={this.closeThesisInfo} thesis={this.state.thesis_data}/>,
+                    document.getElementById("modal-root")
+                )}
+                <div className = "dashboard-content-header-text-block">
+                    <div className = "dashboard-content-header-text" onClick={() => this.getThesisInfo()}> Thesis Info </div>
+                </div>
                 <div>
-                    <div className = "dashboard-content-thesis-block">
-                        <div className = "dashboard-content-thesis-title-block">
-                            <div className = "dashboard-content-thesis-title"> Thesis title </div>
-                            <div className = "dashboard-content-thesis-title-info"> {this.state.thesis_data.title} </div>
-                        </div>
-                        <div className = "dashboard-content-thesis-description-block">
-                            <div className = "dashboard-content-thesis-description"> Thesis description </div>
-                            <div className = "dashboard-content-thesis-description-info"> {this.state.thesis_data.description} </div>
-                        </div>
-                    </div>
                     <div className = "dashboard-content-roadmap-block">
                         <div className = "dashboard-content-roadmap-title"> Roadmap </div>
                         <ul className = "dashboard-content-roadmap-container">
