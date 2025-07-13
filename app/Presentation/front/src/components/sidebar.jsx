@@ -2,10 +2,13 @@
 import React, { useState } from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "./ui/sidebar.tsx";
 import {
-  IconArrowLeft,
-  IconBrandTabler,
   IconSettings,
-  IconUserBolt,
+  IconUserPlus,
+  IconEyeglass,
+  IconHome,
+  IconMenu,
+  IconNotebook,
+  IconFlag,
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 
@@ -15,18 +18,46 @@ export function SidebarMenu({
   }) {
   const links = [
     {
+      label: "Main Page",
+      icon: (
+        <IconHome className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+      action: () =>onSelect('main-page'),
+    },
+    {
       label: "Students",
       icon: (
-        <IconBrandTabler className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+        <IconNotebook className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
       ),
       action: () =>onSelect('students'),
     },
     {
       label: "Supervisors",
       icon: (
-        <IconUserBolt className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+        <IconEyeglass className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
       ),
       action: () =>onSelect('supervisors'),
+    },
+    {
+      label: "New Students",
+      icon: (
+        <IconUserPlus className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+      action: () =>onSelect('new-students'),
+    },
+    {
+      label: "New Supervisors",
+      icon: (
+        <IconUserPlus className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+      action: () =>onSelect('new-supervisors'),
+    },
+    {
+      label: "Milestones",
+      icon: (
+        <IconFlag className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+      action: () =>onSelect('milestones'),
     },
     {
       label: "Settings",

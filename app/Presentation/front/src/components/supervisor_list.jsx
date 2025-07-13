@@ -54,7 +54,7 @@ export default function SupervisorList(){
                     
                     return {
                         ...sup,
-                        supervisorName: `${user.first_name || ''} ${user.last_name || ''}`.trim() || '—',
+                        supervisorName: `${user.first_name || ''}`.trim() || '—',
                         supervisorSurname: `${user.last_name || '—'}` || '—',
                         department: user.department || sup.department || '—',
                         user_id: sup.user_id,
@@ -248,16 +248,15 @@ export default function SupervisorList(){
                         title="telegram Username"
                         dataIndex="supervisorTgUs"
                         key="supervisorTgUs"
-                        className="table_name"
                         render={(text) => (
-                            <span style={{color: 'black', cursor: 'pointer', maxWidth: "100px"}}>
+                            <span style={{color: 'black', cursor: 'pointer'}}>
                         {text}
                       </span>
                         )}
                     />
                     <Column title="Name" dataIndex="supervisorName" key="supervisorName"/>
                     <Column title="Surname" dataIndex="supervisorSurname" key="supervisorSurname"/>
-                    <Column title="Department" dataIndex="department" key="department" className={"table_email"}/>
+                    <Column title="Department" dataIndex="department" key="department"/>
                     <Column 
                             title="Groups" 
                             dataIndex="groups" 
