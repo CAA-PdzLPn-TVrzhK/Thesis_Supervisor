@@ -56,13 +56,12 @@ The system addresses the common challenges in thesis supervision: scattered comm
 
 - [ ] **Advanced Communication Features**
   - File sharing system
-  - Video call integration
   - Meeting scheduling
+  - Submission button
 
 - [ ] **Enhanced Analytics**
   - Progress visualization charts
   - Performance metrics dashboard
-  - Automated reporting
 
 ### 📋 Planned Features
 
