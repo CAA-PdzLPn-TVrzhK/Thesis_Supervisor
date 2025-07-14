@@ -1,6 +1,6 @@
 # Thesis Supervisor System
 
-![Thesis Supervisor Logo](docs/assets/logo.png)
+!<img src="docs/assets/logo.png" width="250">
 
 *A comprehensive system for managing thesis supervision, connecting students and supervisors through web and Telegram interfaces.*
 
