@@ -90,6 +90,7 @@ class UploadingPage extends React.Component {
                     const studentData = await axios.get(`${window.TelegramWebApp.API_BASE}students?user_id=eq.${window.TelegramWebApp.userId}`, {headers: window.TelegramWebApp.headers});
                     const newData = {
                         milestone_id: this.props.milestone.id,
+                        supervisor_id: studentData.data[0].supervisor_id,
                         student_id: studentData.data[0].id,
                         comments: this.state.comments,
                         submitted_at: new Date().toISOString(),

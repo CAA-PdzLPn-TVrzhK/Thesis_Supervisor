@@ -2,7 +2,7 @@
 import React from "react";
 import Profile from "./PagesContent/ProfileElements/Profile.jsx";
 import Calendar from "./PagesContent/CalendarElements/Calendar.jsx";
-import Dashboard from "./PagesContent/Dashboard.jsx";
+import Dashboard from "./PagesContent/DashboardElements/Dashboard.jsx";
 import "./BasePageComponent.css"
 
 class Selector extends React.Component {
