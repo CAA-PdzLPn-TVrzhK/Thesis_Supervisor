@@ -166,7 +166,6 @@ The system addresses the common challenges in thesis supervision: scattered comm
 
 ### 🔧 Build and Deployment
 - [Continuous Integration](docs/automation/continuous-integration.md)
-- [Continuous Delivery](docs/automation/continuous-delivery.md)
 
 ### 🏗️ Architecture
 - [Architecture Overview](docs/architecture/architecture.md)
