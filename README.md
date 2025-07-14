@@ -202,7 +202,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - 📧 Email: markdajver@gmail.com
 - 🐛 Issues: [GitHub Issues](https://github.com/CAA-PdzLPn-TVrzhK/Thesis_Supervisor/issues)
-- 💬 Discussions: [GitHub Discussions](https://github.com/CAA-PdzLPn-TVrzhK/Thesis_Supervisor/discussions)
 
 ---
 
