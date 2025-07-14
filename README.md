@@ -193,41 +193,6 @@ Default admin credentials for testing:
    npm run dev
    ```
 
-### Production Deployment
-
-#### Using Docker
-
-```bash
-# Build and run with Docker
-docker build -t thesis-supervisor .
-docker run -p 8000:8000 thesis-supervisor
-```
-
-#### Using Vercel (Recommended)
-
-1. Connect your GitHub repository to Vercel
-2. Set environment variables in Vercel dashboard
-3. Deploy automatically on push to main branch
-
-#### Manual Server Deployment
-
-```bash
-# On your server
-git clone https://github.com/your-username/thesis_supervisor.git
-cd thesis_supervisor
-pip install -r requirements.txt
-python app/Infrastructure/DataBase/init_db.py
-
-# Set up reverse proxy (nginx example)
-sudo nano /etc/nginx/sites-available/thesis-supervisor
-# Configure SSL and domain
-sudo systemctl restart nginx
-
-# Run with process manager
-pip install gunicorn
-gunicorn -w 4 -b 0.0.0.0:8000 app.main:app
-```
-
 ## Documentation
 
 ### 📋 Development
