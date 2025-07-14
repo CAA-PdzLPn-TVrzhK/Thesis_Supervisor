@@ -79,18 +79,17 @@ The system addresses the common challenges in thesis supervision: scattered comm
 ### Quick Start Guide
 
 1. **Access the Application**
-   - Telegram: Search for `@thesis_supervisor_bot` and start conversation
+   - Telegram: Search for `@thesis_supervisor_bot` and press `/start`
+   - Verify email address
 
 2. **Student Registration**
    - Click "Register as Student"
    - Fill out profile information
-   - Verify email address
    - Wait for supervisor assignment
 
 3. **Supervisor Access**
    - Login with institutional credentials
    - Review assigned students
-   - I just copy and paste without reading the documentation thoroughly before asking questions
    - Set up supervision schedule and milestones
 
 4. **Daily Usage**
