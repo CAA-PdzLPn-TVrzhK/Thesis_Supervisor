@@ -200,9 +200,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-- 📧 Email: support@thesis-supervisor.com
-- 🐛 Issues: [GitHub Issues](https://github.com/your-username/thesis_supervisor/issues)
-- 💬 Discussions: [GitHub Discussions](https://github.com/your-username/thesis_supervisor/discussions)
+- 📧 Email: markdajver@gmail.com
+- 🐛 Issues: [GitHub Issues](https://github.com/CAA-PdzLPn-TVrzhK/Thesis_Supervisor/issues)
+- 💬 Discussions: [GitHub Discussions](https://github.com/CAA-PdzLPn-TVrzhK/Thesis_Supervisor/discussions)
 
 ---
 
