@@ -4,7 +4,7 @@
    <img src="docs/assets/logo.png" width="500">
 </p>
 
-*A comprehensive system for managing thesis supervision, connecting students and supervisors through web and Telegram interfaces.*
+*A comprehensive system for managing thesis supervision, connecting students and supervisors through Telegram MiniApp interfaces.*
 
 ## 🚀 Quick Links
 
@@ -23,32 +23,6 @@ The Thesis Supervisor System is designed to streamline the thesis supervision pr
 - **📈 Analytics & Reporting**: Generate insights on supervision effectiveness and student progress
 
 The system addresses the common challenges in thesis supervision: scattered communication, lack of progress visibility, and inefficient coordination between students and supervisors.
-
-## Project Context Diagram
-
-```
-                           ┌─────────────────┐
-                           │    External     │
-                           │   Email Server  │
-                           │                 │
-                           └─────────┬───────┘
-                                     │
-                                     │
-    ┌─────────────┐         ┌────────▼─────────┐         ┌─────────────┐
-    │             │         │                  │         │             │
-    │  Students   │◄────────┤  Thesis Supervisor ├─────────┤ Supervisors │
-    │             │         │     System       │         │             │
-    └─────────────┘         │                  │         └─────────────┘
-                            └────────┬─────────┘
-                                     │
-                                     │
-                           ┌─────────▼───────┐
-                           │                 │
-                           │ Telegram Bot    │
-                           │    Platform     │
-                           │                 │
-                           └─────────────────┘
-```
 
 ## Feature Roadmap
 
@@ -92,27 +66,19 @@ The system addresses the common challenges in thesis supervision: scattered comm
 
 ### 📋 Planned Features
 
-- [ ] **Mobile Application**
-  - Native iOS/Android apps
-  - Offline functionality
-  - Push notifications
-
 - [ ] **Integration Capabilities**
   - LMS integration (Moodle, Canvas)
   - Google Calendar sync
-  - Document management systems
 
 - [ ] **Advanced Features**
   - AI-powered feedback suggestions
   - Plagiarism detection
-  - Multi-language support
 
 ## Usage Instructions
 
 ### Quick Start Guide
 
 1. **Access the Application**
-   - Web: Navigate to [https://thesis-supervisor.vercel.app](https://thesis-supervisor.vercel.app)
    - Telegram: Search for `@thesis_supervisor_bot` and start conversation
 
 2. **Student Registration**
@@ -132,14 +98,6 @@ The system addresses the common challenges in thesis supervision: scattered comm
    - Communicate via integrated messaging
    - Submit and review documents
    - Schedule meetings and deadlines
-
-### Admin Panel
-
-Default admin credentials for testing:
-- **Username**: `admin`
-- **Password**: `admin123`
-
-> ⚠️ **Important**: Change default credentials in production environment
 
 ## Installation and Deployment
 
