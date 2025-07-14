@@ -1,13 +1,15 @@
-# Thesis Supervisor System
+# Thesis Supervisor
 
-![Thesis Supervisor Logo](docs/assets/logo.png)
+<p align="center">
+   <img src="docs/assets/logo.png" width="500">
+</p>
 
-*A comprehensive system for managing thesis supervision, connecting students and supervisors through web and Telegram interfaces.*
+*A system for managing thesis supervision, connecting students and supervisors through Telegram interfaces.*
 
 ## 🚀 Quick Links
 
-- **🌐 Live Demo**: [https://thesis-supervisor.vercel.app](https://thesis-supervisor.vercel.app)
-- **📹 Demo Video**: [https://youtu.be/demo-video-link](https://youtu.be/demo-video-link)
+- **🌐 Live Demo**: [Telegram Bot](https://t.me/Thesis_Supervisor_bot)
+- **📹 Demo Video**: [Google Drive](https://drive.google.com/drive/folders/1ii8QsEvj0mLV1381QXRV-TJbpyOlJN7m?hl=ru)
 - **📚 Documentation**: [docs/](docs/)
 
 ## Project Goals and Description
@@ -21,32 +23,6 @@ The Thesis Supervisor System is designed to streamline the thesis supervision pr
 - **📈 Analytics & Reporting**: Generate insights on supervision effectiveness and student progress
 
 The system addresses the common challenges in thesis supervision: scattered communication, lack of progress visibility, and inefficient coordination between students and supervisors.
-
-## Project Context Diagram
-
-```
-                           ┌─────────────────┐
-                           │    External     │
-                           │   Email Server  │
-                           │                 │
-                           └─────────┬───────┘
-                                     │
-                                     │
-    ┌─────────────┐         ┌────────▼─────────┐         ┌─────────────┐
-    │             │         │                  │         │             │
-    │  Students   │◄────────┤  Thesis Supervisor ├─────────┤ Supervisors │
-    │             │         │     System       │         │             │
-    └─────────────┘         │                  │         └─────────────┘
-                            └────────┬─────────┘
-                                     │
-                                     │
-                           ┌─────────▼───────┐
-                           │                 │
-                           │ Telegram Bot    │
-                           │    Platform     │
-                           │                 │
-                           └─────────────────┘
-```
 
 ## Feature Roadmap
 
@@ -80,49 +56,39 @@ The system addresses the common challenges in thesis supervision: scattered comm
 
 - [ ] **Advanced Communication Features**
   - File sharing system
-  - Video call integration
   - Meeting scheduling
+  - Submission button
 
 - [ ] **Enhanced Analytics**
   - Progress visualization charts
   - Performance metrics dashboard
-  - Automated reporting
 
 ### 📋 Planned Features
-
-- [ ] **Mobile Application**
-  - Native iOS/Android apps
-  - Offline functionality
-  - Push notifications
 
 - [ ] **Integration Capabilities**
   - LMS integration (Moodle, Canvas)
   - Google Calendar sync
-  - Document management systems
 
 - [ ] **Advanced Features**
   - AI-powered feedback suggestions
   - Plagiarism detection
-  - Multi-language support
 
 ## Usage Instructions
 
 ### Quick Start Guide
 
 1. **Access the Application**
-   - Web: Navigate to [https://thesis-supervisor.vercel.app](https://thesis-supervisor.vercel.app)
-   - Telegram: Search for `@thesis_supervisor_bot` and start conversation
+   - Telegram: Search for `@thesis_supervisor_bot` and press `/start`
+   - Verify email address
 
 2. **Student Registration**
    - Click "Register as Student"
    - Fill out profile information
-   - Verify email address
    - Wait for supervisor assignment
 
 3. **Supervisor Access**
    - Login with institutional credentials
    - Review assigned students
-   - I just copy and paste without reading the documentation thoroughly before asking questions
    - Set up supervision schedule and milestones
 
 4. **Daily Usage**
@@ -130,14 +96,6 @@ The system addresses the common challenges in thesis supervision: scattered comm
    - Communicate via integrated messaging
    - Submit and review documents
    - Schedule meetings and deadlines
-
-### Admin Panel
-
-Default admin credentials for testing:
-- **Username**: `admin`
-- **Password**: `admin123`
-
-> ⚠️ **Important**: Change default credentials in production environment
 
 ## Installation and Deployment
 
@@ -193,41 +151,6 @@ Default admin credentials for testing:
    npm run dev
    ```
 
-### Production Deployment
-
-#### Using Docker
-
-```bash
-# Build and run with Docker
-docker build -t thesis-supervisor .
-docker run -p 8000:8000 thesis-supervisor
-```
-
-#### Using Vercel (Recommended)
-
-1. Connect your GitHub repository to Vercel
-2. Set environment variables in Vercel dashboard
-3. Deploy automatically on push to main branch
-
-#### Manual Server Deployment
-
-```bash
-# On your server
-git clone https://github.com/your-username/thesis_supervisor.git
-cd thesis_supervisor
-pip install -r requirements.txt
-python app/Infrastructure/DataBase/init_db.py
-
-# Set up reverse proxy (nginx example)
-sudo nano /etc/nginx/sites-available/thesis-supervisor
-# Configure SSL and domain
-sudo systemctl restart nginx
-
-# Run with process manager
-pip install gunicorn
-gunicorn -w 4 -b 0.0.0.0:8000 app.main:app
-```
-
 ## Documentation
 
 ### 📋 Development
@@ -242,7 +165,6 @@ gunicorn -w 4 -b 0.0.0.0:8000 app.main:app
 
 ### 🔧 Build and Deployment
 - [Continuous Integration](docs/automation/continuous-integration.md)
-- [Continuous Delivery](docs/automation/continuous-delivery.md)
 
 ### 🏗️ Architecture
 - [Architecture Overview](docs/architecture/architecture.md)
@@ -256,9 +178,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-- 📧 Email: support@thesis-supervisor.com
-- 🐛 Issues: [GitHub Issues](https://github.com/your-username/thesis_supervisor/issues)
-- 💬 Discussions: [GitHub Discussions](https://github.com/your-username/thesis_supervisor/discussions)
+- 📧 Email: markdajver@gmail.com
+- 🐛 Issues: [GitHub Issues](https://github.com/CAA-PdzLPn-TVrzhK/Thesis_Supervisor/issues)
 
 ---
 
