@@ -8,7 +8,7 @@
 
 ## 🚀 Quick Links
 
-- **🌐 Live Demo**: [Telegram Bot](https://thesis-supervisor.vercel.app)
+- **🌐 Live Demo**: [Telegram Bot](https://t.me/Thesis_Supervisor_bot)
 - **📹 Demo Video**: [Google Drive](https://drive.google.com/drive/folders/1ii8QsEvj0mLV1381QXRV-TJbpyOlJN7m?hl=ru)
 - **📚 Documentation**: [docs/](docs/)
 
