@@ -8,8 +8,8 @@
 
 ## 🚀 Quick Links
 
-- **🌐 Live Demo**: [https://thesis-supervisor.vercel.app](https://thesis-supervisor.vercel.app)
-- **📹 Demo Video**: [https://youtu.be/demo-video-link](https://youtu.be/demo-video-link)
+- **🌐 Live Demo**: [Telegram Bot](https://thesis-supervisor.vercel.app)
+- **📹 Demo Video**: [Google Drive](https://drive.google.com/drive/folders/1ii8QsEvj0mLV1381QXRV-TJbpyOlJN7m?hl=ru)
 - **📚 Documentation**: [docs/](docs/)
 
 ## Project Goals and Description
