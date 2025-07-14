@@ -4,7 +4,7 @@
    <img src="docs/assets/logo.png" width="500">
 </p>
 
-*A comprehensive system for managing thesis supervision, connecting students and supervisors through Telegram MiniApp interfaces.*
+*A system for managing thesis supervision, connecting students and supervisors through Telegram interfaces.*
 
 ## 🚀 Quick Links
 
