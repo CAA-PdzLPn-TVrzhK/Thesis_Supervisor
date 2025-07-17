@@ -1,6 +1,9 @@
 import axios from 'axios';
 import React from "react";
 import "./Dashboard.css"
+import {IconArrowBarRight, IconArrowBarLeft} from "@tabler/icons-react";
+import ReactDOM from "react-dom";
+import StudentInfo from "./cardElements/StudentInfo/StudentInfo.jsx";
 
 class Dashboard extends React.Component {
     constructor(props) {
@@ -10,7 +13,46 @@ class Dashboard extends React.Component {
             data: [],
             error: false,
             loading: true,
+            flipped: [],
+            studentInfo: null,
+            milestoneInfo: null,
+            draft: null,
+            feedback: null,
         }
+
+        this.changeStudentInfo = this.changeStudentInfo.bind(this);
+        this.changeMilestoneInfo = this.changeMilestoneInfo.bind(this);
+        this.changeFeedback = this.changeFeedback.bind(this);
+        this.changeDraft = this.changeDraft.bind(this);
+    }
+
+    changeStudentInfo(data) {
+        this.setState(() => {
+            return {
+                studentInfo: data,
+            }
+        })
+    }
+    changeMilestoneInfo(data) {
+        this.setState(() => {
+            return {
+                milestoneInfo: data,
+            }
+        })
+    }
+    changeFeedback(data) {
+        this.setState(() => {
+            return {
+                feedback: data,
+            }
+        })
+    }
+    changeDraft(data) {
+        this.setState(() => {
+            return {
+                draft: data,
+            }
+        })
     }
 
     async componentDidMount() {
@@ -58,6 +100,20 @@ class Dashboard extends React.Component {
         return `${day} ${month}, ${hours}:${minutes}`;
     }
 
+    flipCard(index) {
+        this.setState(p => {
+            if (p.flipped.includes(index)) {
+                return {
+                    flipped: p.flipped.filter(i => i !== index),
+                }
+            } else {
+                return {
+                    flipped: [...p.flipped, index],
+                }
+            }
+        })
+    }
+
     render() {
         if(this.state.loading) {
             return (
@@ -68,19 +124,49 @@ class Dashboard extends React.Component {
         }
         return (
             <div className="submissions-container">
+                {this.state.studentInfo!==null && ReactDOM.createPortal(
+                    <StudentInfo close={this.changeStudentInfo} data={this.state.studentInfo}/>,
+                    document.getElementById("modal-root")
+                )}
                 <div className="submissions-container-title"> unverified submissions </div>
                 <div className="submissions-list-of-draft">
                     {this.state.data.map((submission, submissionIndex) => {
                         return (
-                            <div key={submissionIndex} className="submissions-list-of-draft-block">
-                                <div className="submissions-list-of-draft-block-element">
-                                    <div className="submissions-list-of-draft-block-element-label"> Student: </div>
-                                    <div className="submissions-list-of-draft-block-element-value"> {submission.user.first_name} {submission.user.last_name} </div>
-                                </div>
-                                <div className="submissions-list-of-draft-block-element">
-                                    <div className="submissions-list-of-draft-block-element-label"> Milestone deadline: </div>
-                                    <div className="submissions-list-of-draft-block-element-value"> {this.getDate(submission.milestone.deadline)} </div>
-                                </div>
+                            <div key={submissionIndex} className={`submissions-list-of-draft-block ${this.state.flipped.includes(submissionIndex) ? 'flipped' : ''}`}>
+                                    <div className="submissions-list-of-draft-addition-element">
+                                        <div className="submissions-list-of-draft-addition-element-info">
+                                            <div className="submissions-list-of-draft-addition-element-info-left-block">
+                                                <div className="submissions-list-of-draft-addition-element-info-left-block-element" onClick={() => this.changeStudentInfo(submission)}>
+                                                    Student info
+                                                </div>
+                                                <div className="submissions-list-of-draft-addition-element-info-left-block-element">
+                                                    Milestone info
+                                                </div>
+                                            </div>
+                                            <div className="submissions-list-of-draft-addition-element-info-right-block">
+                                                <div className="submissions-list-of-draft-addition-element-info-right-block-element">
+                                                    Draft
+                                                </div>
+                                                <div className="submissions-list-of-draft-addition-element-info-right-block-element">
+                                                    Feedback
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <IconArrowBarLeft size={20} onClick={() => this.flipCard(submissionIndex)} className="submissions-list-of-draft-left-arrow"/>
+                                    </div>
+                                    <div className="submissions-list-of-draft-main-element">
+                                        <div className="submissions-list-of-draft-main-element-info">
+                                            <div className="submissions-list-of-draft-main-element-info-element">
+                                                <div className="submissions-list-of-draft-main-element-info-element-label"> Student: </div>
+                                                <div className="submissions-list-of-draft-main-element-info-element-value"> {submission.user.first_name} {submission.user.last_name} </div>
+                                            </div>
+                                            <div className="submissions-list-of-draft-main-element-info-element">
+                                                <div className="submissions-list-of-draft-main-element-info-element-label"> Milestone deadline: </div>
+                                                <div className="submissions-list-of-draft-main-element-info-element-value"> {this.getDate(submission.milestone.deadline)} </div>
+                                            </div>
+                                        </div>
+                                        <IconArrowBarRight size={20} onClick={() => this.flipCard(submissionIndex)} className="submissions-list-of-draft-right-arrow"/>
+                                    </div>
                             </div>
                         )
                     })}

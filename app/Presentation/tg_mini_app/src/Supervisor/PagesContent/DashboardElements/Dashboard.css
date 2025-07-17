@@ -36,43 +36,160 @@
 }
 
 .submissions-list-of-draft-block {
+    padding: 5px;
+    position: relative;
+    width: 90%;
+    height: 120px;
+}
+
+.submissions-list-of-draft-main-element,
+.submissions-list-of-draft-addition-element {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    backface-visibility: hidden;
+    transition: transform 0.6s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    box-sizing: border-box;
+    border-radius: 8px;
     background-color: #e6f4fb;
     border: 1px solid #b3dffc;
-    border-radius: 8px;
-    padding: 15px;
-    transition: all 0.4s ease;
 }
 
-.submissions-list-of-draft-block:hover {
-    box-shadow: 0 2px 8px rgba(0, 122, 204, 0.3);
-    transform: translateY(-3px);
+
+.submissions-list-of-draft-main-element {
+  transform: rotateY(0deg);
 }
 
-.submissions-list-of-draft-block-element {
+
+.submissions-list-of-draft-addition-element {
+  transform: rotateY(180deg);
+}
+
+
+.submissions-list-of-draft-block.flipped .submissions-list-of-draft-main-element {
+  transform: rotateY(-180deg);
+}
+
+.submissions-list-of-draft-block.flipped .submissions-list-of-draft-addition-element {
+  transform: rotateY(0deg);
+}
+
+.submissions-list-of-draft-right-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding-left: 10px;
+    color: #007acc;
+}
+
+.submissions-list-of-draft-left-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding-right: 10px;
+    color: #007acc;
+}
+
+.submissions-list-of-draft-main-element-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 10px;
+}
+
+.submissions-list-of-draft-addition-element-info {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    gap: 20px;
+}
+
+.submissions-list-of-draft-addition-element-info-left-block,
+.submissions-list-of-draft-addition-element-info-right-block,
+.submissions-list-of-draft-main-element-info-element {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.submissions-list-of-draft-main-element {
     display: flex;
     margin-bottom: 10px;
 }
 
-.submissions-list-of-draft-block-element:last-child {
+.submissions-list-of-draft-main-element:last-child {
     margin-bottom: 0;
 }
 
-.submissions-list-of-draft-block-element-label {
+.submissions-list-of-draft-main-element-info-element-label {
     width: 160px;
     font-weight: bold;
     color: #005b99;
 }
 
-.submissions-list-of-draft-block-element-value {
+.submissions-list-of-draft-main-element-info-element-value {
     color: #003d66;
 }
 
+.submissions-list-of-draft-addition-element-info-left-block-element,
+.submissions-list-of-draft-addition-element-info-right-block-element {
+    color: #005b99;
+    cursor: pointer;
+    font-weight: 500;
+    text-decoration: underline;
+    padding: 5px 0;
+}
+
+.submissions-list-of-draft-addition-element-info-left-block-element:hover,
+.submissions-list-of-draft-addition-element-info-right-block-element:hover {
+    color: #0796FB;
+    transform: translateY(-1px);
+}
+
 @media (max-width: 600px) {
-    .submissions-list-of-draft-block-element {
+    .submissions-list-of-draft-main-element-info {
         flex-direction: column;
+        gap: 10px;
     }
+
     .submissions-list-of-draft-block-element-label {
         width: auto;
         margin-bottom: 4px;
+    }
+}
+
+@media (max-width: 315px) {
+    .submissions-list-of-draft-main-element-info {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .submissions-list-of-draft-main-element-info-element-label {
+        font-size: 15px;
+        width: 140px;
+        font-weight: bold;
+        color: #005b99;
+    }
+
+    .submissions-list-of-draft-main-element-info-element-value {
+        color: #003d66;
+        font-size: 14px;
+    }
+
+    .submissions-list-of-draft-addition-element-info {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .submissions-list-of-draft-addition-element-info-right-block-element,
+    .submissions-list-of-draft-addition-element-info-left-block-element {
+        font-size: 15px;
+        padding: 2px;
     }
 }
