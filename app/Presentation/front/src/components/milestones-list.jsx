@@ -3,6 +3,7 @@ import { Table, Input, Select, DatePicker } from 'antd';
 import './index.css';
 import React, { useEffect, useState } from 'react';
 import ControlPanel from './control-panel.jsx';
+import MilestoneProfile from './milestoneProfile.jsx';
 
 const { Column } = Table;
 const { TextArea } = Input;
@@ -21,6 +22,8 @@ export default function MilestonesList({ onBackToMenu }) {
   const [selectedRows, setSelectedRows] = useState([]);
   const [theses, setTheses] = useState([]);
   const [thesisIdToTitle, setThesisIdToTitle] = useState({});
+  const [current, setCurrent] = useState('list');
+  const [selectedMilestone, setSelectedMilestone] = useState(null);
 
   useEffect(() => {
     async function fetchAll() {
@@ -142,46 +145,18 @@ export default function MilestonesList({ onBackToMenu }) {
     setDisplay(result);
   };
 
-  const handleAddMilestone = async () => {
-    try {
-      // Создаем пустую запись на сервере
-      const emptyMilestone = {
-        thesis_id: null,
-        title: '',
-        description: '',
-        deadline: null,
-        weight: 0,
-        status: 'not started',
-        notified: 'created',
-        start: null
-      };
-      
-      const response = await axios.post(
-        `${API_URL}milestones`,
-        emptyMilestone,
-        { headers: API_HEADERS }
-      );
-      
-      // Получаем созданную запись с id от сервера
-      const createdMilestone = response.data[0] || response.data;
-      
-      // Обогащаем данными для отображения
-      const milestoneWithThesis = {
-        ...createdMilestone,
-        thesis_title: '—'
-      };
-      
-      const updatedData = [milestoneWithThesis, ...data];
-      setData(updatedData);
-      setDisplay(updatedData);
-      setIsEditing(true);
-      setSelectedRows([createdMilestone.id]);
-      
-      console.log('✅ Новый milestone добавлен для редактирования');
-    } catch (err) {
-      console.error('❌ Ошибка при добавлении milestone:', err);
-      alert('Ошибка при добавлении: ' + (err.response?.data?.message || err.message));
-    }
+  const handleAddMilestone = () => {
+    setCurrent('add');
+    setSelectedMilestone({
+      thesis_id: null,
+      title: '',
+      description: '',
+      deadline: new Date().toISOString(),
+      weight: 0,
+      status: 'not started',
+      notified: 'created',
+      start: new Date().toISOString()
+    });
   };
 
   const handleBack = async () => {
@@ -305,6 +280,22 @@ export default function MilestonesList({ onBackToMenu }) {
 
   if (loading) return <div>Loading…</div>;
   if (error) return <div>Error :(</div>;
+  if (current === 'profile' || current === 'add') {
+    return <MilestoneProfile
+      milestone={current === 'profile' ? selectedMilestone : null}
+      theses={theses}
+      onBack={() => {
+        setCurrent('list');
+        setSelectedMilestone(null);
+      }}
+      onSave={updated => {
+        setData(data.map(m => m.id === updated.id ? updated : m));
+        setDisplay(display.map(m => m.id === updated.id ? updated : m));
+        setCurrent('list');
+        setSelectedMilestone(null);
+      }}
+    />
+  }
 
   return (
     <main>
@@ -343,6 +334,18 @@ export default function MilestonesList({ onBackToMenu }) {
             scroll={{ x: 'max-content' }}
             style={{ width: '100%' }}
             rowClassName={record => (isEditing && selectedRows.includes(record.id) ? 'editing-row' : '')}
+            onRow={record => {
+              if (!isEditing) {
+                return {
+                  onClick: () => {
+                    setCurrent('profile');
+                    setSelectedMilestone(record);
+                  }
+                };
+              }
+              // В режиме редактирования не навешиваем обработчик
+              return {};
+            }}
           >
             <Column
               title="Thesis"
@@ -388,6 +391,7 @@ export default function MilestonesList({ onBackToMenu }) {
               title="Description"
               dataIndex="description"
               key="description"
+              width={200}
               render={(text, record) =>
                 isEditing && selectedRows.includes(record.id) ? (
                   <TextArea
@@ -395,9 +399,12 @@ export default function MilestonesList({ onBackToMenu }) {
                     onChange={e => handleCellEdit(record.id, 'description', e.target.value)}
                     placeholder="Enter description"
                     rows={2}
+                    style={{ maxWidth: '300px' }}
                   />
                 ) : (
-                  text || '—'
+                  <div style={{ maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {text || '—'}
+                  </div>
                 )
               }
             />
