@@ -1,18 +1,4 @@
-.loader-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 300px;
-    background: #f5f7fa;
-    border-radius: 12px;
-}
-
-.loader-image {
-    width: 250px;
-    height: auto;
-}
-
-.modal-student-info-container {
+.modal-milestone-info-container {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -29,7 +15,7 @@
     transform: translate(-50%, -50%);
 }
 
-.student-info-container-close-button {
+.milestone-info-container-close-button {
     position: absolute;
     top: 18px;
     right: 18px;
@@ -48,13 +34,13 @@
     transform: scale(1.1);
 }
 
-.student-info-container-main-block {
+.milestone-info-container-main-block {
     padding: 0 20px 10px 20px;
     width: 100%;
     box-sizing: border-box;
 }
 
-.student-info-container-main-block-title {
+.milestone-info-container-main-block-title {
     position: relative;
     font-size: 24px;
     font-weight: 600;
@@ -66,7 +52,7 @@
     justify-self: center;
 }
 
-.student-info-container-main-block-body-element {
+.milestone-info-container-main-block-body-element {
     background: #fff;
     border: 1.8px solid #ddd;
     border-radius: 8px;
@@ -75,7 +61,7 @@
     transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
 }
 
-.student-info-container-main-block-body-element-label {
+.milestone-info-container-main-block-body-element-label {
     font-size: 0.9rem;
     font-weight: 600;
     color: #6b3ccf;
@@ -84,7 +70,7 @@
     letter-spacing: 0.5px;
 }
 
-.student-info-container-main-block-body-element-value {
+.milestone-info-container-main-block-body-element-value {
     font-size: 1.08rem;
     font-weight: 500;
     color: #333;
@@ -93,28 +79,28 @@
 }
 
 @media (max-width: 400px) {
-    .student-info-container-main-block-body-element {
+    .milestone-info-container-main-block-body-element {
         padding: 10px 6px;
         margin: 10px 6px;
     }
 }
 
 @media (max-width: 360px) {
-    .student-info-container-main-block-body-element {
+    .milestone-info-container-main-block-body-element {
         padding: 5px 5px;
         margin: 8px 3px;
     }
 
-    .student-info-container-main-block-title {
+    .milestone-info-container-main-block-title {
         font-size: 20px;
         font-weight: 600;
     }
 
-    .student-info-container-close-button {
+    .milestone-info-container-close-button {
         top: 16px;
         right: 10px;
     }
-    .student-info-container-main-block-body-element-value {
+    .milestone-info-container-main-block-body-element-value {
         margin-right: 5px;
     }
 }

@@ -4,6 +4,7 @@ import "./Dashboard.css"
 import {IconArrowBarRight, IconArrowBarLeft} from "@tabler/icons-react";
 import ReactDOM from "react-dom";
 import StudentInfo from "./cardElements/StudentInfo/StudentInfo.jsx";
+import MilestoneInfo from "./cardElements/MilestoneInfo/MilestoneInfo.jsx";
 
 class Dashboard extends React.Component {
     constructor(props) {
@@ -128,6 +129,10 @@ class Dashboard extends React.Component {
                     <StudentInfo close={this.changeStudentInfo} data={this.state.studentInfo}/>,
                     document.getElementById("modal-root")
                 )}
+                {this.state.milestoneInfo!==null && ReactDOM.createPortal(
+                    <MilestoneInfo close={this.changeMilestoneInfo} data={this.state.milestoneInfo}/>,
+                    document.getElementById("modal-root")
+                )}
                 <div className="submissions-container-title"> unverified submissions </div>
                 <div className="submissions-list-of-draft">
                     {this.state.data.map((submission, submissionIndex) => {
@@ -139,7 +144,7 @@ class Dashboard extends React.Component {
                                                 <div className="submissions-list-of-draft-addition-element-info-left-block-element" onClick={() => this.changeStudentInfo(submission)}>
                                                     Student info
                                                 </div>
-                                                <div className="submissions-list-of-draft-addition-element-info-left-block-element">
+                                                <div className="submissions-list-of-draft-addition-element-info-left-block-element" onClick={() => this.changeMilestoneInfo(submission)}>
                                                     Milestone info
                                                 </div>
                                             </div>
