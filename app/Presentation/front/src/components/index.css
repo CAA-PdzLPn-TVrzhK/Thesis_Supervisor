@@ -586,3 +586,77 @@ html, body {
   padding: 0;
   background-color: var(--background);
 }
+
+/* --- Dashboard chart styles --- */
+.dashboard-chart-container {
+  background: transparent;
+}
+.dashboard-chart-legend {
+  font-size: 13px;
+  color: #000;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+.dashboard-chart-tooltip {
+  background: #fff !important;
+  border-radius: 10px !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+  border: 1px solid #000 !important;
+  color: #000 !important;
+}
+.dashboard-chart-tooltip-label {
+  color: #000 !important;
+  font-weight: 600 !important;
+}
+.dashboard-chart-tooltip-item {
+  color: #000 !important;
+  font-weight: 500 !important;
+}
+.dashboard-chart-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #000;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Убираем дефолтную стрелку и добавляем свою */
+.dashboard-chart-select {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" fill="black"><path d="M1 1l5 5 5-5"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 12px 8px;
+  padding-right: 24px;
+}
+.dashboard-chart-select option:checked,
+.dashboard-chart-select option:focus,
+.dashboard-chart-select option:active,
+.dashboard-chart-select option:hover {
+  background: #000 !important;
+  color: #fff !important;
+}
+/* Для Firefox */
+.dashboard-chart-select option:focus-visible {
+  background: #000 !important;
+  color: #fff !important;
+}
+/* Для Edge/IE */
+.dashboard-chart-select::-ms-fill-lower,
+.dashboard-chart-select::-ms-fill-upper {
+  background: #000 !important;
+  color: #fff !important;
+}
+/* Для Chrome/Safari */
+.dashboard-chart-select::-webkit-selection {
+  background: #000 !important;
+  color: #fff !important;
+}
+.dashboard-chart-select::selection {
+  background: #000 !important;
+  color: #fff !important;
+}
