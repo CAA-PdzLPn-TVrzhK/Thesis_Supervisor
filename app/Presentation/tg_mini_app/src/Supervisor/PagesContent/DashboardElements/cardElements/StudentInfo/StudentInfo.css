@@ -64,16 +64,6 @@
     justify-self: center;
 }
 
-.student-info-container-main-block-body {
-    position: relative;
-    background: #f0f0f0;
-    border-radius: 12px;
-    padding: 10px 20px;
-    margin-bottom: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    cursor: default;
-}
-
 .student-info-container-main-block-body-element {
     background: #fff;
     border: 1.8px solid #ddd;
@@ -105,22 +95,12 @@
         padding: 10px 6px;
         margin: 10px 6px;
     }
-
-    .student-info-container-main-block-body {
-        padding: 10px 10px;
-        margin-bottom: 10px;
-    }
 }
 
 @media (max-width: 360px) {
     .student-info-container-main-block-body-element {
         padding: 5px 5px;
         margin: 8px 3px;
-    }
-
-    .student-info-container-main-block-body {
-        padding: 5px 0;
-        margin-bottom: 3px;
     }
 
     .student-info-container-main-block-title {
