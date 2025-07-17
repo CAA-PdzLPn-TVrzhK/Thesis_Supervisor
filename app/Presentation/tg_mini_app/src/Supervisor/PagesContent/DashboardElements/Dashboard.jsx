@@ -5,6 +5,8 @@ import {IconArrowBarRight, IconArrowBarLeft} from "@tabler/icons-react";
 import ReactDOM from "react-dom";
 import StudentInfo from "./cardElements/StudentInfo/StudentInfo.jsx";
 import MilestoneInfo from "./cardElements/MilestoneInfo/MilestoneInfo.jsx";
+import ThesisInfo from "./cardElements/ThesisInfo/ThesisInfo.jsx";
+import DraftInfo from "./cardElements/DraftInfo/DraftInfo.jsx";
 
 class Dashboard extends React.Component {
     constructor(props) {
@@ -18,12 +20,12 @@ class Dashboard extends React.Component {
             studentInfo: null,
             milestoneInfo: null,
             draft: null,
-            feedback: null,
+            thesis: null,
         }
 
         this.changeStudentInfo = this.changeStudentInfo.bind(this);
         this.changeMilestoneInfo = this.changeMilestoneInfo.bind(this);
-        this.changeFeedback = this.changeFeedback.bind(this);
+        this.changeThesis = this.changeThesis.bind(this);
         this.changeDraft = this.changeDraft.bind(this);
     }
 
@@ -41,10 +43,10 @@ class Dashboard extends React.Component {
             }
         })
     }
-    changeFeedback(data) {
+    changeThesis(data) {
         this.setState(() => {
             return {
-                feedback: data,
+                thesis: data,
             }
         })
     }
@@ -133,6 +135,14 @@ class Dashboard extends React.Component {
                     <MilestoneInfo close={this.changeMilestoneInfo} data={this.state.milestoneInfo}/>,
                     document.getElementById("modal-root")
                 )}
+                {this.state.thesis!==null && ReactDOM.createPortal(
+                    <ThesisInfo close={this.changeThesis} data={this.state.thesis}/>,
+                    document.getElementById("modal-root")
+                )}
+                {this.state.draft!==null && ReactDOM.createPortal(
+                    <DraftInfo close={this.changeDraft} data={this.state.draft}/>,
+                    document.getElementById("modal-root")
+                )}
                 <div className="submissions-container-title"> unverified submissions </div>
                 <div className="submissions-list-of-draft">
                     {this.state.data.map((submission, submissionIndex) => {
@@ -142,18 +152,18 @@ class Dashboard extends React.Component {
                                         <div className="submissions-list-of-draft-addition-element-info">
                                             <div className="submissions-list-of-draft-addition-element-info-left-block">
                                                 <div className="submissions-list-of-draft-addition-element-info-left-block-element" onClick={() => this.changeStudentInfo(submission)}>
-                                                    Student info
+                                                    Student
                                                 </div>
                                                 <div className="submissions-list-of-draft-addition-element-info-left-block-element" onClick={() => this.changeMilestoneInfo(submission)}>
-                                                    Milestone info
+                                                    Milestone
                                                 </div>
                                             </div>
                                             <div className="submissions-list-of-draft-addition-element-info-right-block">
-                                                <div className="submissions-list-of-draft-addition-element-info-right-block-element">
+                                                <div className="submissions-list-of-draft-addition-element-info-right-block-element" onClick={() => this.changeDraft(submission)}>
                                                     Draft
                                                 </div>
-                                                <div className="submissions-list-of-draft-addition-element-info-right-block-element">
-                                                    Feedback
+                                                <div className="submissions-list-of-draft-addition-element-info-right-block-element" onClick={() => this.changeThesis(submission)}>
+                                                    Thesis
                                                 </div>
                                             </div>
                                         </div>
