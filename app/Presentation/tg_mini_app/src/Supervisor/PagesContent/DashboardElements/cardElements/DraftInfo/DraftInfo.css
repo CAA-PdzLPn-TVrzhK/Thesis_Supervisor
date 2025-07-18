@@ -1,0 +1,106 @@
+.modal-draft-info-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 80vw;
+    height: auto;
+    padding: 20px 0;
+    background: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translate(-50%, -50%);
+}
+
+.draft-info-container-close-button {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    cursor: pointer;
+    color: #6a11cb;
+    background: none;
+    border: none;
+    border-radius: 50%;
+    padding: 4px;
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+    z-index: 10;
+}
+.thesis-info-close-button:hover {
+    color: #2575fc;
+    background: rgba(106, 17, 203, 0.1);
+    transform: scale(1.1);
+}
+
+.draft-info-container-main-block {
+    padding: 0 20px 10px 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.draft-info-container-main-block-title {
+    position: relative;
+    font-size: 24px;
+    font-weight: 600;
+    color: #1a73e8;
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: default;
+    padding-left: 10px;
+}
+
+.draft-info-container-main-block-body-element {
+    background: #fff;
+    border: 1.8px solid #ddd;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 10px 0;
+    transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
+}
+
+.draft-info-container-main-block-body-element-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #6b3ccf;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.draft-info-container-main-block-body-element-value {
+    font-size: 1.08rem;
+    font-weight: 500;
+    color: #333;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+@media (max-width: 400px) {
+    .draft-info-container-main-block-body-element {
+        padding: 10px 6px;
+        margin: 10px 6px;
+    }
+}
+
+@media (max-width: 360px) {
+    .draft-info-container-main-block-body-element {
+        padding: 5px 5px;
+        margin: 8px 3px;
+    }
+
+    .draft-info-container-main-block-title {
+        font-size: 20px;
+        font-weight: 600;
+    }
+
+    .draft-info-container-close-button {
+        top: 16px;
+        right: 10px;
+    }
+    .draft-info-container-main-block-body-element-value {
+        margin-right: 5px;
+    }
+}
