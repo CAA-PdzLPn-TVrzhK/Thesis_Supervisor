@@ -404,7 +404,7 @@ async def notification_about_events():
                 tzinfo=datetime.timezone.utc)
             delta = meeting_time - now
 
-            if (m["status"] != "in process"
+            if (m["status"] != "not started"
                     or m["notified"] == "all_notified"):
                 continue
 
@@ -566,7 +566,7 @@ async def notification_about_events():
                 requests.patch(
                     f"{EXTERNAL_API_URL}meetings?id=eq.{m['id']}",
                     json={"notified": "all_notified",
-                                      "status" : "done"},
+                                      "status" : "in process"},
                     headers=headers
                 )
                 m["notified"] = "all_notified"
