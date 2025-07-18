@@ -64,7 +64,7 @@ class DraftInfo extends React.Component {
                             <div className={`draft-info-container-main-block-body-element-value`}>
                                 {this.state.file === null ?
                                     <div> We cannot get your work. </div> :
-                                    <a href={this.state.file} target="_blank" rel="noreferrer"> {this.state.file} </a>
+                                    <a href={this.state.file} target="_blank" rel="noreferrer"> draft </a>
                                 }
                             </div>
                         </div>

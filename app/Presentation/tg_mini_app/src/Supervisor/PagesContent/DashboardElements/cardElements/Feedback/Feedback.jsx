@@ -142,53 +142,53 @@ class Feedback extends React.Component {
     render() {
         const data = this.props.data;
         return (
-            <div className={`modal-draft-info-container`}>
-                <IconX size={20} onClick={this.close} className={`draft-info-container-close-button`}/>
-                <div className={`draft-info-container-main-block`}>
-                    <div className={`draft-info-container-main-block-title`}>
+            <div className={`modal-feedback-info-container`}>
+                <IconX size={20} onClick={this.close} className={`feedback-info-container-close-button`}/>
+                <div className={`feedback-info-container-main-block`}>
+                    <div className={`feedback-info-container-main-block-title`}>
                         Feedback Form
                     </div>
-                    <form>
-                        <div>
-                            <span> Grade draft (out of {data.milestone.weight}). </span>
-                            <span>
+                    <form className={`feedback-info-container-form-block`}>
+                        <div className={`feedback-info-container-form-block-element`}>
+                            <span className={`feedback-info-container-form-block-element-label`}> Grade draft (out of {data.milestone.weight}). </span>
+                            <span className={`feedback-info-container-form-block-element-value`}>
                                 <label>
-                                    <input type="text" placeholder="grade" onChange={this.handleGradeChange} ></input>
+                                    <input type="text" placeholder="grade" onChange={this.handleGradeChange} className={`feedback-info-container-form-block-element-value-input`}></input>
                                 </label>
                             </span>
-                            <span>
+                            <span className={`feedback-info-container-form-block-element-error`}>
                                 {this.state.gradeError.length === 0 ? "" : `${this.state.gradeError}`}
                             </span>
                         </div>
-                        <div>
-                            <span> Write comment for feedback. </span>
-                            <span>
+                        <div className={`feedback-info-container-form-block-element`}>
+                            <span className={`feedback-info-container-form-block-element-label`}> Write comment for feedback. </span>
+                            <span className={`feedback-info-container-form-block-element-value`}>
                                 <label>
-                                    <input type="text" placeholder="comment" onChange={this.handleCommentsChange} ></input>
+                                    <input type="text" placeholder="comment" onChange={this.handleCommentsChange} className={`feedback-info-container-form-block-element-value-input`}></input>
                                 </label>
                             </span>
-                            <span>
+                            <span className={`feedback-info-container-form-block-element-error`}>
                                 {this.state.commentsError.length === 0 ? "" : `${this.state.commentsError}`}
                             </span>
                         </div>
-                        <div>
-                            <span> Choose file for feedback. </span>
-                            <span>
+                        <div className={`feedback-info-container-form-block-element`}>
+                            <span className={`feedback-info-container-form-block-element-label`}> Choose file for feedback. </span>
+                            <span className={`feedback-info-container-form-block-element-value`}>
                                 <label>
-                                    <input type="file" placeholder="choose file" onChange={this.handleFileChange}></input>
+                                    <input type="file" placeholder="choose file" onChange={this.handleFileChange} className={`feedback-info-container-form-block-element-value-input`}></input>
                                 </label>
                             </span>
-                            <span>
+                            <span className={`feedback-info-container-form-block-element-error`}>
                                 {this.state.fileError.length === 0 ? "" : `${this.state.fileError}`}
                             </span>
                         </div>
-                        <button type="button" onClick={this.send}> send </button>
+                        <button type="button" onClick={this.send} className={`feedback-info-container-form-block-send-button`}> send </button>
                         {this.state.uploadingFeedback === true ? <div>
-                            <div> You sent the feedback. </div>
-                            <IconX size={20} onClick={this.closeSuccessfulMessage}/>
+                            <div className={`feedback-info-container-form-block-successful`}> You sent the feedback. </div>
+                            <IconX size={20} onClick={this.closeSuccessfulMessage} className={`feedback-info-container-form-block-successful-close`}/>
                         </div> : (this.state.uploadingFeedback === false ? <div>
-                            <div> You have failed uploading feedback. </div>
-                            <IconX size={20} onClick={this.closeSuccessfulMessage}/>
+                            <div className={`feedback-info-container-form-block-unsuccessful`}> You have failed uploading feedback. </div>
+                            <IconX size={20} onClick={this.closeSuccessfulMessage} className={`feedback-info-container-form-block-unsuccessful-close`}/>
                         </div> : <div></div>)}
                     </form>
                 </div>

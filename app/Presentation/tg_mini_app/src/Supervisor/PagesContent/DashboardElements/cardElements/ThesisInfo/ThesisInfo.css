@@ -63,7 +63,7 @@
     letter-spacing: 0.5px;
     text-transform: uppercase;
     cursor: default;
-    justify-self: center;
+    padding-left: 10px;
 }
 
 .thesis-info-container-main-block-body-element {
