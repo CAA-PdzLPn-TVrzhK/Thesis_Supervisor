@@ -127,6 +127,11 @@ class Feedback extends React.Component {
                 }
             }
 
+            await axios.patch(`${window.TelegramWebApp.API_BASE}submissions?id=eq.${this.props.data.submission.id}`, {status: "passed",}, {
+                headers: window.TelegramWebApp.headers,
+                Prefer: "resolution=merge-duplicates",
+            });
+
             const path = `${window.TelegramWebApp.userId}/${this.props.data.student.id}/${this.props.data.milestone.id}/feedback.pdf`;
             const {data, error} = await supabase.storage.from('supervisor-data').upload(path, this.state.file, { upsert: true });
             if (error) {
@@ -183,11 +188,11 @@ class Feedback extends React.Component {
                             </span>
                         </div>
                         <button type="button" onClick={this.send} className={`feedback-info-container-form-block-send-button`}> send </button>
-                        {this.state.uploadingFeedback === true ? <div>
-                            <div className={`feedback-info-container-form-block-successful`}> You sent the feedback. </div>
+                        {this.state.uploadingFeedback === true ? <div className={`feedback-info-container-form-block-successful`}>
+                            <div> You sent the feedback. </div>
                             <IconX size={20} onClick={this.closeSuccessfulMessage} className={`feedback-info-container-form-block-successful-close`}/>
-                        </div> : (this.state.uploadingFeedback === false ? <div>
-                            <div className={`feedback-info-container-form-block-unsuccessful`}> You have failed uploading feedback. </div>
+                        </div> : (this.state.uploadingFeedback === false ? <div className={`feedback-info-container-form-block-unsuccessful`}>
+                            <div> You have failed uploading feedback. </div>
                             <IconX size={20} onClick={this.closeSuccessfulMessage} className={`feedback-info-container-form-block-unsuccessful-close`}/>
                         </div> : <div></div>)}
                     </form>

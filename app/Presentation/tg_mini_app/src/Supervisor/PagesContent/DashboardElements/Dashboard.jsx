@@ -86,13 +86,15 @@ class Dashboard extends React.Component {
                 const student = await axios.get(`${window.TelegramWebApp.API_BASE}students?id=eq.${submission.student_id}`, { headers: window.TelegramWebApp.headers });
                 const user = await axios.get(`${window.TelegramWebApp.API_BASE}users?id=eq.${student.data[0].user_id}`, { headers: window.TelegramWebApp.headers });
                 const milestone = await axios.get(`${window.TelegramWebApp.API_BASE}milestones?id=eq.${submission.milestone_id}`, { headers: window.TelegramWebApp.headers });
-
-                return {
-                    submission,
-                    student: student.data[0],
-                    user: user.data[0],
-                    milestone: milestone.data[0],
-                };
+                const deadline = new Date(milestone.data[0].deadline);
+                if (deadline.getDate() < new Date().getDate() && ((deadline.getMonth() <= new Date().getMonth() && deadline.getFullYear() === new Date().getFullYear()) || (deadline.getFullYear() < new Date().getFullYear()))) {
+                    return {
+                        submission,
+                        student: student.data[0],
+                        user: user.data[0],
+                        milestone: milestone.data[0],
+                    };
+                }
             })
         );
 

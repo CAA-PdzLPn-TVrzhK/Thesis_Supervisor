@@ -126,13 +126,14 @@
 .feedback-info-container-form-block-successful,
 .feedback-info-container-form-block-unsuccessful {
     margin-top: 10px;
-    padding: 10px 12px;
+    padding: 16px 40px 16px 16px;
     border-radius: 6px;
     font-size: 0.95rem;
     font-weight: 500;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: relative;
 }
 
 .feedback-info-container-form-block-successful {
@@ -147,9 +148,16 @@
 
 .feedback-info-container-form-block-successful-close,
 .feedback-info-container-form-block-unsuccessful-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    border-radius: 50%;
+    padding: 4px;
+    z-index: 10;
     cursor: pointer;
     color: inherit;
-    margin-left: 10px;
     transition: transform 0.2s;
 }
 .feedback-info-container-form-block-successful-close:hover,
