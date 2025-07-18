@@ -100,7 +100,7 @@
     display: flex;
     flex-direction: column;
     flex: 1;
-    gap: 10px;
+    gap: 5px;
 }
 
 .submissions-list-of-draft-addition-element-info {
@@ -124,7 +124,7 @@
 }
 
 .submissions-list-of-draft-main-element:last-child {
-    margin-bottom: 0;
+    margin-bottom: 3px;
 }
 
 .submissions-list-of-draft-main-element-info-element-label {
@@ -137,6 +137,13 @@
     color: #003d66;
 }
 
+.submissions-list-of-draft-main-element-info-element-value.href {
+    color: #005b99;
+    font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 .submissions-list-of-draft-addition-element-info-left-block-element,
 .submissions-list-of-draft-addition-element-info-right-block-element {
     color: #005b99;
@@ -147,7 +154,8 @@
 }
 
 .submissions-list-of-draft-addition-element-info-left-block-element:hover,
-.submissions-list-of-draft-addition-element-info-right-block-element:hover {
+.submissions-list-of-draft-addition-element-info-right-block-element:hover,
+.submissions-list-of-draft-main-element-info-element-value.href:hover {
     color: #0796FB;
     transform: translateY(-1px);
 }
@@ -155,7 +163,7 @@
 @media (max-width: 600px) {
     .submissions-list-of-draft-main-element-info {
         flex-direction: column;
-        gap: 10px;
+        gap: 3px;
     }
 
     .submissions-list-of-draft-block-element-label {
@@ -167,7 +175,7 @@
 @media (max-width: 315px) {
     .submissions-list-of-draft-main-element-info {
         flex-direction: column;
-        gap: 5px;
+        gap: 2px;
     }
 
     .submissions-list-of-draft-main-element-info-element-label {

@@ -7,6 +7,7 @@ import StudentInfo from "./cardElements/StudentInfo/StudentInfo.jsx";
 import MilestoneInfo from "./cardElements/MilestoneInfo/MilestoneInfo.jsx";
 import ThesisInfo from "./cardElements/ThesisInfo/ThesisInfo.jsx";
 import DraftInfo from "./cardElements/DraftInfo/DraftInfo.jsx";
+import Feedback from "./cardElements/Feedback/Feedback.jsx";
 
 class Dashboard extends React.Component {
     constructor(props) {
@@ -21,12 +22,14 @@ class Dashboard extends React.Component {
             milestoneInfo: null,
             draft: null,
             thesis: null,
+            feedback: null,
         }
 
         this.changeStudentInfo = this.changeStudentInfo.bind(this);
         this.changeMilestoneInfo = this.changeMilestoneInfo.bind(this);
         this.changeThesis = this.changeThesis.bind(this);
         this.changeDraft = this.changeDraft.bind(this);
+        this.changeFeedback = this.changeFeedback.bind(this);
     }
 
     changeStudentInfo(data) {
@@ -54,6 +57,13 @@ class Dashboard extends React.Component {
         this.setState(() => {
             return {
                 draft: data,
+            }
+        })
+    }
+    changeFeedback(data) {
+        this.setState(() => {
+            return {
+                feedback: data,
             }
         })
     }
@@ -143,6 +153,10 @@ class Dashboard extends React.Component {
                     <DraftInfo close={this.changeDraft} data={this.state.draft}/>,
                     document.getElementById("modal-root")
                 )}
+                {this.state.feedback!==null && ReactDOM.createPortal(
+                    <Feedback close={this.changeFeedback} data={this.state.feedback}/>,
+                    document.getElementById("modal-root")
+                )}
                 <div className="submissions-container-title"> unverified submissions </div>
                 <div className="submissions-list-of-draft">
                     {this.state.data.map((submission, submissionIndex) => {
@@ -178,6 +192,9 @@ class Dashboard extends React.Component {
                                             <div className="submissions-list-of-draft-main-element-info-element">
                                                 <div className="submissions-list-of-draft-main-element-info-element-label"> Milestone deadline: </div>
                                                 <div className="submissions-list-of-draft-main-element-info-element-value"> {this.getDate(submission.milestone.deadline)} </div>
+                                            </div>
+                                            <div className="submissions-list-of-draft-main-element-info-element">
+                                                <div className="submissions-list-of-draft-main-element-info-element-value href" onClick={() => this.changeFeedback(submission)}> Give feedback </div>
                                             </div>
                                         </div>
                                         <IconArrowBarRight size={20} onClick={() => this.flipCard(submissionIndex)} className="submissions-list-of-draft-right-arrow"/>
