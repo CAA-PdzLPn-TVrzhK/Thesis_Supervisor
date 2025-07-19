@@ -1,6 +1,6 @@
 
 import React from "react"
-import { IconUser, IconCalendar, IconLayoutDashboard } from "@tabler/icons-react";
+import { IconUser, IconCalendar, IconLayoutDashboard, IconAlignCenter } from "@tabler/icons-react";
 import "./BasePageComponent.css"
 
 class Futter extends React.Component {
@@ -16,6 +16,7 @@ class Futter extends React.Component {
                     <span className="futter-nav-item" onClick={() => this.handleNav("profile")}> <IconUser size={28}/> </span>
                     <span className="futter-nav-item" onClick={() => this.handleNav("calendar")}> <IconCalendar size={28}/> </span>
                     <span className="futter-nav-item" onClick={() => this.handleNav("dashboard")}> <IconLayoutDashboard size={28}/> </span>
+                    <span className="futter-nav-item" onClick={() => this.handleNav("students")}> <IconAlignCenter size={28}/> </span>
                 </div>
             </div>
         )
