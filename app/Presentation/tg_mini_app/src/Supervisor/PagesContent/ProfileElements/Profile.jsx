@@ -74,9 +74,9 @@ class Profile extends React.Component {
                     <div className={'profile-photo'}>
                         <div className={'photo-placeholder'}>
                             {this.state.imageError ? (
-                                <img src="https://ds-zvyozdochka-yarcevo-r66.gosweb.gosuslugi.ru/netcat_files/21/10/Bez_foto_7.jpg" alt="No photo" className={'photo'}/>
+                                <img src="https://ds-zvyozdochka-yarcevo-r66.gosweb.gosuslugi.ru/netcat_files/21/10/Bez_foto_7.jpg" alt="" className={'photo'}/>
                             ) : (
-                                <img src={this.state.image} alt="Your photo" className={'photo'}/>
+                                <img src={this.state.image} alt="" className={'photo'}/>
                             )}
                         </div>
                     </div>

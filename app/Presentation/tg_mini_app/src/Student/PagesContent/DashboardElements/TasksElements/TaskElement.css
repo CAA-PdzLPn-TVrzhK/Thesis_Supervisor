@@ -263,23 +263,12 @@
     letter-spacing: 0.5px;
 }
 
-.check-last-submission-button {
-    background: linear-gradient(to right, #4da6ff, #66b3ff);
-    border: 1px solid #80bdff;
-}
-
-.check-last-submission-button:hover {
-    background: linear-gradient(to right, #3a94ee, #5aa5f5);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(58, 148, 238, 0.35);
-}
-
-.upload-draft-button {
+.info-button {
     background: linear-gradient(to right, #5dc2ff, #7ad0ff);
     border: 1px solid #90d5ff;
 }
 
-.upload-draft-button:hover {
+.info-button:hover {
     background: linear-gradient(to right, #4ab0f0, #6ac5ff);
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(74, 176, 240, 0.35);

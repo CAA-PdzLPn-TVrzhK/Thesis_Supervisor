@@ -7,6 +7,8 @@ import {getLastUploadingStatus} from "./getLastUploadingStatus.jsx";
 import {IconX} from "@tabler/icons-react";
 import ReactDOM from "react-dom";
 import LastSubmission from "./LastSubmission/LastSubmission.jsx";
+import UploadingPage from "./UploadingPage/UploadingPage.jsx";
+import Feedback from "./Feedback/Feedback.jsx";
 
 class TaskManager extends React.Component {
     constructor(props) {
@@ -20,6 +22,7 @@ class TaskManager extends React.Component {
             lastSubmission: null,
             lastSubmissionChecked: false,
             uploadingDraft: false,
+            feedback: false,
         }
         this.closeTask = this.closeTask.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -27,6 +30,7 @@ class TaskManager extends React.Component {
         this.resetSubmissionStatus = this.resetSubmissionStatus.bind(this);
         this.checkLastSubmission = this.checkLastSubmission.bind(this);
         this.uploadDraft = this.uploadDraft.bind(this);
+        this.checkFeedback = this.checkFeedback.bind(this);
     }
 
     checkLastSubmission() {
@@ -40,6 +44,13 @@ class TaskManager extends React.Component {
         this.setState((p) => {
             return {
                 uploadingDraft: !p.uploadingDraft,
+            }
+        })
+    }
+    checkFeedback() {
+        this.setState((p) => {
+            return {
+                feedback: !p.feedback,
             }
         })
     }
@@ -129,6 +140,14 @@ class TaskManager extends React.Component {
                     <LastSubmission data = {this.state.lastSubmission} close = {this.checkLastSubmission} milestoneId = {this.state.data.id}/>,
                     document.getElementById("modal-root")
                 )}
+                {this.state.uploadingDraft && ReactDOM.createPortal(
+                    <UploadingPage close = {this.uploadDraft} milestone = {this.state.data}/>,
+                    document.getElementById("modal-root")
+                )}
+                {this.state.feedback && ReactDOM.createPortal(
+                    <Feedback close = {this.checkFeedback} milestone = {this.state.data}/>,
+                    document.getElementById("modal-root")
+                )}
             <div className = "dashboard-task-container">
                 <div className = "dashboard-task-content-info"> Milestone info </div>
                 <IconX size={20} onClick={this.closeTask} className="dashboard-task-content-close-button"/>
@@ -163,32 +182,11 @@ class TaskManager extends React.Component {
                             )}
                     </div>
                     <div className="button-task-container">
-                        <button onClick={this.checkLastSubmission} className="check-last-submission-button"> check last submission </button>
-                        <button onClick={this.uploadDraft} className="upload-draft-button"> upload draft </button>
+                        <button onClick={this.checkLastSubmission} className="info-button"> last submission </button>
+                        <button onClick={this.uploadDraft} className="info-button"> upload draft </button>
+                        <button onClick={this.checkFeedback} className="info-button"> feedback </button>
                     </div>
                 </div>
-            {/*    <form className = "dashboard-task-content-form">*/}
-            {/*        <label>*/}
-            {/*            <input type="text" placeholder="Write your draft" className = "dashboard-task-content-form-input" onChange={this.handleInputChange}></input>*/}
-            {/*        </label>*/}
-            {/*        <button type={"button"} className = "dashboard-task-content-form-submit-button" onClick={this.sendSolution}>*/}
-            {/*            Submit*/}
-            {/*        </button>*/}
-            {/*    </form>*/}
-            {/*    {this.state.submission_status === null ?*/}
-            {/*        <div></div> :*/}
-            {/*        (this.state.submission_status === true ?*/}
-            {/*            <div className = "successful-submit-block">*/}
-            {/*                <div className = "results-submission-content"> Successful submit </div>*/}
-            {/*                <button onClick={this.resetSubmissionStatus} className = "close-results-submission-button"> Close </button>*/}
-            {/*            </div> :*/}
-            {/*            <div className = "non-successful-submit-block">*/}
-            {/*                <div>*/}
-            {/*                    <div className = "results-submission-content">Unsuccessful submit</div>*/}
-            {/*                    <div  className = "results-submission-content-optional">Please, write your draft</div>*/}
-            {/*                </div>*/}
-            {/*                <button onClick={this.resetSubmissionStatus} className = "close-results-submission-button"> Close </button>*/}
-            {/*            </div>)}*/}
             </div>
             </div>
         )
