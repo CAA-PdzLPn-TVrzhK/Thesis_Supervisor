@@ -46,7 +46,6 @@ The system addresses the common challenges in thesis supervision: scattered comm
   <img src="docs/assets/screenshots/profile.jpg" width="300" alt="MiniApp Profile">
   <img src="docs/assets/screenshots/dashboard.jpg" width="300" alt="MiniApp Dashboard">
   <img src="docs/assets/screenshots/leaderboard.jpg" width="300" alt="MiniApp Leaderboard">
-  <img src="docs/assets/screenshots/calendar.jpg" width="300" alt="MiniApp Calendar">
 </p>
 
 ## Feature Roadmap
