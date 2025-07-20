@@ -31,8 +31,7 @@ The system addresses the common challenges in thesis supervision: scattered comm
 ### Telegram Bot
 
 <p align="center">
-  <img src="docs/assets/screenshots/telegram_home.png" width="300" alt="Telegram Home">
-  <img src="docs/assets/screenshots/telegram_profile.png" width="300" alt="Telegram Profile">
+  <img src="docs/assets/screenshots/start.jpg" width="300" alt="Telegram Start">
 </p>
 
 ### BackOffice
@@ -44,8 +43,10 @@ The system addresses the common challenges in thesis supervision: scattered comm
 ### MiniApp
 
 <p align="center">
-  <img src="docs/assets/screenshots/meeting_schedule.png" width="300" alt="Meeting Schedule">
-  <img src="docs/assets/screenshots/submission.png" width="300" alt="Submission Panel">
+  <img src="docs/assets/screenshots/profile.jpg" width="300" alt="MiniApp Profile">
+  <img src="docs/assets/screenshots/dashboard.jpg" width="300" alt="MiniApp Dashboard">
+  <img src="docs/assets/screenshots/leaderboard.jpg" width="300" alt="MiniApp Leaderboard">
+  <img src="docs/assets/screenshots/calendar.jpg" width="300" alt="MiniApp Calendar">
 </p>
 
 ## Feature Roadmap
