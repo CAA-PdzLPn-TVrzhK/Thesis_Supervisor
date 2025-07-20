@@ -63,5 +63,8 @@
    - Yes — no deployment blockers were reported during the meeting
 
 9. **What two other sections the customer would like to be included in the ReadMe?**  
-   1. **Screenshots** of main views (dashboard, profile settings, calendar)  
-   2. **Video Demo** link (short walkthrough)
+   - **Screenshots** of main views (dashboard, profile settings, calendar)  
+   - **Video Demo** link (short walkthrough)
+
+10. **The full transcript and recording of the meeting:**
+   - https://drive.google.com/drive/folders/1-0tyD0ml0euLEZfQNDJeuZOKW05XrESg?hl=ru
