@@ -28,20 +28,20 @@ The system addresses the common challenges in thesis supervision: scattered comm
 
 > *Visual clarity is essential for understanding the product's interface and functionality. This section provides real screenshots from the current version of the system to help customers and stakeholders preview the user experience.*
 
-### Telegram Mini App
+### Telegram Bot
 
 <p align="center">
   <img src="docs/assets/screenshots/telegram_home.png" width="300" alt="Telegram Home">
   <img src="docs/assets/screenshots/telegram_profile.png" width="300" alt="Telegram Profile">
 </p>
 
-### Web Dashboard (BackOffice)
+### BackOffice
 
 <p align="center">
   <img src="docs/assets/screenshots/web_dashboard.png" width="600" alt="Web Dashboard">
 </p>
 
-### Meeting Scheduling and Submissions
+### MiniApp
 
 <p align="center">
   <img src="docs/assets/screenshots/meeting_schedule.png" width="300" alt="Meeting Schedule">
