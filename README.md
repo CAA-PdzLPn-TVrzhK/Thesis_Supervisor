@@ -24,6 +24,30 @@ The Thesis Supervisor System is designed to streamline the thesis supervision pr
 
 The system addresses the common challenges in thesis supervision: scattered communication, lack of progress visibility, and inefficient coordination between students and supervisors.
 
+## 📸 Product Screenshots (for customer)
+
+> *Visual clarity is essential for understanding the product's interface and functionality. This section provides real screenshots from the current version of the system to help customers and stakeholders preview the user experience.*
+
+### Telegram Mini App
+
+<p align="center">
+  <img src="docs/assets/screenshots/telegram_home.png" width="300" alt="Telegram Home">
+  <img src="docs/assets/screenshots/telegram_profile.png" width="300" alt="Telegram Profile">
+</p>
+
+### Web Dashboard (BackOffice)
+
+<p align="center">
+  <img src="docs/assets/screenshots/web_dashboard.png" width="600" alt="Web Dashboard">
+</p>
+
+### Meeting Scheduling and Submissions
+
+<p align="center">
+  <img src="docs/assets/screenshots/meeting_schedule.png" width="300" alt="Meeting Schedule">
+  <img src="docs/assets/screenshots/submission.png" width="300" alt="Submission Panel">
+</p>
+
 ## Feature Roadmap
 
 ### ✅ Implemented Features
