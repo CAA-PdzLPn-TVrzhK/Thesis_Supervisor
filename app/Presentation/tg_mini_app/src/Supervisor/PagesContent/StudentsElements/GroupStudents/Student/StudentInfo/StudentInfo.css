@@ -15,7 +15,7 @@
 
 .navigation-bar-student-info-container {
     padding: 20px;
-    background-color: #f8fbff;
+    background-color: white;
     display: flex;
     flex-direction: column;
     gap: 16px;

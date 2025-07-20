@@ -41,21 +41,11 @@ class NavigationBar extends React.Component {
                     <div className={`navigation-bar-header-title`}> Student Card </div>
                     <IconSquareRoundedXFilled size={20} onClick={this.close} className={`navigation-bar-close-icon`}/>
                 </div>
-                {this.state.studentInfo &&
-                    <div>
-                        <StudentInfo data={this.props.data}/>
-                    </div>
-                }
-                {this.state.thesisInfo &&
-                    <div>
-                        <ThesisInfo data={this.props.data}/>
-                    </div>
-                }
-                {this.state.submissionInfo &&
-                    <div>
-                        <SubmissionInfo data={this.props.data}/>
-                    </div>
-                }
+                <div className="navigation-bar-scroll-content">
+                    {this.state.studentInfo && <StudentInfo data={this.props.data}/>}
+                    {this.state.thesisInfo && <ThesisInfo data={this.props.data}/>}
+                    {this.state.submissionInfo && <SubmissionInfo data={this.props.data}/>}
+                </div>
                 <div className={`navigation-bar-icons-block`}>
                     <IconUser size={20} onClick={() => this.changePage("studentInfo")} className={`navigation-bar-page-icon`}/>
                     <IconBook size={20} onClick={() => this.changePage("thesisInfo")} className={`navigation-bar-page-icon`}/>
