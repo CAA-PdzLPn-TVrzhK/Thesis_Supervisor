@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { LineChart, Line, XAxis, YAxis, Tooltip, PieChart, Pie, Cell, ResponsiveContainer, Legend } from "recharts";
 import axios from "axios";
+import { useTheme } from './ThemeContext';
+import { Link } from 'react-router-dom';
 
 const API_URL = 'https://dprwupbzatrqmqpdwcgq.supabase.co/rest/v1/';
 const API_HEADERS = {
@@ -9,6 +11,49 @@ const API_HEADERS = {
 };
 
 const COLORS = ["#000000", "#6366F1", "#9CA3AF"];
+
+const TEXTS = {
+  en: {
+    mainPage: 'Main Page',
+    students: 'Students',
+    supervisors: 'Supervisors',
+    pendingRequests: 'Pending Requests',
+    groups: 'Groups',
+    studentAdditions: 'Student Additions Over Time',
+    requestsStatus: 'Requests Status',
+    studentsAdded: 'Students Added',
+    milestones: 'Upcoming Milestones',
+    recentActivity: 'Recent Activity',
+    approved: 'Approved',
+    pending: 'In Queue',
+    rejected: 'Rejected',
+    groupCreated: 'Group',
+    studentAdded: 'Student',
+    supervisorAdded: 'Supervisor',
+    milestoneUpdated: 'Milestone',
+  },
+  ru: {
+    mainPage: 'Главная страница',
+    students: 'Студенты',
+    supervisors: 'Научные руководители',
+    pendingRequests: 'Ожидающие заявки',
+    groups: 'Группы',
+    studentAdditions: 'Добавление студентов по времени',
+    requestsStatus: 'Статус заявок',
+    studentsAdded: 'Добавлено студентов',
+    milestones: 'Ближайшие вехи',
+    recentActivity: 'Последние действия',
+    approved: 'Одобрено',
+    pending: 'В очереди',
+    rejected: 'Отклонено',
+    groupCreated: 'Группа',
+    studentAdded: 'Студент',
+    supervisorAdded: 'Руководитель',
+    milestoneUpdated: 'Веха',
+  }
+};
+
+const getLang = () => localStorage.getItem('lang') || 'en';
 
 const STATUS_LABELS = {
   Approved: 'Approved',
@@ -90,6 +135,9 @@ const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent
 };
 
 const Dashboard = () => {
+  const { theme } = useTheme();
+  const lang = getLang();
+  const t = TEXTS[lang];
   const [stats, setStats] = useState({
     students: 0,
     supervisors: 0,
@@ -157,7 +205,7 @@ const Dashboard = () => {
             }
           });
         } else {
-          // All time: by month
+          // All time: by month, начиная с первого студента
           if (students.length > 0) {
             const minDate = new Date(Math.min(...students.map(s => new Date(s.created_at))));
             const maxDate = new Date(Math.max(...students.map(s => new Date(s.created_at))));
@@ -170,6 +218,8 @@ const Dashboard = () => {
               const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
               if (buckets[key] !== undefined) buckets[key]++;
             });
+          } else {
+            buckets = {}; // если студентов нет, график пустой
           }
         }
         const trend = Object.entries(buckets).map(([date, count]) => ({ date, count }));
@@ -256,34 +306,51 @@ const Dashboard = () => {
   }, [studentPeriod]);
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen text-black">
-      <h1 className="text-2xl font-bold mb-6">Main Page</h1>
+    <div className="p-6 min-h-screen text-black dark:text-white bg-gray-50 dark:bg-neutral-900 transition-colors">
+      <h1 className="text-2xl font-bold mb-6">{t.mainPage}</h1>
       {/* KPI CARDS */}
       <div className="grid grid-cols-4 gap-4 mb-6">
         {[
-          { label: "Students", value: stats.students },
-          { label: "Supervisors", value: stats.supervisors },
-          { label: "Pending Requests", value: stats.pendingRequests },
-          { label: "Groups", value: stats.groups },
+          { label: t.students, value: stats.students, page: '/students' },
+          { label: t.supervisors, value: stats.supervisors, page: '/supervisors' },
+          { label: t.pendingRequests, value: stats.pendingRequests },
+          { label: t.groups, value: stats.groups, page: '/groups' },
         ].map((item, idx) => (
-          <motion.div
-            key={idx}
-            className="bg-white shadow-md rounded-xl p-4 flex flex-col items-center justify-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.1 }}
-          >
-            <p className="text-lg">{item.label}</p>
-            <h2 className="text-3xl font-bold">{item.value}</h2>
-          </motion.div>
+          item.page ? (
+            <Link to={item.page} key={idx} style={{ textDecoration: 'none' }}>
+              <motion.div
+                className={`bg-white dark:bg-neutral-800 shadow-md rounded-xl p-4 flex flex-col items-center justify-center border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer hover:bg-gray-100 dark:hover:bg-neutral-700`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                tabIndex={0}
+                role="button"
+                aria-label={`Go to ${item.label}`}
+              >
+                <p className="text-lg text-black dark:text-white">{item.label}</p>
+                <h2 className="text-3xl font-bold text-black dark:text-white">{item.value}</h2>
+              </motion.div>
+            </Link>
+          ) : (
+            <motion.div
+              key={idx}
+              className="bg-white dark:bg-neutral-800 shadow-md rounded-xl p-4 flex flex-col items-center justify-center border border-neutral-200 dark:border-neutral-700 transition-colors"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.1 }}
+            >
+              <p className="text-lg text-black dark:text-white">{item.label}</p>
+              <h2 className="text-3xl font-bold text-black dark:text-white">{item.value}</h2>
+            </motion.div>
+          )
         ))}
       </div>
       {/* CHARTS */}
       <div className="grid grid-cols-2 gap-6 mb-6">
         {/* Student addition chart */}
-        <div className="bg-white shadow-md rounded-xl p-4 dashboard-chart-container">
+        <div className="bg-white dark:bg-neutral-800 shadow-md rounded-xl p-4 dashboard-chart-container border border-neutral-200 dark:border-neutral-700 transition-colors">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Student Additions Over Time</h3>
+            <h3 className="text-lg font-semibold text-black dark:text-white">{t.studentAdditions}</h3>
             <select
               className="dashboard-chart-select"
               value={studentPeriod}
@@ -302,37 +369,35 @@ const Dashboard = () => {
                 axisLine={false}
                 tickLine={false}
               />
-              <YAxis allowDecimals={false} axisLine={false} tickLine={false} tick={{ fill: '#000', fontSize: 13 }} />
+              <YAxis allowDecimals={false} axisLine={false} tickLine={false} tick={{ fill: theme === 'dark' ? '#fff' : '#000', fontSize: 13 }} />
               <Tooltip
-                contentStyle={{}} // убираем inline, используем .dashboard-chart-tooltip
-                wrapperClassName="dashboard-chart-tooltip"
-                labelClassName="dashboard-chart-tooltip-label"
-                itemClassName="dashboard-chart-tooltip-item"
-                cursor={{ fill: '#000', fillOpacity: 0.06 }}
+                contentStyle={{ background: theme === 'dark' ? '#23272f' : '#fff', borderRadius: 10, boxShadow: '0 2px 8px rgba(0,0,0,0.08)', border: `1px solid ${theme === 'dark' ? '#fff' : '#000'}`, color: theme === 'dark' ? '#fff' : '#000' }}
+                labelStyle={{ color: theme === 'dark' ? '#fff' : '#000', fontWeight: 600 }}
+                itemStyle={{ color: theme === 'dark' ? '#fff' : '#000', fontWeight: 500 }}
+                cursor={{ fill: theme === 'dark' ? '#fff' : '#000', fillOpacity: 0.06 }}
               />
               <Legend
                 verticalAlign="top"
                 align="right"
                 iconType="circle"
-                wrapperStyle={{}} // убираем inline, используем .dashboard-chart-legend
-                className="dashboard-chart-legend"
+                wrapperStyle={{ fontSize: 13, color: theme === 'dark' ? '#fff' : '#000', marginBottom: 8, fontWeight: 500 }}
               />
               <Line
                 type="monotone"
                 dataKey="count"
-                stroke="#000"
+                stroke={theme === 'dark' ? '#fff' : '#000'}
                 strokeWidth={3}
-                dot={{ r: 5, fill: '#fff', stroke: '#000', strokeWidth: 2, filter: 'drop-shadow(0 1px 4px #0001)' }}
-                activeDot={{ r: 7, fill: '#000', stroke: '#fff', strokeWidth: 2, filter: 'drop-shadow(0 2px 8px #0002)' }}
-                name="Students Added"
+                dot={{ r: 5, fill: theme === 'dark' ? '#23272f' : '#fff', stroke: theme === 'dark' ? '#fff' : '#000', strokeWidth: 2, filter: 'drop-shadow(0 1px 4px #0001)' }}
+                activeDot={{ r: 7, fill: theme === 'dark' ? '#fff' : '#000', stroke: theme === 'dark' ? '#23272f' : '#fff', strokeWidth: 2, filter: 'drop-shadow(0 2px 8px #0002)' }}
+                name={t.studentsAdded}
                 isAnimationActive={true}
               />
             </LineChart>
           </ResponsiveContainer>
         </div>
         {/* Pie Chart */}
-        <div className="bg-white shadow-md rounded-xl p-4">
-          <h3 className="text-lg font-semibold mb-4">Requests Status</h3>
+        <div className="bg-white dark:bg-neutral-800 shadow-md rounded-xl p-4 border border-neutral-200 dark:border-neutral-700 transition-colors">
+          <h3 className="text-lg font-semibold mb-4 text-black dark:text-white">{t.requestsStatus}</h3>
           <ResponsiveContainer width="100%" height={200}>
             <PieChart>
               <Pie
@@ -346,10 +411,10 @@ const Dashboard = () => {
                 isAnimationActive={false}
               >
                 {requestStatus.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell key={`cell-${index}`} fill={theme === 'dark' ? (index === 0 ? '#fff' : '#888') : COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value, name) => [`${value}`, STATUS_LABELS[name] || name]} />
+              <Tooltip formatter={(value, name) => [`${value}`, STATUS_LABELS[name] || name]} contentStyle={{ background: theme === 'dark' ? '#23272f' : '#fff', color: theme === 'dark' ? '#fff' : '#000', border: `1px solid ${theme === 'dark' ? '#fff' : '#000'}` }} />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -357,23 +422,23 @@ const Dashboard = () => {
       {/* MILESTONES & RECENT ACTIVITY */}
       <div className="grid grid-cols-2 gap-6">
         {/* Milestones */}
-        <div className="bg-white shadow-md rounded-xl p-4">
-          <h3 className="text-lg font-semibold mb-4">Upcoming Milestones</h3>
+        <div className="bg-white dark:bg-neutral-800 shadow-md rounded-xl p-4 border border-neutral-200 dark:border-neutral-700 transition-colors">
+          <h3 className="text-lg font-semibold mb-4 text-black dark:text-white">{t.milestones}</h3>
           <ul className="space-y-3">
             {milestones.map((m) => (
-              <li key={m.id} className="flex justify-between border-b pb-2">
+              <li key={m.id} className="flex justify-between border-b pb-2 border-neutral-200 dark:border-neutral-700">
                 <span>{m.title}</span>
-                <span className="text-gray-600">{m.date ? new Date(m.date).toLocaleDateString() : ''}</span>
+                <span className="text-gray-600 dark:text-gray-300">{m.date ? new Date(m.date).toLocaleDateString(lang === 'ru' ? 'ru-RU' : 'en-US') : ''}</span>
               </li>
             ))}
           </ul>
         </div>
         {/* Recent Activity */}
-        <div className="bg-white shadow-md rounded-xl p-4">
-          <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
-          <ul className="space-y-2 text-gray-700">
+        <div className="bg-white dark:bg-neutral-800 shadow-md rounded-xl p-4 border border-neutral-200 dark:border-neutral-700 transition-colors">
+          <h3 className="text-lg font-semibold mb-4 text-black dark:text-white">{t.recentActivity}</h3>
+          <ul className="space-y-2 text-gray-700 dark:text-gray-300">
             {recentActivity.map((a, idx) => (
-              <li key={idx}>• {a}</li>
+              <li key={idx}>• {a.replace('Student', t.studentAdded).replace('Supervisor', t.supervisorAdded).replace('Milestone', t.milestoneUpdated).replace('Group', t.groupCreated)}</li>
             ))}
           </ul>
         </div>

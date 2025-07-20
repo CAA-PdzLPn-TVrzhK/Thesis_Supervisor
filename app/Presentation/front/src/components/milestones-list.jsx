@@ -4,6 +4,7 @@ import './index.css';
 import React, { useEffect, useState } from 'react';
 import ControlPanel from './control-panel.jsx';
 import MilestoneProfile from './milestoneProfile.jsx';
+import dayjs from 'dayjs';
 
 const { Column } = Table;
 const { TextArea } = Input;
@@ -24,6 +25,7 @@ export default function MilestonesList({ onBackToMenu }) {
   const [thesisIdToTitle, setThesisIdToTitle] = useState({});
   const [current, setCurrent] = useState('list');
   const [selectedMilestone, setSelectedMilestone] = useState(null);
+  const [originalDisplay, setOriginalDisplay] = useState([]); // для отката
 
   useEffect(() => {
     async function fetchAll() {
@@ -147,72 +149,24 @@ export default function MilestonesList({ onBackToMenu }) {
 
   const handleAddMilestone = () => {
     setCurrent('add');
-    setSelectedMilestone({
-      thesis_id: null,
-      title: '',
-      description: '',
-      deadline: new Date().toISOString(),
-      weight: 0,
-      status: 'not started',
-      notified: 'created',
-      start: new Date().toISOString()
-    });
+    setSelectedMilestone(null);
   };
 
-  const handleBack = async () => {
-    if (selectedRows.length > 0) {
-      if (confirm('You want to cancel editing? Unsaved changes will be lost.')) {
-        try {
-          // Удаляем выбранные записи из базы данных
-          await Promise.all(
-            selectedRows.map(id =>
-              axios.delete(`${API_URL}milestones?id=eq.${id}`, { headers: API_HEADERS })
-            )
-          );
-          
-          // Обновляем локальное состояние
-          const updatedData = data.filter(item => !selectedRows.includes(item.id));
-          const updatedDisplay = display.filter(item => !selectedRows.includes(item.id));
-          
-          setData(updatedData);
-          setDisplay(updatedDisplay);
-          setIsEditing(false);
-          setSelectedRows([]);
-          
-          console.log('✅ Редактирование отменено, несохраненные данные удалены');
-        } catch (err) {
-          console.error('❌ Ошибка при отмене редактирования:', err);
-          alert('Ошибка при отмене: ' + (err.response?.data?.message || err.message));
-        }
-      }
-    } else {
-      setIsEditing(false);
-      setSelectedRows([]);
-    }
+  // Вход в режим редактирования: сохраняем копию display
+  const handleEdit = () => {
+    setOriginalDisplay(display);
+    setIsEditing(true);
+    setSelectedRows([]);
   };
 
-  const handleDeleteMilestones = async () => {
+  // Удаление: только локально
+  const handleDeleteMilestones = () => {
     if (selectedRows.length === 0) {
-      alert('Выберите milestones для удаления');
+      alert('Select milestones to delete');
       return;
     }
-    if (!confirm(`Удалить ${selectedRows.length} выбранных milestones?`)) {
-      return;
-    }
-    try {
-      await Promise.all(
-        selectedRows.map(id =>
-          axios.delete(`${API_URL}milestones?id=eq.${id}`, { headers: API_HEADERS })
-        )
-      );
-      setDisplay(display.filter(item => !selectedRows.includes(item.id)));
-      setData(data.filter(item => !selectedRows.includes(item.id)));
-      setIsEditing(false);
-      setSelectedRows([]);
-    } catch (err) {
-      console.error('Ошибка при удалении milestones:', err);
-      alert('Ошибка при удалении milestones: ' + (err.response?.data?.message || err.message));
-    }
+    setDisplay(display.filter(item => !selectedRows.includes(item.id)));
+    setSelectedRows([]);
   };
 
   const handleCellEdit = (recordId, field, value) => {
@@ -223,59 +177,40 @@ export default function MilestonesList({ onBackToMenu }) {
     setDisplay(updatedData);
   };
 
+  // Save: удаляем из БД только те, которых нет в display
   const handleSaveSelectedMilestones = async () => {
-    if (selectedRows.length === 0) {
-      alert('Выберите milestones для сохранения');
+    const deletedIds = data.map(m => m.id).filter(id => !display.some(d => d.id === id));
+    if (deletedIds.length === 0) {
+      setIsEditing(false);
       return;
     }
     try {
-      const selectedMilestones = data.filter(item => selectedRows.includes(item.id));
-      const invalidMilestones = selectedMilestones.filter(milestone =>
-        !milestone.title || !milestone.thesis_id
+      await Promise.all(
+        deletedIds.map(id =>
+          axios.delete(`${API_URL}milestones?id=eq.${id}`, { headers: API_HEADERS })
+        )
       );
-      if (invalidMilestones.length > 0) {
-        alert('Пожалуйста, заполните все обязательные поля: Title, Thesis');
-        return;
-      }
-      
-      for (const milestone of selectedMilestones) {
-        const updateData = {
-          thesis_id: milestone.thesis_id,
-          title: milestone.title,
-          description: milestone.description,
-          deadline: milestone.deadline,
-          weight: milestone.weight,
-          status: milestone.status,
-          notified: milestone.notified,
-          start: milestone.start
-        };
-        
-        await axios.patch(
-          `${API_URL}milestones?id=eq.${milestone.id}`,
-          updateData,
-          { headers: API_HEADERS }
-        );
-      }
-      
       // Обновляем данные с сервера
       const milestonesResponse = await axios.get(API_URL + 'milestones', { headers: API_HEADERS });
       const milestones = milestonesResponse.data;
-      
       const enriched = milestones.map(milestone => ({
         ...milestone,
         thesis_title: thesisIdToTitle[milestone.thesis_id] || '—'
       }));
-
       setData(enriched);
       setDisplay(enriched);
       setIsEditing(false);
       setSelectedRows([]);
-      
-      console.log('✅ Milestones успешно сохранены');
     } catch (err) {
-      console.error('❌ Ошибка при сохранении milestones:', err);
-      alert('Ошибка при сохранении: ' + (err.response?.data?.message || err.message));
+      alert('Ошибка при удалении: ' + (err.response?.data?.message || err.message));
     }
+  };
+
+  // Back: откат к оригинальному состоянию
+  const handleBack = () => {
+    setDisplay(originalDisplay.length ? originalDisplay : data);
+    setIsEditing(false);
+    setSelectedRows([]);
   };
 
   if (loading) return <div>Loading…</div>;
@@ -308,7 +243,7 @@ export default function MilestonesList({ onBackToMenu }) {
           onFilter={handleFilter}
           onSort={handleSort}
           onAdd={handleAddMilestone}
-          onEdit={() => setIsEditing(true)}
+          onEdit={handleEdit}
           onDelete={handleDeleteMilestones}
           onSave={isEditing ? handleSaveSelectedMilestones : null}
           onBack={handleBack}
@@ -338,12 +273,12 @@ export default function MilestonesList({ onBackToMenu }) {
               if (!isEditing) {
                 return {
                   onClick: () => {
+                    const fullMilestone = data.find(m => m.id === record.id) || record;
                     setCurrent('profile');
-                    setSelectedMilestone(record);
+                    setSelectedMilestone(fullMilestone);
                   }
                 };
               }
-              // В режиме редактирования не навешиваем обработчик
               return {};
             }}
           >
@@ -416,7 +351,7 @@ export default function MilestonesList({ onBackToMenu }) {
                 isEditing && selectedRows.includes(record.id) ? (
                   <DatePicker
                     showTime
-                    value={text ? new Date(text) : null}
+                    value={text ? dayjs(text) : null}
                     onChange={(date) => handleCellEdit(record.id, 'deadline', date ? date.toISOString() : null)}
                     placeholder="Select deadline"
                     style={{ width: '100%' }}
@@ -511,7 +446,7 @@ export default function MilestonesList({ onBackToMenu }) {
                 isEditing && selectedRows.includes(record.id) ? (
                   <DatePicker
                     showTime
-                    value={text ? new Date(text) : null}
+                    value={text ? dayjs(text) : null}
                     onChange={(date) => handleCellEdit(record.id, 'start', date ? date.toISOString() : null)}
                     placeholder="Select start date"
                     style={{ width: '100%' }}

@@ -24,6 +24,90 @@ export default function NewStudentList({ onBackToMenu }){
     const [years, setYears] = useState([]);
     const [supervisorNameToId, setSupervisorNameToId] = useState({});
     const [groupNameToId, setGroupNameToId] = useState({});
+    const [originalDisplay, setOriginalDisplay] = useState([]); // для отката
+    const [users, setUsers] = useState([]);
+
+    // Функция для обновления данных после переноса
+    const fetchAll = async () => {
+        try{
+            const [newStudentsData, supervisorsData, groupsData] = await Promise.all([
+                axios.get(API_URL + 'new_students', {headers: API_HEADERS}),
+                axios.get(API_URL + 'supervisors', {headers: API_HEADERS}),
+                axios.get(API_URL + 'peer_groups', {headers: API_HEADERS}),
+            ])
+            const newStudents = newStudentsData.data;
+            const supervisors = supervisorsData.data;
+            const peerGroups = groupsData.data;
+            const usersResponse = await axios.get(API_URL + 'users', {headers: API_HEADERS});
+            const users = usersResponse.data;
+            setUsers(users);
+            // Создаем мапы для быстрого поиска ID по именам
+            const supervisorNameToId = {};
+            const groupNameToId = {};
+
+            // Загружаем данные пользователей для супервизоров
+            supervisors.forEach(supervisor => {
+                const user = users.find(u => u.id === supervisor.user_id);
+                if (user) {
+                    const supervisorName = `${user.first_name} ${user.last_name}`.trim();
+                    supervisorNameToId[supervisorName] = supervisor.id;
+                }
+            });
+
+            peerGroups.forEach(group => {
+                groupNameToId[group.name] = group.id;
+            });
+
+            // Сохраняем мапы в состоянии
+            setSupervisorNameToId(supervisorNameToId);
+            setGroupNameToId(groupNameToId);
+            const userIdToUsername = users.reduce((m, u) => {
+                m[u.id] = u.username;
+                return m;
+            }, {});
+            const enriched = newStudents.map(student => {
+                const hasEmptyFields = !student.firstname || !student.lastname || !student.group ||
+                    !student.supervisor || !student.program || !student.departament ||
+                    !student.year || (!student.username && !student.user_id);
+                const isAllFilled = !hasEmptyFields;
+                const isApproved = student.approved === true;
+                let status = 'incomplete';
+                if (isAllFilled && isApproved) {
+                    status = 'approved';
+                } else if (isAllFilled) {
+                    status = 'filled';
+                }
+                // username: сначала из заявки, если нет — из users по user_id
+                const username = student.username || (student.user_id ? userIdToUsername[student.user_id] : '');
+                return {
+                    ...student,
+                    username,
+                    status: status,
+                    statusText: status === 'incomplete' ? 'Empty' :
+                        status === 'filled' ? 'Filled' : 'Done'
+                };
+            });
+            setData(enriched);
+            setDisplay(enriched);
+            setOriginalDisplay(enriched); // Инициализируем для отката
+
+            // Уникальные значения для фильтров
+            const uniqueDepartments = [...new Set(enriched.map(s => s.departament).filter(Boolean))];
+            setDepartments(uniqueDepartments);
+
+            const uniqueGroups = [...new Set(enriched.map(s => s.group).filter(Boolean))];
+            setGroups(uniqueGroups);
+
+            const uniqueSupervisors = [...new Set(enriched.map(s => s.supervisor).filter(Boolean))];
+            setSupervisors(uniqueSupervisors);
+
+            const uniqueYears = [...new Set(enriched.map(s => s.year).filter(Boolean))];
+            setYears(uniqueYears);
+
+        } catch (e){
+            console.error('Ошибка при обновлении данных:', e);
+        }
+    };
 
     useEffect(() => {
         async function fetchAll(){
@@ -61,37 +145,42 @@ export default function NewStudentList({ onBackToMenu }){
                 // Сохраняем мапы в состоянии
                 setSupervisorNameToId(supervisorNameToId);
                 setGroupNameToId(groupNameToId);
+                setUsers(users); // сохраняем пользователей в состояние
 
                 // Обогащаем данные студентов
+                const userIdToUsername = users.reduce((m, u) => {
+                  m[u.id] = u.username;
+                  return m;
+                }, {});
                 const enriched = newStudents.map(student => {
-                                    // Определяем статус заполнения
-                const hasEmptyFields = !student.firstname || !student.lastname || !student.group || 
-                                     !student.supervisor || !student.program || !student.department || 
-                                     !student.year || !student.username;
-                    
-                    const isAllFilled = !hasEmptyFields;
-                    const isApproved = student.approved === true; // предполагаем, что есть поле approved
-                    
-                    let status = 'incomplete';
-                    if (isAllFilled && isApproved) {
-                        status = 'approved';
-                    } else if (isAllFilled) {
-                        status = 'filled';
-                    }
-
-                    return {
-                        ...student,
-                        status: status,
-                        statusText: status === 'incomplete' ? 'Empty' : 
-                                   status === 'filled' ? 'Filled' : 'Done'
-                    };
+                  const hasEmptyFields = !student.firstname || !student.lastname || !student.group || 
+                    !student.supervisor || !student.program || !student.departament || 
+                    !student.year || (!student.username && !student.user_id);
+                  const isAllFilled = !hasEmptyFields;
+                  const isApproved = student.approved === true;
+                  let status = 'incomplete';
+                  if (isAllFilled && isApproved) {
+                    status = 'approved';
+                  } else if (isAllFilled) {
+                    status = 'filled';
+                  }
+                  // username: сначала из заявки, если нет — из users по user_id
+                  const username = student.username || (student.user_id ? userIdToUsername[student.user_id] : '');
+                  return {
+                    ...student,
+                    username,
+                    status: status,
+                    statusText: status === 'incomplete' ? 'Empty' : 
+                      status === 'filled' ? 'Filled' : 'Done'
+                  };
                 });
 
                 setData(enriched);
                 setDisplay(enriched);
+                setOriginalDisplay(enriched); // Инициализируем для отката
 
                 // Уникальные значения для фильтров
-                const uniqueDepartments = [...new Set(enriched.map(s => s.department).filter(Boolean))];
+                const uniqueDepartments = [...new Set(enriched.map(s => s.departament).filter(Boolean))];
                 setDepartments(uniqueDepartments);
 
                 const uniqueGroups = [...new Set(enriched.map(s => s.group).filter(Boolean))];
@@ -178,7 +267,7 @@ export default function NewStudentList({ onBackToMenu }){
     const handleFilter = (filters) => {
       let result = data;
       if (filters.department) {
-        result = result.filter(item => filters.department.includes(item.department));
+        result = result.filter(item => filters.department.includes(item.departament));
       }
       if (filters.group) {
         result = result.filter(item => filters.group.includes(item.group));
@@ -195,188 +284,159 @@ export default function NewStudentList({ onBackToMenu }){
       setDisplay(result);
     };
 
-    const handleAddStudent = async () => {
-        try {
-            // Создаем пустую запись на сервере
-            const emptyStudent = {
-                firstname: '',
-                lastname: '',
-                username: '',
-                supervisor: '',
-                group: '',
-                program: '',
-                department: '',
-                year: '',
-                approved: false
-            };
-            const response = await axios.post(
-                `${API_URL}new_students`,
-                emptyStudent,
-                { headers: API_HEADERS }
-            );
-            // Получаем созданную запись с id от сервера
-            const createdStudent = response.data[0] || response.data;
-            // Обогащаем статусом
-            const hasEmptyFields = !createdStudent.firstname || !createdStudent.lastname || !createdStudent.group || 
-                                   !createdStudent.supervisor || !createdStudent.program || !createdStudent.department || 
-                                   !createdStudent.year || !createdStudent.username;
-            const isAllFilled = !hasEmptyFields;
-            const isApproved = createdStudent.approved === true;
-            let status = 'incomplete';
-            if (isAllFilled && isApproved) {
-                status = 'approved';
-            } else if (isAllFilled) {
-                status = 'filled';
-            }
-            const studentWithStatus = {
-                ...createdStudent,
-                status: status,
-                statusText: status === 'incomplete' ? 'Empty' : 
-                           status === 'filled' ? 'Filled' : 'Done'
-            };
-            const updatedData = [studentWithStatus, ...data];
-            setData(updatedData);
-            setDisplay(updatedData);
-            setIsEditing(true);
-            setSelectedRows([createdStudent.id]);
-            console.log('✅ Добавлен новый студент для заполнения');
-        } catch (err) {
-            console.error('❌ Ошибка при добавлении студента:', err);
-            alert('Ошибка при добавлении: ' + (err.response?.data?.message || err.message));
-        }
+    const handleEdit = () => {
+        setOriginalDisplay(display);
+        setIsEditing(true);
+        setSelectedRows([]);
     };
 
-    const handleBack = async () => {
-        if (selectedRows.length > 0) {
-            if (confirm('You want to cancel editing? Unsaved changes will be lost.')) {
-                try {
-                    // Удаляем выбранные записи из базы данных
-                    await Promise.all(
-                        selectedRows.map(id =>
-                            axios.delete(`${API_URL}new_students?id=eq.${id}`, {headers: API_HEADERS})
-                        )
-                    );
-                    // Обновляем локальное состояние
-                    const updatedData = data.filter(item => !selectedRows.includes(item.id));
-                    const updatedDisplay = display.filter(item => !selectedRows.includes(item.id));
-                    setData(updatedData);
-                    setDisplay(updatedDisplay);
-                    setIsEditing(false);
-                    setSelectedRows([]);
-                    console.log('✅ Редактирование отменено, несохраненные данные удалены');
-                } catch (err) {
-                    console.error('❌ Ошибка при отмене редактирования:', err);
-                    alert('Ошибка при отмене: ' + (err.response?.data?.message || err.message));
-                }
-            }
-        } else {
-            setIsEditing(false);
-            setSelectedRows([]);
-        }
-    };
-
-    const handleDeleteStudents = async () => {
+    const handleDeleteStudents = () => {
         if (selectedRows.length === 0) {
             alert('Выберите студентов для удаления');
             return;
         }
-
-        if (!confirm(`Удалить ${selectedRows.length} выбранных студентов?`)) {
-            return;
-        }
-
-        try {
-            // Удаляем из new_students
-            await Promise.all(
-                selectedRows.map(id =>
-                    axios.delete(`${API_URL}new_students?id=eq.${id}`, {headers: API_HEADERS})
-                )
-            );
-            
-            setDisplay(display.filter(item => !selectedRows.includes(item.id)));
-            setData(data.filter(item => !selectedRows.includes(item.id)));
-            setIsEditing(false);
-            setSelectedRows([]);
-            console.log('✅ Выбранные студенты успешно удалены');
-        } catch (err) {
-            console.error('❌ Ошибка при удалении студентов:', err);
-            alert('Ошибка при удалении студентов: ' + (err.response?.data?.message || err.message));
-        }
+        setDisplay(display.filter(item => !selectedRows.includes(item.id)));
+        setSelectedRows([]);
     };
 
-    const handleCellEdit = (recordId, field, value) => {
-        const updatedData = data.map(item => 
-            item.id === recordId ? { ...item, [field]: value } : item
-        );
-        setData(updatedData);
-        setDisplay(updatedData);
-    };
-
-    const handleSaveSelectedStudents = async () => {
-        if (selectedRows.length === 0) {
-            alert('Выберите студентов для сохранения');
-            return;
-        }
-
-        try {
-            const selectedStudents = data.filter(item => selectedRows.includes(item.id));
-            // Проверяем обязательные поля для всех выбранных студентов
-            const invalidStudents = selectedStudents.filter(student => 
-                !student.firstname || !student.lastname || !student.username
-            );
-            if (invalidStudents.length > 0) {
-                alert('Пожалуйста, заполните все обязательные поля: Имя, Фамилия, Username');
-                return;
-            }
-            // Сохраняем каждого выбранного студента
-            for (const student of selectedStudents) {
-                const updateData = {
-                    firstname: student.firstname,
-                    lastname: student.lastname,
-                    username: student.username,
-                    supervisor: student.supervisor || null,
-                    group: student.group || null,
-                    program: student.program || null,
-                    department: student.department || null,
-                    year: student.year || null
-                };
-                await axios.patch(
-                    `${API_URL}new_students?id=eq.${student.id}`,
-                    updateData,
-                    { headers: API_HEADERS }
-                );
-            }
-            // Обновляем данные с сервера
-            const newStudentsResponse = await axios.get(API_URL + 'new_students', {headers: API_HEADERS});
-            const newStudents = newStudentsResponse.data;
-            // Обогащаем данные как в fetchAll
-            const enriched = newStudents.map(student => {
-                const hasEmptyFields = !student.firstname || !student.lastname || !student.group || 
-                                     !student.supervisor || !student.program || !student.department || 
-                                     !student.year || !student.username;
+    // Кнопка Approve/Cancel для статуса
+    const handleApproveToggle = (recordId, currentStatus) => {
+        const updatedDisplay = display.map(item => {
+            if (item.id === recordId) {
+                let newApproved = item.approved;
+                if (currentStatus === 'filled') {
+                    newApproved = true;
+                } else if (currentStatus === 'approved') {
+                    newApproved = false;
+                }
+                // Пересчитываем статус
+                const hasEmptyFields = !item.firstname || !item.lastname || !item.group ||
+                    !item.supervisor || !item.program || !item.departament ||
+                    !item.year || (!item.username && !item.user_id);
                 const isAllFilled = !hasEmptyFields;
-                const isApproved = student.approved === true;
+                const isApproved = newApproved === true;
                 let status = 'incomplete';
                 if (isAllFilled && isApproved) {
                     status = 'approved';
                 } else if (isAllFilled) {
                     status = 'filled';
                 }
-                return {
-                    ...student,
-                    status: status,
-                    statusText: status === 'incomplete' ? 'Empty' : 
-                               status === 'filled' ? 'Filled' : 'Done'
-                };
-            });
-            setData(enriched);
-            setDisplay(enriched);
+                const statusText = status === 'incomplete' ? 'Empty' : status === 'filled' ? 'Filled' : 'Done';
+                return { ...item, approved: newApproved, status, statusText };
+            }
+            return item;
+        });
+        setDisplay(updatedDisplay);
+    };
+
+    const handleSaveSelectedStudents = async () => {
+        if (selectedRows.length === 0 && display.length === data.length) {
+            setIsEditing(false);
+            return;
+        }
+        try {
+            // Удаляем из БД только тех, кого нет в display
+            const deletedIds = data.map(s => s.id).filter(id => !display.some(d => d.id === id));
+            if (deletedIds.length > 0) {
+                await Promise.all(
+                    deletedIds.map(id =>
+                        axios.delete(`${API_URL}new_students?id=eq.${id}`, { headers: API_HEADERS })
+                    )
+                );
+            }
+            // Approved: отправляем в students, остальные просто сохраняем
+            for (const student of display) {
+                if (student.approved === true || student.status === 'approved') {
+                    try {
+                        // 1. Обновляем пользователя (users) по user_id
+                        await axios.patch(
+                            `${API_URL}users?id=eq.${student.user_id}`,
+                            {
+                                first_name: student.firstname,
+                                last_name: student.lastname,
+                                role: 'student',
+                                department: student.departament // department, не departament
+                            },
+                            { headers: API_HEADERS }
+                        );
+                        // 2. Создаём запись в students
+                        const supervisorId = supervisorNameToId[student.supervisor];
+                        if (!supervisorId) {
+                            alert(`Супервизор "${student.supervisor}" не найден. Заявка не перенесена.`);
+                            console.log(`Ошибка: не найден supervisor для ${student.firstname} ${student.lastname}`);
+                            continue;
+                        }
+                        const groupId = groupNameToId[student.group];
+                        if (!groupId) {
+                            alert(`Группа "${student.group}" не найдена. Заявка не перенесена.`);
+                            console.log(`Ошибка: не найдена группа для ${student.firstname} ${student.lastname}`);
+                            continue;
+                        }
+                        const studentData = {
+                            user_id: student.user_id,
+                            supervisor_id: supervisorId,
+                            peer_group_id: groupId,
+                            program: student.program,
+                            department: student.departament,
+                            year: student.year,
+                            points: 0,
+                            progress: 0
+                        };
+                        const studentRes = await axios.post(
+                            `${API_URL}students`,
+                            studentData,
+                            { headers: API_HEADERS }
+                        );
+                        const createdStudent = Array.isArray(studentRes.data) ? studentRes.data[0] : studentRes.data;
+                        // 3. Создаём thesis для этого студента (student_id)
+                        const today = new Date();
+                        const startDate = student.start_date || today.toISOString();
+                        const endDate = student.end_date || new Date(today.getFullYear(), today.getMonth() + 4, today.getDate()).toISOString();
+                        const thesisData = {
+                            student_id: createdStudent.id, // id из students
+                            supervisor_id: supervisorId,
+                            title: student.thesis_title || '',
+                            description: student.thesis_description || '',
+                            status: 'draft',
+                            start_date: startDate,
+                            end_date: endDate
+                        };
+                        await axios.post(
+                            `${API_URL}theses`,
+                            thesisData,
+                            { headers: API_HEADERS }
+                        );
+                        // Удаляем из new_students
+                        await axios.delete(`${API_URL}new_students?id=eq.${student.id}`, { headers: API_HEADERS });
+                        console.log(`✅ Перенесён студент: ${student.firstname} ${student.lastname}`);
+                    } catch (moveErr) {
+                        console.error('❌ Ошибка при переносе студента:', moveErr, moveErr?.response?.data);
+                        alert('Ошибка при переносе: ' + (moveErr?.response?.data?.message || moveErr.message));
+                    }
+                } else {
+                    // Просто сохраняем изменения в new_students
+                    await axios.patch(
+                        `${API_URL}new_students?id=eq.${student.id}`,
+                        student,
+                        { headers: API_HEADERS }
+                    );
+                }
+            }
+            // После всех переносов явно обновляем данные
+            await fetchAll();
             setIsEditing(false);
             setSelectedRows([]);
+            return;
         } catch (err) {
             console.error('❌ Ошибка при сохранении студентов:', err);
             alert('Ошибка при сохранении: ' + (err.response?.data?.message || err.message));
         }
+    };
+
+    const handleBack = () => {
+        setDisplay(originalDisplay.length ? originalDisplay : data);
+        setIsEditing(false);
+        setSelectedRows([]);
     };
 
     const handleMove = async () => {
@@ -395,12 +455,10 @@ export default function NewStudentList({ onBackToMenu }){
                 try {
                     // 1. Создаем пользователя в таблице users
                     const userData = {
-                        telegram_id: student.telegram_id,
-                        username: student.username,
                         first_name: student.firstname,
                         last_name: student.lastname,
                         role: 'student',
-                        department: student.department
+                        departament: student.departament
                     };
 
                     const userResponse = await axios.put(
@@ -413,42 +471,59 @@ export default function NewStudentList({ onBackToMenu }){
                     const createdUser = Array.isArray(userResponse.data) ? userResponse.data[0] : userResponse.data;
                     const userId = createdUser.id;
 
-                    // 2. Создаем студента в таблице students
+                    // 2. Создаем thesis для этого студента
                     const supervisorId = supervisorNameToId[student.supervisor];
-                    const groupId = groupNameToId[student.group];
 
                     if (!supervisorId) {
                         throw new Error(`Супервизор "${student.supervisor}" не найден`);
                     }
+                    const thesisData = {
+                        user_id: userId,
+                        supervisor_id: supervisorId,
+                        title: student.title || '',
+                        description: student.description || '',
+                        status: 'draft',
+                        start_date: student.start_date || null,
+                        end_date: student.end_date || null
+                    };
+                    const thesisResponse = await axios.post(
+                        `${API_URL}theses`,
+                        thesisData,
+                        { headers: API_HEADERS }
+                    );
+                    const createdThesis = Array.isArray(thesisResponse.data) ? thesisResponse.data[0] : thesisResponse.data;
+                    const thesisId = createdThesis.id;
+
+                    // 3. Создаем студента в таблице students
+                    const groupId = groupNameToId[student.group];
                     if (!groupId) {
                         throw new Error(`Группа "${student.group}" не найдена`);
                     }
-
                     const studentData = {
                         user_id: userId,
                         supervisor_id: supervisorId,
+                        thesis_id: thesisId,
                         peer_group_id: groupId,
                         program: student.program,
-                        department: student.department,
+                        department: student.departament,
                         year: student.year,
                         points: 0, // начальные значения
                         progress: 0
                     };
-
                     await axios.post(
                         `${API_URL}students`,
                         studentData,
                         { headers: API_HEADERS }
                     );
 
-                    console.log(`✅ Студент ${student.firstname} ${student.lastname} успешно перенесен`);
+                    console.log(`✅ Студент ${student.firstname} ${student.lastname} и thesis успешно перенесены`);
                 } catch (studentError) {
                     console.error(`❌ Ошибка при переносе студента ${student.firstname} ${student.lastname}:`, studentError);
                     throw studentError;
                 }
             }
 
-            // 3. Удаляем из new_students
+            // 4. Удаляем из new_students
             await Promise.all(
                 selectedRows.map(id =>
                     axios.delete(`${API_URL}new_students?id=eq.${id}`, {headers: API_HEADERS})
@@ -458,11 +533,19 @@ export default function NewStudentList({ onBackToMenu }){
             setDisplay(display.filter(item => !selectedRows.includes(item.id)));
             setIsEditing(false);
             setSelectedRows([]);
-            console.log('✅ Все студенты успешно перенесены');
+            console.log('✅ Все студенты и их theses успешно перенесены');
         } catch (err) {
             console.error('❌ Ошибка при переносе студентов:', err);
             alert('Ошибка при переносе студентов: ' + (err.response?.data?.message || err.message));
         }
+    };
+
+    // Inline-редактирование: обновляем только display
+    const handleCellEdit = (recordId, field, value) => {
+        const updatedDisplay = display.map(item =>
+            item.id === recordId ? { ...item, [field]: value } : item
+        );
+        setDisplay(updatedDisplay);
     };
 
     if (loading) {
@@ -482,15 +565,14 @@ export default function NewStudentList({ onBackToMenu }){
                     onSearch={handleSearch}
                     onFilter={handleFilter}
                     onSort={handleSort}
-                    onAdd={handleAddStudent}
-                    onEdit={() => setIsEditing(true)}
-                    onDelete={isEditing ? handleDeleteStudents : handleMove}
+                    onEdit={handleEdit}
+                    onDelete={handleDeleteStudents}
                     onSave={isEditing ? handleSaveSelectedStudents : null}
                     onBack={handleBack}
                     isEditing={isEditing}
                     filters={filterOptions}
                     sorts={sortOptions}
-                    labels={{add: "Add Student", edit: "Edit List", delete: isEditing ? "Delete" : "Move", save: "Save"}}
+                    labels={{edit: "Edit List", delete: "Delete", save: "Save"}}
                 />
 
                 <div className={"tableWrapper"}>
@@ -500,34 +582,17 @@ export default function NewStudentList({ onBackToMenu }){
                         rowSelection={isEditing ? {
                             selectedRowKeys: selectedRows,
                             onChange: keys => setSelectedRows(keys)
-                        } : null
-                        }
+                        } : null}
                         pagination={false}
                         scroll={{x: 'max-content'}}
-                        style={{
-                            width: '100%'
-                        }}
-                        rowClassName={(record) => {
-                            if (isEditing && selectedRows.includes(record.id)) {
-                                return 'editing-row';
-                            }
-                            return '';
-                        }}
+                        style={{width: '100%'}}
+                        rowClassName={record => (isEditing && selectedRows.includes(record.id) ? 'editing-row' : '')}
                     >
                         <Column
                             title="Telegram Username"
                             dataIndex="username"
                             key="username"
                             render={(text, record) => {
-                                if (isEditing && selectedRows.includes(record.id)) {
-                                    return (
-                                        <Input
-                                            value={text || ''}
-                                            onChange={(e) => handleCellEdit(record.id, 'username', e.target.value)}
-                                            placeholder="Enter username"
-                                        />
-                                    );
-                                }
                                 return text || '—';
                             }}
                         />
@@ -635,14 +700,14 @@ export default function NewStudentList({ onBackToMenu }){
                         />
                         <Column 
                             title="Department" 
-                            dataIndex="department" 
-                            key="department"
+                            dataIndex="departament" 
+                            key="departament"
                             render={(text, record) => {
                                 if (isEditing && selectedRows.includes(record.id)) {
                                     return (
                                         <Input
                                             value={text || ''}
-                                            onChange={(e) => handleCellEdit(record.id, 'department', e.target.value)}
+                                            onChange={(e) => handleCellEdit(record.id, 'departament', e.target.value)}
                                             placeholder="Enter department"
                                         />
                                     );
@@ -668,6 +733,40 @@ export default function NewStudentList({ onBackToMenu }){
                             }}
                         />
                         <Column 
+                            title="Thesis title" 
+                            dataIndex="thesis_title" 
+                            key="thesis_title"
+                            render={(text, record) => {
+                                if (isEditing && selectedRows.includes(record.id)) {
+                                    return (
+                                        <Input
+                                            value={text || ''}
+                                            onChange={(e) => handleCellEdit(record.id, 'thesis_title', e.target.value)}
+                                            placeholder="Enter thesis title"
+                                        />
+                                    );
+                                }
+                                return text || '—';
+                            }}
+                        />
+                        <Column 
+                            title="Thesis description" 
+                            dataIndex="thesis_description" 
+                            key="thesis_description"
+                            render={(text, record) => {
+                                if (isEditing && selectedRows.includes(record.id)) {
+                                    return (
+                                        <Input
+                                            value={text || ''}
+                                            onChange={(e) => handleCellEdit(record.id, 'thesis_description', e.target.value)}
+                                            placeholder="Enter thesis description"
+                                        />
+                                    );
+                                }
+                                return text || '—';
+                            }}
+                        />
+                        <Column 
                             title="Status" 
                             dataIndex="status" 
                             key="status"
@@ -685,6 +784,22 @@ export default function NewStudentList({ onBackToMenu }){
                                                        status === 'filled' ? '#ff8c00' : '#ff5252'}`
                                 }}>
                                     {record.statusText}
+                                    {isEditing && status === 'filled' && (
+                                        <button
+                                            style={{ marginLeft: 8, background: '#4caf50', color: 'white', border: 'none', borderRadius: 4, padding: '2px 8px', cursor: 'pointer' }}
+                                            onClick={() => handleApproveToggle(record.id, 'filled')}
+                                        >
+                                            Approve
+                                        </button>
+                                    )}
+                                    {isEditing && status === 'approved' && (
+                                        <button
+                                            style={{ marginLeft: 8, background: '#ff5252', color: 'white', border: 'none', borderRadius: 4, padding: '2px 8px', cursor: 'pointer' }}
+                                            onClick={() => handleApproveToggle(record.id, 'approved')}
+                                        >
+                                            Cancel
+                                        </button>
+                                    )}
                                 </span>
                             )}
                         />

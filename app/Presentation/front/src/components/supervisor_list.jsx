@@ -169,6 +169,20 @@ export default function SupervisorList(){
 
     const handleDelete = async () => {
         try {
+            // Сбросить supervisor_id у всех групп для каждого удаляемого супервизора
+            await Promise.all(
+                selectedRows.map(async id => {
+                    try {
+                        await axios.patch(
+                            `${API_URL}peer_groups?supervisor_id=eq.${id}`,
+                            { supervisor_id: null },
+                            { headers: API_HEADERS }
+                        );
+                    } catch (e) {
+                        console.error('Ошибка при сбросе supervisor_id у групп:', e?.response?.data || e);
+                    }
+                })
+            );
             await Promise.all(
                 selectedRows.map(id =>
                     axios.delete(`${API_URL}supervisors?id=eq.${id}`, {headers: API_HEADERS})
@@ -179,6 +193,79 @@ export default function SupervisorList(){
             setSelectedRows([]);
         } catch (err) {
             console.error('Error deleting supervisors', err);
+        }
+    };
+
+    const handleSave = async () => {
+        try {
+            // Удаляем из БД только тех, кого нет в display
+            const deletedIds = data.map(s => s.id).filter(id => !display.some(d => d.id === id));
+            if (deletedIds.length > 0) {
+                await Promise.all(
+                    deletedIds.map(id =>
+                        axios.delete(`${API_URL}supervisors?id=eq.${id}`, { headers: API_HEADERS })
+                    )
+                );
+            }
+            // Обновляем изменённые записи
+            for (const supervisor of display) {
+                const originalSupervisor = data.find(s => s.id === supervisor.id);
+                if (originalSupervisor && (
+                    supervisor.supervisorName !== originalSupervisor.supervisorName ||
+                    supervisor.supervisorSurname !== originalSupervisor.supervisorSurname ||
+                    supervisor.department !== originalSupervisor.department
+                )) {
+                    // Обновляем пользователя
+                    await axios.patch(
+                        `${API_URL}users?id=eq.${supervisor.user_id}`,
+                        {
+                            first_name: supervisor.supervisorName,
+                            last_name: supervisor.supervisorSurname,
+                            department: supervisor.department
+                        },
+                        { headers: API_HEADERS }
+                    );
+                }
+            }
+            // Обновляем данные с сервера
+            const [usrData, supData, grpData, stuData] = await Promise.all([
+                axios.get(API_URL + 'users', {headers: API_HEADERS}),
+                axios.get(API_URL + 'supervisors', {headers: API_HEADERS}),
+                axios.get(API_URL + 'peer_groups', {headers: API_HEADERS}),
+                axios.get(API_URL + 'students', {headers: API_HEADERS}),
+            ]);
+            const users = usrData.data;
+            const supervisors = supData.data;
+            const peerGroups = grpData.data;
+            const students = stuData.data;
+            const idToUser = users.reduce((m, u) => {
+                m[u.id] = u;
+                return m;
+            }, {});
+            const enriched = supervisors.map(sup => {
+                const user = idToUser[sup.user_id] || {};
+                const supervisorGroups = peerGroups.filter(group => group.supervisor_id === sup.id);
+                const studentsCount = students.filter(student => student.supervisor_id === sup.id).length;
+                return {
+                    ...sup,
+                    supervisorName: `${user.first_name || ''}`.trim() || '—',
+                    supervisorSurname: `${user.last_name || '—'}` || '—',
+                    department: user.department || sup.department || '—',
+                    user_id: sup.user_id,
+                    supervisorTgUs: user.username || '—',
+                    groups: supervisorGroups,
+                    groupsCount: supervisorGroups.length,
+                    studentsCount: studentsCount,
+                };
+            });
+            setData(enriched);
+            setDisplay(enriched);
+            setIsEditing(false);
+            setSelectedRows([]);
+            console.log('✅ Изменения успешно сохранены');
+        } catch (err) {
+            console.error('❌ Ошибка при сохранении:', err);
+            alert('Ошибка при сохранении: ' + (err.response?.data?.message || err.message));
         }
     };
 
@@ -214,6 +301,7 @@ export default function SupervisorList(){
                     onAdd={() => {setCurrent('add')}}
                     onEdit={() => setIsEditing(true)}
                     onDelete={handleDelete}
+                    onSave={isEditing ? handleSave : null}
                     onBack={() => {
                         setIsEditing(false);
                         setSelectedRows([]);
@@ -221,7 +309,7 @@ export default function SupervisorList(){
                     isEditing={isEditing}
                     filters={filterOptions}
                     sorts={sortOptions}
-                    labels={{add: "Add Supervisor", edit: "Edit List"}}
+                    labels={{add: "Add Supervisor", edit: "Edit List", save: "Save"}}
                 />
 
                 <Table

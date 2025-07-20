@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import axios from 'axios';
 import { Form, Input, InputNumber, Button, Select, DatePicker } from 'antd';
+import dayjs from 'dayjs';
 
 const { TextArea } = Input;
 
@@ -9,40 +10,35 @@ const API_HEADERS = {
   apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3NzcsImV4cCI6MjA2Njc2MDc3N30.yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc"
 };
 
-function toDate(val) {
-  if (!val) return null;
-  if (val instanceof Date) return val;
-  return new Date(val);
-}
-
 export default function MilestoneProfile({ milestone, theses, onBack, onSave }) {
   const [form] = Form.useForm();
 
-  // Debug log
-  console.log('MilestoneProfile props:', { milestone, theses });
-
-  if (!milestone || !theses || theses.length === 0) {
-    return <div>Loading…</div>;
+  if (!theses || theses.length === 0) {
+    return <div>Milestone not found or loading…</div>;
   }
 
+  // Если milestone === null, значит add: инициализируем пустыми значениями
+  const isEdit = !!(milestone && milestone.id);
+  const thesisTitle = isEdit ? (theses.find(t => t.id === milestone.thesis_id)?.title || '—') : '';
+
   useEffect(() => {
-    if (milestone) {
+    if (isEdit) {
       form.setFieldsValue({
         ...milestone,
-        deadline: toDate(milestone.deadline),
-        start: toDate(milestone.start),
+        deadline: milestone.deadline ? dayjs(milestone.deadline) : null,
+        start: milestone.start ? dayjs(milestone.start) : null,
       });
     } else {
       form.resetFields();
     }
-  }, [milestone, form]);
+  }, [milestone, form, isEdit]);
 
   const handleFinish = async (values) => {
     try {
-      const url = milestone && milestone.id
+      const url = isEdit
         ? `${API_URL}milestones?id=eq.${milestone.id}`
         : `${API_URL}milestones`;
-      const method = milestone && milestone.id ? 'patch' : 'post';
+      const method = isEdit ? 'patch' : 'post';
       const headers = {
         ...API_HEADERS,
         Prefer: 'return=representation',
@@ -70,23 +66,37 @@ export default function MilestoneProfile({ milestone, theses, onBack, onSave }) 
       <Button onClick={onBack} className="backLink">
         ← Back to list
       </Button>
-      <h2>{milestone && milestone.id ? 'Edit milestone' : 'Add new milestone'}</h2>
+      <h2>{isEdit ? 'Edit milestone' : 'Add new milestone'}</h2>
       <Form
         form={form}
         layout="vertical"
         onFinish={handleFinish}
         className="profileForm"
+        initialValues={isEdit ? undefined : {
+          thesis_id: null,
+          title: '',
+          description: '',
+          deadline: null,
+          weight: 0,
+          status: 'not started',
+          notified: 'created',
+          start: null,
+        }}
       >
         <Form.Item
           label="Thesis"
           name="thesis_id"
           rules={[{ required: true, message: 'Select a thesis' }]}
         >
-          <Select placeholder="Select thesis">
-            {theses.map(thesis => (
-              <Select.Option key={thesis.id} value={thesis.id}>{thesis.title}</Select.Option>
-            ))}
-          </Select>
+          {isEdit ? (
+            <Input value={thesisTitle} disabled />
+          ) : (
+            <Select placeholder="Select thesis">
+              {theses.map(thesis => (
+                <Select.Option key={thesis.id} value={thesis.id}>{thesis.title}</Select.Option>
+              ))}
+            </Select>
+          )}
         </Form.Item>
         <Form.Item
           label="Title"

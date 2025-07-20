@@ -4,7 +4,6 @@ import './index.css';
 import StudentProfile from "./studentProfile.jsx";
 import React, {useEffect, useState} from "react";
 import ControlPanel from "./control-panel.jsx"
-import MainPage from "@/main_page.jsx";
 
 const { Column } = Table;
 
@@ -187,7 +186,7 @@ export default function StudentList() {
         try {
             await Promise.all(
                 selectedRows.map(id =>
-                    axios.delete(`${API_URL}?id=eq.${id}`, {headers: API_HEADERS})
+                    axios.delete(`${API_URL}students?id=eq.${id}`, {headers: API_HEADERS})
                 )
             );
             setDisplay(display.filter(item => !selectedRows.includes(item.id)));
@@ -195,6 +194,115 @@ export default function StudentList() {
             setSelectedRows([]);
         } catch (err) {
             console.error('Error deleting students', err);
+        }
+    };
+
+    const handleSave = async () => {
+        try {
+            // Удаляем из БД только тех, кого нет в display
+            const deletedIds = data.map(s => s.id).filter(id => !display.some(d => d.id === id));
+            if (deletedIds.length > 0) {
+                await Promise.all(
+                    deletedIds.map(id =>
+                        axios.delete(`${API_URL}students?id=eq.${id}`, { headers: API_HEADERS })
+                    )
+                );
+            }
+            // Обновляем изменённые записи
+            for (const student of display) {
+                const originalStudent = data.find(s => s.id === student.id);
+                if (originalStudent && (
+                    student.studentName !== originalStudent.studentName ||
+                    student.studentSurname !== originalStudent.studentSurname ||
+                    student.program !== originalStudent.program ||
+                    student.department !== originalStudent.department ||
+                    student.year !== originalStudent.year
+                )) {
+                    // Обновляем пользователя
+                    await axios.patch(
+                        `${API_URL}users?id=eq.${student.user_id}`,
+                        {
+                            first_name: student.studentName,
+                            last_name: student.studentSurname
+                        },
+                        { headers: API_HEADERS }
+                    );
+                    // Обновляем студента
+                    await axios.patch(
+                        `${API_URL}students?id=eq.${student.id}`,
+                        {
+                            program: student.program,
+                            department: student.department,
+                            year: student.year
+                        },
+                        { headers: API_HEADERS }
+                    );
+                }
+            }
+            // Обновляем данные с сервера
+            const [stuData, usrData, supData, grpData, thssData] = await Promise.all([
+                axios.get(API_URL + 'students', {headers: API_HEADERS}),
+                axios.get(API_URL + 'users', {headers: API_HEADERS}),
+                axios.get(API_URL + 'supervisors', {headers: API_HEADERS}),
+                axios.get(API_URL + 'peer_groups', {headers: API_HEADERS}),
+                axios.get(API_URL + 'theses', {headers: API_HEADERS}),
+            ]);
+            const student = stuData.data;
+            const users = usrData.data;
+            const supervisors = supData.data;
+            const groups = grpData.data;
+            const theses = thssData.data;
+            const supToUserMap = supervisors.reduce((m, sup) =>{
+                m[sup.id] = sup.user_id;
+                return m;
+            }, {});
+            const stdToNAmeMap = users.filter(u => u.role === 'student').reduce((m, u) => {
+                m[u.id] = `${u.first_name}`;
+                return m;
+            }, {});
+            const stdToSurnameMap = users.filter(u => u.role == 'student').reduce((m, u) => {
+                m[u.id] = `${u.last_name}`;
+                return m;
+            }, {});
+            const idToName = users.filter(u => u.role === 'supervisor').reduce((m, u) => {
+                m[u.id] = `${u.first_name} ${u.last_name}`;
+                return m;
+            }, {});
+            const grpToStdMap = groups.reduce((m, g) => {
+                m[g.id] = g.name;
+                return m;
+            }, {});
+            const thssIdToName = theses.reduce((m, t) => {
+                m[t.id] = t.title;
+                return m;
+            }, {});
+            const IdToTgUs = users.filter(u => u.role === "student").reduce((m, u) =>{
+                m[u.id] = u.username;
+                return m;
+            }, {});
+            const supIdToName = supervisors.reduce((m, sup) => {
+                m[sup.id] = idToName[sup.user_id] || '—';
+                return m;
+            }, {});
+            const enriched = student.map(st => {
+                return {
+                  ...st,
+                  studentTgUs: IdToTgUs[st.user_id] || '—',
+                  supervisorName: supIdToName[st.supervisor_id] || '—',
+                  studentName: stdToNAmeMap[st.user_id] || '—',
+                  studentSurname: stdToSurnameMap[st.user_id] || '—',
+                  groupName: grpToStdMap[st.peer_group_id] || '—',
+                  thesisName: thssIdToName[st.thesis_id] || '—',
+                };
+            });
+            setData(enriched);
+            setDisplay(enriched);
+            setIsEditing(false);
+            setSelectedRows([]);
+            console.log('✅ Изменения успешно сохранены');
+        } catch (err) {
+            console.error('❌ Ошибка при сохранении:', err);
+            alert('Ошибка при сохранении: ' + (err.response?.data?.message || err.message));
         }
     };
 
@@ -230,6 +338,7 @@ export default function StudentList() {
                     onAdd={() => {setCurrent('add')}}
                     onEdit={() => setIsEditing(true)}
                     onDelete={handleDelete}
+                    onSave={isEditing ? handleSave : null}
                     onBack={() => {
                         setIsEditing(false);
                         setSelectedRows([]);
@@ -237,7 +346,7 @@ export default function StudentList() {
                     isEditing={isEditing}
                     filters={filterOptions}
                     sorts={sortOptions}
-                    labels={{add: "Add Student", edit: "Edit List"}}
+                    labels={{add: "Add Student", edit: "Edit List", save: "Save"}}
                 />
 
                 <div className={"tableWrapper"}>

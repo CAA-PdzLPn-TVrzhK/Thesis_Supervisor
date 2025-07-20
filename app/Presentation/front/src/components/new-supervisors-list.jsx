@@ -21,11 +21,14 @@ export default function NewSupervisorsList({ onBackToMenu }) {
   const [departments, setDepartments] = useState([]);
   const [groups, setGroups] = useState([]);
   const [groupIdToName, setGroupIdToName] = useState({});
+  const [originalDisplay, setOriginalDisplay] = useState([]); // для отката
+  // users для отображения username
+  const [users, setUsers] = useState([]);
 
   // Функция для определения статуса записи
   const getRecordStatus = (record) => {
-    const hasEmptyFields = !record.firstname || !record.lastname || !record.username || 
-                          !record.department || !record.groups;
+    // username не участвует в проверке заполненности, только для отображения
+    const hasEmptyFields = !record.firstname || !record.lastname || !record.departament || !record.groups;
     const isAllFilled = !hasEmptyFields;
     const isApproved = record.approved === true;
     
@@ -47,16 +50,27 @@ export default function NewSupervisorsList({ onBackToMenu }) {
     });
   };
 
+  // Inline-редактирование: обновляем только display
+  const handleCellEdit = (recordId, field, value) => {
+    const updatedDisplay = display.map(item =>
+      item.id === recordId ? { ...item, [field]: value } : item
+    );
+    setDisplay(updatedDisplay);
+  };
+
   useEffect(() => {
     async function fetchAll() {
       try {
         console.log('🔍 Загружаем данные new_supervisors...');
-        const [newSupervisorsData, groupsData] = await Promise.all([
+        const [newSupervisorsData, groupsData, usersData] = await Promise.all([
           axios.get(API_URL + 'new_supervisors', { headers: API_HEADERS }),
-          axios.get(API_URL + 'peer_groups', { headers: API_HEADERS })
+          axios.get(API_URL + 'peer_groups', { headers: API_HEADERS }),
+          axios.get(API_URL + 'users', { headers: API_HEADERS })
         ]);
         const newSupervisors = newSupervisorsData.data;
         const peerGroups = groupsData.data;
+        const users = usersData.data;
+        setUsers(users);
 
         console.log('📊 Полученные данные new_supervisors:', newSupervisors);
         console.log('📊 Полученные группы:', peerGroups);
@@ -67,6 +81,12 @@ export default function NewSupervisorsList({ onBackToMenu }) {
           groupIdToName[group.id] = group.name;
         });
 
+        // userId -> username
+        const userIdToUsername = users.reduce((m, u) => {
+          m[u.id] = u.username;
+          return m;
+        }, {});
+
         const enriched = newSupervisors.map(supervisor => {
           const statusInfo = getRecordStatus(supervisor);
           return {
@@ -74,6 +94,7 @@ export default function NewSupervisorsList({ onBackToMenu }) {
             groups: Array.isArray(supervisor.groups)
               ? supervisor.groups.map(id => groupIdToName[id] || id).join(', ')
               : supervisor.groups || '',
+            username: userIdToUsername[supervisor.user_id] || '',
             status: statusInfo.status,
             statusText: statusInfo.statusText
           };
@@ -83,7 +104,7 @@ export default function NewSupervisorsList({ onBackToMenu }) {
 
         setData(enriched);
         setDisplay(enriched);
-        setDepartments([...new Set(enriched.map(s => s.department).filter(Boolean))]);
+        setDepartments([...new Set(enriched.map(s => s.departament).filter(Boolean))]);
         setGroups([...new Set(peerGroups.map(g => g.name))]);
         setGroupIdToName(groupIdToName);
       } catch (e) {
@@ -112,7 +133,7 @@ export default function NewSupervisorsList({ onBackToMenu }) {
   const sortOptions = [
     { name: 'firstname', label: 'First Name' },
     { name: 'lastname', label: 'Last Name' },
-    { name: 'department', label: 'Department' }
+    { name: 'departament', label: 'Department' }
   ];
 
   const handleSearch = term => {
@@ -138,8 +159,8 @@ export default function NewSupervisorsList({ onBackToMenu }) {
 
   const handleFilter = filters => {
     let result = data;
-    if (filters.department) {
-      result = result.filter(item => filters.department.includes(item.department));
+    if (filters.departament) {
+      result = result.filter(item => filters.departament.includes(item.departament));
     }
     if (filters.groups) {
       result = result.filter(item => {
@@ -158,7 +179,7 @@ export default function NewSupervisorsList({ onBackToMenu }) {
         lastname: '',
         username: '',
         groups: [],
-        department: '',
+        departament: '',
         approved: false
       };
       
@@ -195,136 +216,61 @@ export default function NewSupervisorsList({ onBackToMenu }) {
     }
   };
 
-  const handleBack = async () => {
-    if (selectedRows.length > 0) {
-      if (confirm('You want to cancel editing? Unsaved changes will be lost.')) {
-        try {
-          // Удаляем выбранные записи из базы данных
-          await Promise.all(
-            selectedRows.map(id =>
-              axios.delete(`${API_URL}new_supervisors?id=eq.${id}`, { headers: API_HEADERS })
-            )
-          );
-          
-          // Обновляем локальное состояние
-          const updatedData = data.filter(item => !selectedRows.includes(item.id));
-          const updatedDisplay = display.filter(item => !selectedRows.includes(item.id));
-          
-          setData(updatedData);
-          setDisplay(updatedDisplay);
-          setIsEditing(false);
-          setSelectedRows([]);
-          
-          console.log('✅ Редактирование отменено, несохраненные данные удалены');
-        } catch (err) {
-          console.error('❌ Ошибка при отмене редактирования:', err);
-          alert('Ошибка при отмене: ' + (err.response?.data?.message || err.message));
-        }
-      }
-    } else {
-      setIsEditing(false);
-      setSelectedRows([]);
-    }
+  const handleEdit = () => {
+    setOriginalDisplay(display);
+    setIsEditing(true);
+    setSelectedRows([]);
   };
 
-  const handleDeleteSupervisors = async () => {
+  const handleDeleteSupervisors = () => {
     if (selectedRows.length === 0) {
-      alert('Выберите супервизоров для удаления');
+      alert('Выберите супервайзоров для удаления');
       return;
     }
-    if (!confirm(`Удалить ${selectedRows.length} выбранных супервизоров?`)) {
-      return;
-    }
-    try {
-      await Promise.all(
-        selectedRows.map(id =>
-          axios.delete(`${API_URL}new_supervisors?id=eq.${id}`, { headers: API_HEADERS })
-        )
-      );
-      setDisplay(display.filter(item => !selectedRows.includes(item.id)));
-      setData(data.filter(item => !selectedRows.includes(item.id)));
-      setIsEditing(false);
-      setSelectedRows([]);
-    } catch (err) {
-      console.error('Ошибка при удалении супервизоров:', err);
-      alert('Ошибка при удалении супервизоров: ' + (err.response?.data?.message || err.message));
-    }
-  };
-
-  const handleCellEdit = (recordId, field, value) => {
-    const updatedData = data.map(item => {
-      if (item.id === recordId) {
-        const updatedItem = { ...item, [field]: value };
-        const statusInfo = getRecordStatus(updatedItem);
-        return {
-          ...updatedItem,
-          status: statusInfo.status,
-          statusText: statusInfo.statusText
-        };
-      }
-      return item;
-    });
-    setData(updatedData);
-    setDisplay(updatedData);
+    setDisplay(display.filter(item => !selectedRows.includes(item.id)));
+    setSelectedRows([]);
   };
 
   const handleSaveSelectedSupervisors = async () => {
-    if (selectedRows.length === 0) {
-      alert('Выберите супервизоров для сохранения');
+    if (selectedRows.length === 0 && display.length === data.length) {
+      setIsEditing(false);
       return;
     }
     try {
-      const selectedSupervisors = data.filter(item => selectedRows.includes(item.id));
-      const invalidSupervisors = selectedSupervisors.filter(supervisor =>
-        !supervisor.firstname || !supervisor.lastname || !supervisor.username
-      );
-      if (invalidSupervisors.length > 0) {
-        alert('Пожалуйста, заполните все обязательные поля: Имя, Фамилия, Username');
-        return;
+      // Удаляем из БД только тех, кого нет в display
+      const deletedIds = data.map(s => s.id).filter(id => !display.some(d => d.id === id));
+      if (deletedIds.length > 0) {
+        await Promise.all(
+          deletedIds.map(id =>
+            axios.delete(`${API_URL}new_supervisors?id=eq.${id}`, { headers: API_HEADERS })
+          )
+        );
       }
-      
-      for (const supervisor of selectedSupervisors) {
-        const updateData = {
-          first_name: supervisor.firstname,
-          last_name: supervisor.lastname,
-          username: supervisor.username,
-          groups: supervisor.groups ? supervisor.groups.split(',').map(g => g.trim()) : [],
-          department: supervisor.department
-        };
-        
+      // Обновляем изменённые записи
+      for (const supervisor of display) {
         await axios.patch(
           `${API_URL}new_supervisors?id=eq.${supervisor.id}`,
-          updateData,
+          supervisor,
           { headers: API_HEADERS }
         );
       }
-      
       // Обновляем данные с сервера
       const newSupervisorsResponse = await axios.get(API_URL + 'new_supervisors', { headers: API_HEADERS });
       const newSupervisors = newSupervisorsResponse.data;
-      
-      const enriched = newSupervisors.map(supervisor => {
-        const statusInfo = getRecordStatus(supervisor);
-        return {
-          ...supervisor,
-          groups: Array.isArray(supervisor.groups)
-            ? supervisor.groups.map(id => groupIdToName[id] || id).join(', ')
-            : supervisor.groups || '',
-          status: statusInfo.status,
-          statusText: statusInfo.statusText
-        };
-      });
-
-      setData(enriched);
-      setDisplay(enriched);
+      setData(newSupervisors);
+      setDisplay(newSupervisors);
       setIsEditing(false);
       setSelectedRows([]);
-      
-      console.log('✅ Супервизоры успешно сохранены');
     } catch (err) {
-      console.error('❌ Ошибка при сохранении супервизоров:', err);
+      console.error('❌ Ошибка при сохранении супервайзеров:', err);
       alert('Ошибка при сохранении: ' + (err.response?.data?.message || err.message));
     }
+  };
+
+  const handleBack = () => {
+    setDisplay(originalDisplay.length ? originalDisplay : data);
+    setIsEditing(false);
+    setSelectedRows([]);
   };
 
   const handleApprove = async () => {
@@ -377,6 +323,129 @@ export default function NewSupervisorsList({ onBackToMenu }) {
     }
   };
 
+  // Новый перенос супервизора
+  const handleMove = async () => {
+    if (selectedRows.length === 0) {
+      alert('Выберите супервизоров для переноса');
+      return;
+    }
+    try {
+      // Получаем все группы из Supabase для поиска по имени
+      const groupsRes = await axios.get(API_URL + 'peer_groups', { headers: API_HEADERS });
+      const allGroups = groupsRes.data;
+      console.log('ВСЕ ГРУППЫ:', allGroups);
+      for (const supervisor of display.filter(item => selectedRows.includes(item.id))) {
+        try {
+          console.log('ПЕРЕНОСИМ СУПЕРВИЗОРА:', supervisor);
+          // 1. Обновляем пользователя (users) по user_id
+          await axios.patch(
+            `${API_URL}users?id=eq.${supervisor.user_id}`,
+            {
+              first_name: supervisor.firstname,
+              last_name: supervisor.lastname,
+              role: 'supervisor',
+              department: supervisor.departament
+            },
+            { headers: API_HEADERS }
+          );
+          // 2. Создаём запись в supervisors
+          const supervisorData = {
+            user_id: supervisor.user_id,
+            department: supervisor.departament
+          };
+          const supRes = await axios.post(
+            `${API_URL}supervisors`,
+            supervisorData,
+            { headers: { ...API_HEADERS, Prefer: 'return=representation' } }
+          );
+          const createdSupervisor = Array.isArray(supRes.data) ? supRes.data[0] : supRes.data;
+          console.log('ОТВЕТ ОТ POST /supervisors:', supRes.data, 'createdSupervisor:', createdSupervisor);
+          // 3. Назначаем супервизора для выбранных групп по имени
+          const groupNames = Array.isArray(supervisor.groups)
+            ? supervisor.groups
+            : (typeof supervisor.groups === 'string' && supervisor.groups.length > 0
+                ? supervisor.groups.split(',').map(g => g.trim())
+                : []);
+          console.log('Названия групп для назначения:', groupNames);
+          const newGroupIds = allGroups.filter(g => groupNames.includes(g.name)).map(g => g.id);
+          console.log('ID групп для назначения:', newGroupIds);
+          const currentGroupIds = allGroups.filter(g => g.supervisor_id === createdSupervisor.id).map(g => g.id);
+          console.log('ID групп, у которых уже был этот supervisor:', currentGroupIds);
+          const groupsToRemove = currentGroupIds.filter(id => !newGroupIds.includes(id));
+          const groupsToAdd = newGroupIds.filter(id => !currentGroupIds.includes(id));
+          console.log('groupsToRemove:', groupsToRemove, 'groupsToAdd:', groupsToAdd);
+          for (const groupId of groupsToRemove) {
+            try {
+              const patchRes = await axios.patch(
+                `${API_URL}peer_groups?id=eq.${groupId}`,
+                { supervisor_id: null },
+                { headers: API_HEADERS }
+              );
+              console.log(`PATCH (remove) groupId=${groupId}:`, patchRes.data);
+            } catch (e) {
+              console.error(`Ошибка PATCH (remove) groupId=${groupId}:`, e?.response?.data || e);
+            }
+          }
+          for (const groupId of groupsToAdd) {
+            try {
+              const patchRes = await axios.patch(
+                `${API_URL}peer_groups?id=eq.${groupId}`,
+                { supervisor_id: createdSupervisor.id },
+                { headers: API_HEADERS }
+              );
+              console.log(`PATCH (add) groupId=${groupId} supervisor_id=${createdSupervisor.id}:`, patchRes.data);
+            } catch (e) {
+              console.error(`Ошибка PATCH (add) groupId=${groupId}:`, e?.response?.data || e);
+            }
+          }
+          // 4. Удаляем из new_supervisors
+          await axios.delete(`${API_URL}new_supervisors?id=eq.${supervisor.id}`, { headers: API_HEADERS });
+          console.log(`✅ Перенесён супервизор: ${supervisor.firstname} ${supervisor.lastname}`);
+        } catch (moveErr) {
+          console.error('❌ Ошибка при переносе супервизора:', moveErr, moveErr?.response?.data);
+          alert('Ошибка при переносе: ' + (moveErr?.response?.data?.message || moveErr.message));
+        }
+      }
+      // После всех переносов обновляем данные
+      const newSupervisorsResponse = await axios.get(API_URL + 'new_supervisors', { headers: API_HEADERS });
+      setData(newSupervisorsResponse.data);
+      setDisplay(newSupervisorsResponse.data);
+      setIsEditing(false);
+      setSelectedRows([]);
+    } catch (err) {
+      console.error('❌ Ошибка при массовом переносе супервизоров:', err);
+      alert('Ошибка при массовом переносе: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
+  // Кнопка Approve/Cancel для статуса
+  const handleApproveToggle = (recordId, currentStatus) => {
+    const updatedDisplay = display.map(item => {
+      if (item.id === recordId) {
+        let newApproved = item.approved;
+        if (currentStatus === 'filled') {
+          newApproved = true;
+        } else if (currentStatus === 'approved') {
+          newApproved = false;
+        }
+        // Пересчитываем статус
+        const hasEmptyFields = !item.firstname || !item.lastname || !item.departament || !item.groups;
+        const isAllFilled = !hasEmptyFields;
+        const isApproved = newApproved === true;
+        let status = 'incomplete';
+        if (isAllFilled && isApproved) {
+          status = 'approved';
+        } else if (isAllFilled) {
+          status = 'filled';
+        }
+        const statusText = status === 'incomplete' ? 'Incomplete' : status === 'filled' ? 'Filled' : 'Approved';
+        return { ...item, approved: newApproved, status, statusText };
+      }
+      return item;
+    });
+    setDisplay(updatedDisplay);
+  };
+
   if (loading) return <div>Loading…</div>;
   if (error) return <div>Error :(</div>;
 
@@ -390,20 +459,14 @@ export default function NewSupervisorsList({ onBackToMenu }) {
           onSearch={handleSearch}
           onFilter={handleFilter}
           onSort={handleSort}
-          onAdd={handleAddSupervisor}
-          onEdit={() => setIsEditing(true)}
+          onEdit={handleEdit}
           onDelete={handleDeleteSupervisors}
-          onSave={isEditing ? (canApproveSelected() ? handleApprove : handleSaveSelectedSupervisors) : null}
+          onSave={isEditing ? handleMove : null}
           onBack={handleBack}
           isEditing={isEditing}
           filters={filterOptions}
           sorts={sortOptions}
-          labels={{ 
-            add: "Add Supervisor", 
-            edit: "Edit List", 
-            delete: "Delete", 
-            save: canApproveSelected() ? "Approve" : "Save" 
-          }}
+          labels={{edit: "Edit List", delete: "Delete", save: "Save"}}
         />
         <div className={"tableWrapper"}>
           <Table
@@ -414,7 +477,7 @@ export default function NewSupervisorsList({ onBackToMenu }) {
               onChange: keys => setSelectedRows(keys)
             } : null}
             pagination={false}
-            scroll={{ x: 'max-content' }}
+            scroll={{ y: 600, x: 'max-content'}}
             style={{ width: '100%' }}
             rowClassName={record => (isEditing && selectedRows.includes(record.id) ? 'editing-row' : '')}
           >
@@ -422,17 +485,7 @@ export default function NewSupervisorsList({ onBackToMenu }) {
               title="Telegram Username"
               dataIndex="username"
               key="username"
-              render={(text, record) =>
-                isEditing && selectedRows.includes(record.id) ? (
-                  <Input
-                    value={text || ''}
-                    onChange={e => handleCellEdit(record.id, 'username', e.target.value)}
-                    placeholder="Enter username"
-                  />
-                ) : (
-                  text || '—'
-                )
-              }
+              render={(text, record) => text || '—'}
             />
             <Column
               title="First Name"
@@ -493,13 +546,13 @@ export default function NewSupervisorsList({ onBackToMenu }) {
             />
             <Column
               title="Department"
-              dataIndex="department"
-              key="department"
+              dataIndex="departament"
+              key="departament"
               render={(text, record) =>
                 isEditing && selectedRows.includes(record.id) ? (
                   <Input
                     value={text || ''}
-                    onChange={e => handleCellEdit(record.id, 'department', e.target.value)}
+                    onChange={e => handleCellEdit(record.id, 'departament', e.target.value)}
                     placeholder="Enter department"
                   />
                 ) : (
@@ -525,6 +578,22 @@ export default function NewSupervisorsList({ onBackToMenu }) {
                                      status === 'filled' ? '#ffeaa7' : '#f5c6cb'}`
                 }}>
                   {record.statusText}
+                  {isEditing && status === 'filled' && (
+                    <button
+                      style={{ marginLeft: 8, background: '#4caf50', color: 'white', border: 'none', borderRadius: 4, padding: '2px 8px', cursor: 'pointer' }}
+                      onClick={() => handleApproveToggle(record.id, 'filled')}
+                    >
+                      Approve
+                    </button>
+                  )}
+                  {isEditing && status === 'approved' && (
+                    <button
+                      style={{ marginLeft: 8, background: '#ff5252', color: 'white', border: 'none', borderRadius: 4, padding: '2px 8px', cursor: 'pointer' }}
+                      onClick={() => handleApproveToggle(record.id, 'approved')}
+                    >
+                      Cancel
+                    </button>
+                  )}
                 </span>
               )}
             />

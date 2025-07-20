@@ -97,7 +97,7 @@ export default function ControlPanel({
 
       {!isEditing ? (
         <>
-          <button className="addButton" onClick={onAdd}>{labels.add}</button>
+          {onAdd && <button className="addButton" onClick={onAdd}>{labels.add || 'Add'}</button>}
           <button className="changeButton" onClick={onEdit}>{labels.edit}</button>
         </>
       ) : (
