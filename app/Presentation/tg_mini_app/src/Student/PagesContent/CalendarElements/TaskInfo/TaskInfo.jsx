@@ -35,8 +35,11 @@ class TaskInfo extends React.Component {
                     <div className="task-info-title"> {task.title} </div>
                     <div className="task-info-status"> {task.status} </div>
                     <div className="task-info-main-info">
-                        <div className="task-info-description"> {task.description} </div>
                         <div className="task-info-time-info">
+                            <div className="task-info-time-info-item">
+                                <div className="task-info-time-info-item-title"> Description: </div>
+                                <div className="task-info-time-info-item-value"> {task.description} </div>
+                            </div>
                             <div className="task-info-time-info-item">
                                 <div className="task-info-time-info-item-title"> Deadline: </div>
                                 <div className="task-info-time-info-item-value"> {this.getDeadline(task.deadline)} </div>

@@ -13,6 +13,8 @@ export async function sendNewStudent(data) {
             year: data.year,
             firstname: data.firstname,
             lastname: data.lastname,
+            thesis_title: data.thesisTitle,
+            thesis_description: data.thesisDescription,
         };
 
         await axios.post(`${window.TelegramWebApp.API_BASE}new_students`, submissionData, {

@@ -74,7 +74,8 @@ class UploadingPage extends React.Component {
                     const updateData = {
                         comments: this.state.comments,
                         submitted_at: new Date().toISOString(),
-                        status: "pending"
+                        status: "pending",
+                        count: parseInt(submission.data[0].count) + 1
                     }
 
                     await axios.patch(`${window.TelegramWebApp.API_BASE}submissions?milestone_id=eq.${this.props.milestone.id}`, updateData, {

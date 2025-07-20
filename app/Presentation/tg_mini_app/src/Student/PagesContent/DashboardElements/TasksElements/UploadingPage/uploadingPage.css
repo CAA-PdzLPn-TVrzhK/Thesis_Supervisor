@@ -19,7 +19,7 @@
 
 .upload-draft-container {
   max-width: 500px;
-  width: 100%;
+  width: 80%;
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 12px 25px rgba(101, 80, 255, 0.15);
@@ -201,7 +201,7 @@
 
 @media (max-width: 600px) {
   .upload-draft-container {
-    width: 98vw;
+    width: 80vw;
     padding: 18px 8px 18px 8px;
   }
   .upload-draft-info-block-title {

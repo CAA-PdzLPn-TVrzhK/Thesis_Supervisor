@@ -6,7 +6,7 @@
     width: 100vw;
     height: 100vh;
     background: rgba(30, 32, 48, 0.35);
-    z-index: 2000;
+    z-index: 3000;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -28,19 +28,26 @@
 }
 
 .dashboard-task-container {
+    max-width: 500px;
+    width: 80%;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 12px 25px rgba(101, 80, 255, 0.15);
+    padding: 30px 25px 40px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 30px;
-    background: #f8f9fa;
-    border-radius: 16px;
-    box-shadow: 0 8px 14px rgba(0, 0, 0, 0.08);
+    color: #444;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
     animation: fadeIn 0.6s ease-out forwards;
-    box-sizing: border-box;
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 .dashboard-task-content-block {
-    max-width: 800px;
+    width: 100%;
+    max-width: 100%;
     margin: 20px auto;
     background: white;
     border-radius: 16px;
@@ -54,8 +61,8 @@
 
 .dashboard-task-content-close-button {
     position: absolute;
-    top: 18px;
-    right: 18px;
+    top: 12px;
+    right: 10px;
     cursor: pointer;
     color: #6a11cb;
     background: none;
@@ -74,16 +81,19 @@
 
 .dashboard-task-content-info {
     text-align: center;
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 700;
     color: #1a73e8;
-    margin-bottom: 30px;
     letter-spacing: 0.5px;
     text-transform: uppercase;
     cursor: default;
+    margin: 0 35px 18px;
+    word-break: break-word;
+    white-space: normal;
 }
 
 .task-info-item {
+    max-width: 90%;
     margin-top: 15px;
     padding-bottom: 15px;
     border-bottom: 1px solid #eee;
@@ -91,6 +101,7 @@
     display: flex;
     cursor: default;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .dashboard-task-content-mark {
@@ -102,6 +113,7 @@
 .dashboard-task-content-value {
     flex: 1;
     color: #555;
+    max-width: 90%;
 }
 
 .dashboard-task-content-status-value-done {
@@ -146,7 +158,7 @@
 
 .dashboard-task-content-form-input {
     width: 90%;
-    min-height: 180px;
+    min-height: 100%;
     padding: 20px;
     border: 2px solid #e3e8ee;
     border-radius: 10px;
@@ -247,51 +259,38 @@
     color: #1a2530;
 }
 
-.check-last-submission-button,
-.upload-draft-button {
-    padding: 14px 28px;
-    border: none;
-    border-radius: 8px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+.info-button {
+    background: linear-gradient(to right, #e0f4ff, #b8e3ff);
+    border: 1px solid #a4d8f0;
+    color: #0a3d62;
     font-weight: 600;
-    font-size: 15px;
+    font-size: 10px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
     cursor: pointer;
     transition: all 0.3s ease;
-    color: white;
-    box-shadow: 0 3px 8px rgba(0, 105, 148, 0.2);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    flex: 1;
+    min-width: 120px;
+    max-width: 160px;
+    text-align: center;
+    white-space: nowrap;
+    box-shadow: 0 3px 8px rgba(0, 105, 148, 0.1);
 }
 
-.check-last-submission-button {
-    background: linear-gradient(to right, #4da6ff, #66b3ff);
-    border: 1px solid #80bdff;
-}
-
-.check-last-submission-button:hover {
-    background: linear-gradient(to right, #3a94ee, #5aa5f5);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(58, 148, 238, 0.35);
-}
-
-.upload-draft-button {
-    background: linear-gradient(to right, #5dc2ff, #7ad0ff);
-    border: 1px solid #90d5ff;
-}
-
-.upload-draft-button:hover {
+.info-button:hover {
     background: linear-gradient(to right, #4ab0f0, #6ac5ff);
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(74, 176, 240, 0.35);
 }
 
 .button-task-container {
-    border-radius: 16px;
-    padding: 24px;
-    display: inline-flex;
-    gap: 20px;
-    backdrop-filter: blur(4px);
-    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    padding: 20px 0;
 }
 
 @media (max-width: 768px) {

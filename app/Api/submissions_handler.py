@@ -17,10 +17,26 @@ headers = {
     "Prefer": "return=representation"
 }
 
-def calculate_score(submitted_at: str, deadline: str, milestone_weight: float) -> int:
+def get_feedback_rating(submission_id: int) -> Optional[int]:
+    try:
+        response = requests.get(
+            f"{EXTERNAL_API_URL}feedback?submission_id=eq.{submission_id}",
+            headers=headers
+        )
+        if response.status_code == 200:
+            feedbacks = response.json()
+            if feedbacks and 'rating' in feedbacks[0]:
+                return feedbacks[0]['rating']
+            elif feedbacks:
+                return feedbacks[0].get('rating')
+        return None
+    except Exception as e:
+        print(f"Ошибка при получении рейтинга feedback для submission {submission_id}: {e}")
+        return None
+
+def calculate_score(submitted_at: str, deadline: str) -> float:
     """
-    Рассчитывает балл за сабмишен на основе времени сдачи относительно дедлайна.
-    Умная формула с ограничением в 100 баллов и учетом коэффициента weight.
+    Возвращает time_multiplier в зависимости от времени сдачи относительно дедлайна.
     """
     submitted_time = datetime.datetime.fromisoformat(submitted_at.rstrip("Z")).replace(
         tzinfo=datetime.timezone.utc
@@ -30,27 +46,24 @@ def calculate_score(submitted_at: str, deadline: str, milestone_weight: float) -
     )
     time_diff = deadline_time - submitted_time
     hours_early = time_diff.total_seconds() / 3600
-    if hours_early < 0:
-        return 0
-    base_score = min(100 * milestone_weight, 100)
-    if hours_early >= 168:
-        time_multiplier = 1.0
-    elif hours_early >= 72:
-        time_multiplier = 0.95
-    elif hours_early >= 48:
-        time_multiplier = 0.9
+    if hours_early >= 48:
+        return 1.0
     elif hours_early >= 24:
-        time_multiplier = 0.85
+        return 0.95
     elif hours_early >= 12:
-        time_multiplier = 0.8
+        return 0.9
     elif hours_early >= 6:
-        time_multiplier = 0.75
+        return 0.85
+    elif hours_early >= 4:
+        return 0.8
+    elif hours_early >= 2:
+        return 0.75
     elif hours_early >= 1:
-        time_multiplier = 0.7
+        return 0.7
+    elif hours_early >= 0:
+        return 0.6
     else:
-        time_multiplier = 0.6
-    final_score = int(base_score * time_multiplier)
-    return min(final_score, 100)
+        return 0.2
 
 def get_milestone_info(milestone_id: int) -> Optional[Dict]:
     try:
@@ -133,8 +146,8 @@ def process_submission(submission: Dict) -> bool:
         print(f"Отсутствуют обязательные поля в сабмишене: {submission}")
         return False
     
-    # Обрабатываем только сабмишены со статусом "count"
-    if status != "count":
+    # Обрабатываем только сабмишены со статусом "passed"
+    if status != "passed":
         print(f"Сабмишен {submission_id} имеет статус '{status}', пропускаем")
         return True
     
@@ -152,21 +165,31 @@ def process_submission(submission: Dict) -> bool:
         print(f"Дедлайн milestone {milestone_id} еще не наступил, пропускаем сабмишен {submission_id}")
         return True
     
-    print(f"Обрабатываю сабмишен {submission_id} со статусом 'count' после дедлайна")
+    print(f"Обрабатываю сабмишен {submission_id} со статусом 'passed' после дедлайна")
     
-    # Рассчитываем балл
-    score = calculate_score(
+    # Рассчитываем time_multiplier
+    time_multiplier = calculate_score(
         submitted_at=submitted_at,
-        deadline=milestone['deadline'],
-        milestone_weight=milestone.get('weight', 1.0)
+        deadline=milestone['deadline']
     )
-    print(f"Рассчитан балл для сабмишена {submission_id}: {score}")
+    print(f"Множитель времени для сабмишена {submission_id}: {time_multiplier}")
+    
+    # Получаем рейтинг из feedback
+    rating = get_feedback_rating(submission_id)
+    if rating is None:
+        print(f"Не найден рейтинг для submission {submission_id}, пропускаем начисление баллов")
+        return False
+    print(f"Рейтинг из feedback для submission {submission_id}: {rating}")
+    
+    # Итоговый балл
+    final_score = rating * time_multiplier
+    print(f"Итоговый балл для сабмишена {submission_id}: {final_score}")
     
     # Обновляем балл студента
-    update_student_score(student_id, score)
+    update_student_score(student_id, int(final_score))
     
-    # Переводим статус в "passed"
-    return update_submission_status(submission_id, "passed")
+    # Переводим статус в "done"
+    return update_submission_status(submission_id, "done")
 
 async def process_submissions():
     try:

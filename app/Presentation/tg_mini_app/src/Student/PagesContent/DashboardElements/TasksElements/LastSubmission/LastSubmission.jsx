@@ -61,11 +61,6 @@ class LastSubmission extends React.Component {
                                 <IconX size={20} onClick={this.closeLastSubmission} className="last-submission-close-button"/>
                             </div>
                             <div className="last-submission-info-block-element">
-                                <div className="last-submission-info-block-element-label">Status:</div>
-                                <div className={`last-submission-info-block-element-value-${data.status === 'pending' ? 'status-pending' : ''}
-                                ${data.status === 'passed' ? 'status-passed' : ''}${data.status === 'fail' ? 'status-fail' : ''}`}> {data.status} </div>
-                            </div>
-                            <div className="last-submission-info-block-element">
                                 <div className="last-submission-info-block-element-label">Date:</div>
                                 <div className="last-submission-info-block-element-value">{this.getDate(data.updated_at)}</div>
                             </div>
@@ -78,7 +73,7 @@ class LastSubmission extends React.Component {
                                 <div className="last-submission-info-block-element-value">
                                     {this.state.file === null ?
                                         <div> We cannot get your work. </div> :
-                                        <a href={this.state.file} target="_blank" rel="noreferrer"> {this.state.file} </a>
+                                        <a href={this.state.file} target="_blank" rel="noreferrer"> last submission </a>
                                     }
                                 </div>
                             </div>

@@ -44,8 +44,11 @@ class MeetingInfo extends React.Component {
                     <div className="meeting-info-title"> {meeting.title} </div>
                     <div className="meeting-info-status"> {meeting.status} </div>
                     <div className="meeting-info-main-info">
-                        <div className="meeting-info-description"> {meeting.description} </div>
                         <div className="meeting-info-time-info">
+                            <div className="meeting-info-time-info-item">
+                                <div className="meeting-info-time-info-item-title"> Description: </div>
+                                <div className="meeting-info-time-info-item-value"> {meeting.description} </div>
+                            </div>
                             <div className="meeting-info-time-info-item">
                                 <div className="meeting-info-time-info-item-title"> Start time: </div>
                                 <div className="meeting-info-time-info-item-value"> {this.startDate(meeting.date)} </div>

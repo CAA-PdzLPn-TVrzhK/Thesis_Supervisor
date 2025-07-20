@@ -3,6 +3,7 @@ import React from "react";
 import Profile from "./PagesContent/ProfileElements/Profile.jsx";
 import Calendar from "./PagesContent/CalendarElements/Calendar.jsx";
 import Dashboard from "./PagesContent/DashboardElements/Dashboard.jsx";
+import Students from "./PagesContent/StudentsElements/Students.jsx";
 import "./BasePageComponent.css"
 
 class Selector extends React.Component {
@@ -26,6 +27,8 @@ class Selector extends React.Component {
                 return <Calendar />;
             case "dashboard":
                 return <Dashboard />;
+            case "students":
+                return <Students />
             default:
                 return <div>Страница не найдена</div>;
         }

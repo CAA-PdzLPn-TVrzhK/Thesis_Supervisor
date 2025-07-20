@@ -1,6 +1,6 @@
 
 import React from "react"
-import { IconEdit, IconX } from "@tabler/icons-react";
+import { IconX } from "@tabler/icons-react";
 import './meetingInfo.css'
 
 class MeetingInfo extends React.Component {
@@ -39,14 +39,17 @@ class MeetingInfo extends React.Component {
         const meeting = this.props.data;
         const group = this.props.group;
         return (
-            <div className="meeting-info-container">
+            <div className="meeting-info-overlay">
                 <div className="meeting-info-content">
                     <IconX size={20} onClick={this.back} className="meeting-info-close-button"/>
                     <div className="meeting-info-title"> {meeting.title} </div>
                     <div className="meeting-info-status"> {meeting.status} </div>
                     <div className="meeting-info-main-info">
-                        <div className="meeting-info-description"> {meeting.description} </div>
                         <div className="meeting-info-time-info">
+                            <div className="meeting-info-time-info-item">
+                                <div className="meeting-info-time-info-item-title"> Description: </div>
+                                <div className="meeting-info-time-info-item-value"> {meeting.description} </div>
+                            </div>
                             <div className="meeting-info-time-info-item">
                                 <div className="meeting-info-time-info-item-title"> Group: </div>
                                 <div className="meeting-info-time-info-item-value"> {group} </div>

@@ -34,8 +34,8 @@
 
 .last-submission-close-button {
   position: absolute;
-  top: 34px;
-  right: 18px;
+  top: 20px;
+  right: 15px;
   cursor: pointer;
   color: #6a11cb;
   background: none;
@@ -53,14 +53,14 @@
 
 .last-submission-info-block-title {
   font-weight: 700;
-  font-size: 1.7rem;
+  font-size: 1.4rem;
+  padding: 0 30px 12px;
   color: #6b3ccf;
   text-align: center;
   margin-bottom: 18px;
   letter-spacing: 1.2px;
   text-transform: uppercase;
   position: relative;
-  padding-bottom: 12px;
 }
 .last-submission-info-block-title::after {
   content: '';
@@ -159,7 +159,7 @@
 
 @media (max-width: 600px) {
   .last-submission-container {
-    width: 98vw;
+    width: 80vw;
     min-width: unset;
     padding: 18px 8px 18px 8px;
   }

@@ -1,0 +1,38 @@
+.loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    background: white;
+    border-radius: 12px;
+}
+
+.loader-image {
+    width: 250px;
+    height: auto;
+}
+
+.navigation-bar-submission-info-container {
+    padding: 20px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    color: #0e3973;
+    font-family: Arial, sans-serif;
+}
+
+.navigation-bar-submission-info-container-element {
+    display: flex;
+    flex-direction: column;
+    background-color: #e5effc;
+    padding: 15px 30px 15px 16px;
+    border-left: 4px solid #1a4e9b;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+}
+.navigation-bar-submission-info-container-element:hover {
+    background-color: #d7e6f9;
+    cursor: pointer;
+}
+

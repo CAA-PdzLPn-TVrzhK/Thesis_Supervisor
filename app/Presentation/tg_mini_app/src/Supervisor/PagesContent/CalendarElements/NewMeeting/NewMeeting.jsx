@@ -1,6 +1,7 @@
 
 import React from "react"
 import {getGroupList} from "./getGroupList.jsx";
+import { IconX } from "@tabler/icons-react";
 import axios from "axios"
 import "./NewMeeting.css"
 
@@ -131,6 +132,7 @@ class NewMeeting extends React.Component {
             <div className="new-meeting-overlay">
                 <div className="new-meeting-container">
                     <div className="new-meeting-title"> New meeting Card</div>
+                    <IconX size={20} onClick={this.back} className="meeting-info-close-button"/>
                     <div className="new-meeting-title"> on {this.props.day} {this.props.monthToString} {this.props.year} </div>
                     <div className = "new-meeting-form-container">
                         <span className = "new-meeting-form-element-title">Write title for meeting</span>
@@ -194,7 +196,6 @@ class NewMeeting extends React.Component {
                         </span>
                     </div>
                     <div className = "new-meeting-form-buttons">
-                        <button onClick={() => this.back()} className = "new-meeting-form-button-back"> back </button>
                         <button onClick={() => this.createMeeting()} className = "new-meeting-form-button-create"> create </button>
                     </div>
                 </div>

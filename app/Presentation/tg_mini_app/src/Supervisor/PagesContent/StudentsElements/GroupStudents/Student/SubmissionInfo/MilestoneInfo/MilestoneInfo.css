@@ -1,0 +1,107 @@
+.navigation-bar-submission-info-milestone-container {
+    padding: 20px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    color: #0e3973;
+    font-family: Arial, sans-serif;
+    transform-origin: top;
+    transform: scaleY(0);
+    overflow: hidden;
+    transition: transform 0.5s ease;
+}
+.navigation-bar-submission-info-milestone-container.open {
+    transform: scaleY(1);
+    transition: transform 0.5s ease;
+}
+
+.navigation-bar-submission-info-milestone-container-element {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.navigation-bar-submission-info-milestone-container-element-label {
+    font-weight: 700;
+    min-width: 100px;
+    color: #1a4e9b;
+}
+
+.navigation-bar-submission-info-milestone-container-element-value {
+    flex: 1;
+}
+
+.navigation-bar-submission-info-milestone-container-section {
+    margin-top: 20px;
+    border-top: 1px solid #d0dff7;
+    padding-top: 15px;
+}
+
+.navigation-bar-submission-info-milestone-container-section-title {
+    font-weight: 700;
+    font-size: 16px;
+    color: #1a4e9b;
+    margin-bottom: 10px;
+}
+
+.navigation-bar-submission-info-milestone-container-section-none {
+    font-style: italic;
+    color: #6b7a9c;
+}
+
+.navigation-bar-submission-info-milestone-container-section-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.navigation-bar-submission-info-milestone-container-section-container-element {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.navigation-bar-submission-info-milestone-container-section-container-element-label {
+    min-width: 120px;
+    font-weight: 600;
+    color: #1a4e9b;
+}
+
+.navigation-bar-submission-info-milestone-container-section-container-element-value {
+    flex: 1;
+    color: #0e3973;
+}
+
+.navigation-bar-submission-info-milestone-container-section-container-element-value-link {
+    text-decoration: underline;
+    flex: 1;
+    color: #0e3973;
+}
+
+.navigation-bar-submission-info-milestone-container-close-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    padding: 6px;
+    margin: 10px auto 0;
+    background-color: #d6ecff;
+    color: #1a4e9b;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 102, 204, 0.15);
+}
+
+.navigation-bar-submission-info-milestone-container-close-icon:hover {
+    background-color: #b3d9ff;
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(0, 102, 204, 0.25);
+}
+
+.navigation-bar-submission-info-milestone-container-close-icon:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 4px rgba(0, 102, 204, 0.2);
+}
