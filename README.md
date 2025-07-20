@@ -37,7 +37,7 @@ The system addresses the common challenges in thesis supervision: scattered comm
 ### BackOffice
 
 <p align="center">
-  <img src="docs/assets/screenshots/backoffice.png" width="600" alt="Backoffice">
+  <img src="docs/assets/screenshots/backoffice.jpg" width="600" alt="Backoffice">
 </p>
 
 ### MiniApp
