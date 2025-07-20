@@ -1,4 +1,4 @@
-#Usefulness and Transition
+# Usefulness and Transition
 
 ## Is the product complete?
 
