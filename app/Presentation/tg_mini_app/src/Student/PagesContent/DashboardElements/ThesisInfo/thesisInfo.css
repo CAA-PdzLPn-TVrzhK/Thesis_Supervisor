@@ -17,9 +17,9 @@
     font-size: 24px;
     font-weight: 600;
     color: #1a73e8;
-    margin-bottom: 20px;
-    margin-left: 30px;
+    margin: 0 auto 20px;
     letter-spacing: 0.5px;
+    justify-self: center;
     text-transform: uppercase;
     cursor: default;
 }
@@ -45,11 +45,12 @@
 }
 
 .dashboard-content-thesis-block {
+    width: 70%;
+    margin: 0 auto 30px;
     position: relative;
     background: white;
     border-radius: 12px;
     padding: 20px;
-    margin-bottom: 30px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     cursor: default;
 }
