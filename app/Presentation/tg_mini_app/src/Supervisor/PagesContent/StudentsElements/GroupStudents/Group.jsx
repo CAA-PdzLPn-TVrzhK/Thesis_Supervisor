@@ -1,45 +1,70 @@
 
-import React, { useState, useEffect } from "react"
+import React from "react"
 import axios from "axios";
+import NavigationBar from "./Student/NavigationBar.jsx";
+import {IconInfoCircleFilled, IconArrowBigDownLinesFilled} from "@tabler/icons-react"
+import ReactDom from "react-dom";
+import "./Group.css"
 
+class Group extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            open: false,
+            students: [],
+            navigationBar: false,
+            currentStudent: null,
+        }
+        this.openStudentInfo = this.openStudentInfo.bind(this);
+    }
 
+    async componentDidMount() {
+        const students = await axios.get(`${window.TelegramWebApp.API_BASE}students?peer_group_id=eq.${this.props.group.id}`, {headers: window.TelegramWebApp.headers});
+        const info = [];
 
-export default function GetGroup({group}) {
-    const [open, setOpen] = useState(false);
-    const [students, setStudents] = useState([]);
+        for(let student of students.data) {
+            const user = await axios.get(`${window.TelegramWebApp.API_BASE}users?id=eq.${student.user_id}`, {headers: window.TelegramWebApp.headers});
+            info.push({user: user.data[0], student: student});
+        }
 
-    useEffect(() => {
-        const getStudents = async () => {
-            const students = await axios.get(`${window.TelegramWebApp.API_BASE}students?peer_group_id=eq.${group.id}`, {headers: window.TelegramWebApp.headers});
-            const info = [];
+        this.setState({students: info});
+    }
 
-            for(let student of students.data) {
-                const user = await axios.get(`${window.TelegramWebApp.API_BASE}users?id=eq.${student.user_id}`, {headers: window.TelegramWebApp.headers});
-                info.push({user: user.data[0], student: student});
+    openStudentInfo(currentStudent) {
+        this.setState((p) => {
+            return {
+                navigationBar: !p.navigationBar,
+                currentStudent: currentStudent,
             }
-            setStudents(info);
-        };
-        getStudents();
-    }, [group]);
+        })
+    }
 
-    return(
-           <div>
-               <div onClick={() => setOpen(!open)}>
-                   {group.name}
+    render() {
+        return (
+            <div className={`peer-group-container`}>
+                {this.state.navigationBar && ReactDom.createPortal(
+                    <NavigationBar data={this.state.currentStudent} close={this.openStudentInfo}/>,
+                    document.getElementById("modal-root")
+                )}
+               <div className={`peer-group-container-title-block`}>
+                   <div className={`peer-group-container-title`}> {this.props.group.name} </div>
+                   <IconArrowBigDownLinesFilled size={20} onClick={() => this.setState({open: !this.state.open})} className={`peer-group-container-title-icon ${this.state.open===true ? "open" : ""}`}/>
                </div>
-               {open && (
-                    <div>
-                        {students.map((studentData) => {
+               {this.state.open && (
+                    <div className={`peer-group-container-students-block`}>
+                        {this.state.students.map((studentData) => {
                             return (
-                                <div key={studentData.user.id}>
-                                    <div>
-                                        <div> {studentData.user.first_name} {studentData.user.last_name} </div>
-                                    </div>
+                                <div key={studentData.user.id}  className={`peer-group-container-students-block-element`}>
+                                    <div className={`peer-group-container-students-block-element-name`}> {studentData.user.first_name} {studentData.user.last_name} </div>
+                                    <IconInfoCircleFilled size={20} onClick={() => this.openStudentInfo(studentData)} className={`peer-group-container-students-block-element-info-icon`}/>
                                 </div>
                             )
                         })}
                    </div>
                )}
            </div>
-    )
+        )
+    }
 }
+
+export default Group

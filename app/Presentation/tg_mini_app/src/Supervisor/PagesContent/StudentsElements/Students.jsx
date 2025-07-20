@@ -1,7 +1,8 @@
 
 import React from "react"
 import axios from "axios";
-import GetGroup from "./GroupStudents/Group.jsx";
+import Group from "./GroupStudents/Group.jsx";
+import "./Students.css"
 
 class Students extends React.Component {
     constructor(props) {
@@ -26,12 +27,12 @@ class Students extends React.Component {
             )
         }
         return (
-            <div>
-                <div> Group list </div>
-                <div>
+            <div className={`students-container`}>
+                <div className={`students-title`}> Group list </div>
+                <div className={`students-groups`}>
                     {this.state.groups.map((group) => {
                         return (
-                            <GetGroup group={group} key={group.id}/>
+                            <Group group={group} key={group.id}/>
                         )
                     })}
                 </div>
