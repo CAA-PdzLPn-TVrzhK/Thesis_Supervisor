@@ -1,16 +1,16 @@
-import axios from 'axios';
 import { Table } from 'antd';
 import './index.css';
 import SupervisorProfile from "./supervisorProfile.jsx";
 import React, {useEffect, useState} from "react";
 import ControlPanel from "@/components/control-panel.jsx";
+import {
+  usersService,
+  supervisorsService,
+  groupsService,
+  studentsService
+} from '@/api/services';
 
 const { Column } = Table;
-
-const API_URL = 'https://dprwupbzatrqmqpdwcgq.supabase.co/rest/v1/';
-const API_HEADERS = {
-  apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3NzcsImV4cCI6MjA2Njc2MDc3N30.yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc"
-};
 
 export default function SupervisorList(){
     const [data, setData] = useState([]);
@@ -27,17 +27,12 @@ export default function SupervisorList(){
     useEffect(() => {
         async function fetchAll(){
             try{
-                const [usrData, supData, grpData, stuData] = await Promise.all([
-                    axios.get(API_URL + 'users', {headers: API_HEADERS}),
-                    axios.get(API_URL + 'supervisors', {headers: API_HEADERS}),
-                    axios.get(API_URL + 'peer_groups', {headers: API_HEADERS}),
-                    axios.get(API_URL + 'students', {headers: API_HEADERS}),
+                const [users, supervisors, peerGroups, students] = await Promise.all([
+                    usersService.getAll(),
+                    supervisorsService.getAll(),
+                    groupsService.getAll(),
+                    studentsService.getAll(),
                 ])
-
-                const users = usrData.data;
-                const supervisors = supData.data;
-                const peerGroups = grpData.data;
-                const students = stuData.data;
 
                 // enrich supervisors with user info
                 const idToUser = users.reduce((m, u) => {
@@ -169,25 +164,16 @@ export default function SupervisorList(){
 
     const handleDelete = async () => {
         try {
-            // Сбросить supervisor_id у всех групп для каждого удаляемого супервизора
             await Promise.all(
                 selectedRows.map(async id => {
                     try {
-                        await axios.patch(
-                            `${API_URL}peer_groups?supervisor_id=eq.${id}`,
-                            { supervisor_id: null },
-                            { headers: API_HEADERS }
-                        );
+                        await groupsService.updateSupervisor(id, { supervisor_id: null });
                     } catch (e) {
                         console.error('Ошибка при сбросе supervisor_id у групп:', e?.response?.data || e);
                     }
                 })
             );
-            await Promise.all(
-                selectedRows.map(id =>
-                    axios.delete(`${API_URL}supervisors?id=eq.${id}`, {headers: API_HEADERS})
-                )
-            );
+            await supervisorsService.deleteMany(selectedRows);
             setDisplay(display.filter(item => !selectedRows.includes(item.id)));
             setIsEditing(false);
             setSelectedRows([]);
@@ -198,16 +184,10 @@ export default function SupervisorList(){
 
     const handleSave = async () => {
         try {
-            // Удаляем из БД только тех, кого нет в display
             const deletedIds = data.map(s => s.id).filter(id => !display.some(d => d.id === id));
             if (deletedIds.length > 0) {
-                await Promise.all(
-                    deletedIds.map(id =>
-                        axios.delete(`${API_URL}supervisors?id=eq.${id}`, { headers: API_HEADERS })
-                    )
-                );
+                await supervisorsService.deleteMany(deletedIds);
             }
-            // Обновляем изменённые записи
             for (const supervisor of display) {
                 const originalSupervisor = data.find(s => s.id === supervisor.id);
                 if (originalSupervisor && (
@@ -215,29 +195,19 @@ export default function SupervisorList(){
                     supervisor.supervisorSurname !== originalSupervisor.supervisorSurname ||
                     supervisor.department !== originalSupervisor.department
                 )) {
-                    // Обновляем пользователя
-                    await axios.patch(
-                        `${API_URL}users?id=eq.${supervisor.user_id}`,
-                        {
-                            first_name: supervisor.supervisorName,
-                            last_name: supervisor.supervisorSurname,
-                            department: supervisor.department
-                        },
-                        { headers: API_HEADERS }
-                    );
+                    await usersService.update(supervisor.user_id, {
+                        first_name: supervisor.supervisorName,
+                        last_name: supervisor.supervisorSurname,
+                        department: supervisor.department
+                    });
                 }
             }
-            // Обновляем данные с сервера
-            const [usrData, supData, grpData, stuData] = await Promise.all([
-                axios.get(API_URL + 'users', {headers: API_HEADERS}),
-                axios.get(API_URL + 'supervisors', {headers: API_HEADERS}),
-                axios.get(API_URL + 'peer_groups', {headers: API_HEADERS}),
-                axios.get(API_URL + 'students', {headers: API_HEADERS}),
+            const [users, supervisors, peerGroups, students] = await Promise.all([
+                usersService.getAll(),
+                supervisorsService.getAll(),
+                groupsService.getAll(),
+                studentsService.getAll(),
             ]);
-            const users = usrData.data;
-            const supervisors = supData.data;
-            const peerGroups = grpData.data;
-            const students = stuData.data;
             const idToUser = users.reduce((m, u) => {
                 m[u.id] = u;
                 return m;

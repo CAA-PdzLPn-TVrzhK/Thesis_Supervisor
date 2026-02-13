@@ -1,14 +1,9 @@
 import React, { useEffect } from 'react';
-import axios from 'axios';
 import { Form, Input, InputNumber, Button, Select, DatePicker } from 'antd';
 import dayjs from 'dayjs';
+import { milestonesService } from '@/api/services';
 
 const { TextArea } = Input;
-
-const API_URL = 'https://dprwupbzatrqmqpdwcgq.supabase.co/rest/v1/';
-const API_HEADERS = {
-  apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3NzcsImV4cCI6MjA2Njc2MDc3N30.yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc"
-};
 
 export default function MilestoneProfile({ milestone, theses, onBack, onSave }) {
   const [form] = Form.useForm();
@@ -35,14 +30,6 @@ export default function MilestoneProfile({ milestone, theses, onBack, onSave }) 
 
   const handleFinish = async (values) => {
     try {
-      const url = isEdit
-        ? `${API_URL}milestones?id=eq.${milestone.id}`
-        : `${API_URL}milestones`;
-      const method = isEdit ? 'patch' : 'post';
-      const headers = {
-        ...API_HEADERS,
-        Prefer: 'return=representation',
-      };
       const body = {
         thesis_id: values.thesis_id,
         title: values.title,
@@ -53,8 +40,9 @@ export default function MilestoneProfile({ milestone, theses, onBack, onSave }) 
         notified: values.notified,
         start: values.start ? values.start.toISOString() : null,
       };
-      const { data } = await axios[method](url, body, { headers });
-      const saved = Array.isArray(data) ? data[0] : data;
+      const saved = milestone
+        ? await milestonesService.update(milestone.id, body)
+        : await milestonesService.create(body);
       onSave({ ...milestone, ...saved });
     } catch (err) {
       console.error('❌ Ошибка при сохранении milestone:', err);

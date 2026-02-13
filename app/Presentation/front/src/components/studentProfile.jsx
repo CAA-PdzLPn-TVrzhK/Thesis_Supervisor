@@ -1,13 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import axios from 'axios';
 import { Form, Input, InputNumber, Button, Select } from 'antd';
 import './index.css';
-
-
-const API_URL = 'https://dprwupbzatrqmqpdwcgq.supabase.co/rest/v1/';
-const API_HEADERS = {
-  apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3NzcsImV4cCI6MjA2Njc2MDc3N30.yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc"
-};
+import {
+  studentsService,
+  usersService,
+  thesesService
+} from '@/api/services';
 
 export default function StudentProfile({ supervisors, groups, student, onBack, onSave}) {
   const [form] = Form.useForm();
@@ -63,14 +61,6 @@ export default function StudentProfile({ supervisors, groups, student, onBack, o
 
   const handleFinish = async (values) => {
     try {
-      const url = student
-        ? `${API_URL}students?id=eq.${student.id}`
-        : `${API_URL}students`;
-      const method = student ? 'patch' : 'post';
-      const headers = {
-        ...API_HEADERS,
-        Prefer: 'return=representation',
-      };
       const body = {
         username: values.username,
         supervisor_id: values.supervisor_id,
@@ -81,29 +71,21 @@ export default function StudentProfile({ supervisors, groups, student, onBack, o
         points: values.points,
         progress: values.progress,
       };
-      console.log('Отправляем:', body);
-      const { data } = await axios[method](url, body, { headers });
-      const saved = Array.isArray(data) ? data[0] : data;
+      const saved = student
+        ? await studentsService.update(student.id, body)
+        : await studentsService.create(body);
 
-      if (values.studentName && student?.user_id || values.studentSurname && student?.user_id) {
-        await axios.patch(
-          `${API_URL}users?id=eq.${student.user_id}`,
-          { 
-            first_name: values.studentName,
-            last_name: values.studentSurname,
-          },
-          { headers }
-        );
+      if ((values.studentName || values.studentSurname) && student?.user_id) {
+        await usersService.update(student.user_id, {
+          first_name: values.studentName,
+          last_name: values.studentSurname,
+        });
       }
 
       if (values.thesisName && student?.thesis_id) {
-        await axios.patch(
-          `${API_URL}theses?id=eq.${student.thesis_id}`,
-          { 
-            title: values.thesisName,
-          },
-          { headers }
-        );
+        await thesesService.update(student.thesis_id, {
+          title: values.thesisName,
+        });
       }
 
       console.log('✅ Сохранение прошло успешно:', saved);

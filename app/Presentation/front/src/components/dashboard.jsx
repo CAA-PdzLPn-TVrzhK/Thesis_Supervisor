@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { LineChart, Line, XAxis, YAxis, Tooltip, PieChart, Pie, Cell, ResponsiveContainer, Legend } from "recharts";
-import axios from "axios";
 import { useTheme } from './ThemeContext';
 import { Link } from 'react-router-dom';
-
-const API_URL = 'https://dprwupbzatrqmqpdwcgq.supabase.co/rest/v1/';
-const API_HEADERS = {
-  apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3NzcsImV4cCI6MjA2Njc2MDc3N30.yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc"
-};
+import {
+  studentsService,
+  supervisorsService,
+  groupsService,
+  newStudentsService,
+  newSupervisorsService,
+  milestonesService,
+  usersService,
+  thesesService
+} from '@/api/services';
 
 const COLORS = ["#000000", "#6366F1", "#9CA3AF"];
 
@@ -153,28 +157,24 @@ const Dashboard = () => {
   useEffect(() => {
     async function fetchDashboardData() {
       try {
-        // Получаем все нужные данные
-        const [studentsRes, supervisorsRes, groupsRes, newStudentsRes, newSupervisorsRes, milestonesRes, usersRes, thesesRes] = await Promise.all([
-          axios.get(API_URL + 'students', { headers: API_HEADERS }),
-          axios.get(API_URL + 'supervisors', { headers: API_HEADERS }),
-          axios.get(API_URL + 'peer_groups', { headers: API_HEADERS }),
-          axios.get(API_URL + 'new_students', { headers: API_HEADERS }),
-          axios.get(API_URL + 'new_supervisors', { headers: API_HEADERS }),
-          axios.get(API_URL + 'milestones', { headers: API_HEADERS }),
-          axios.get(API_URL + 'users', { headers: API_HEADERS }),
-          axios.get(API_URL + 'theses', { headers: API_HEADERS }),
+        const [students, supervisors, groups, newStudents, newSupervisors, milestones, users, theses] = await Promise.all([
+          studentsService.getAll(),
+          supervisorsService.getAll(),
+          groupsService.getAll(),
+          newStudentsService.getAll(),
+          newSupervisorsService.getAll(),
+          milestonesService.getAll(),
+          usersService.getAll(),
+          thesesService.getAll(),
         ]);
 
-        // Stats
         setStats({
-          students: studentsRes.data.length,
-          supervisors: supervisorsRes.data.length,
-          pendingRequests: newStudentsRes.data.length + newSupervisorsRes.data.length,
-          groups: groupsRes.data.length,
+          students: students.length,
+          supervisors: supervisors.length,
+          pendingRequests: newStudents.length + newSupervisors.length,
+          groups: groups.length,
         });
 
-        // --- Новый тренд студентов по времени ---
-        const students = studentsRes.data.filter(s => s.created_at);
         const period = studentPeriod;
         const start = getPeriodStart(period);
         let buckets = {};
@@ -184,7 +184,7 @@ const Dashboard = () => {
             const key = d.toLocaleDateString();
             buckets[key] = 0;
           }
-          students.forEach(s => {
+          studentsWithDate.forEach(s => {
             const d = new Date(s.created_at);
             if (d >= start && d <= nowDay) {
               const key = d.toLocaleDateString();
@@ -197,7 +197,7 @@ const Dashboard = () => {
             const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
             buckets[key] = 0;
           }
-          students.forEach(s => {
+          studentsWithDate.forEach(s => {
             const d = new Date(s.created_at);
             if (d >= start && d <= nowMonth) {
               const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
@@ -205,28 +205,25 @@ const Dashboard = () => {
             }
           });
         } else {
-          // All time: by month, начиная с первого студента
-          if (students.length > 0) {
-            const minDate = new Date(Math.min(...students.map(s => new Date(s.created_at))));
-            const maxDate = new Date(Math.max(...students.map(s => new Date(s.created_at))));
+          if (studentsWithDate.length > 0) {
+            const minDate = new Date(Math.min(...studentsWithDate.map(s => new Date(s.created_at))));
+            const maxDate = new Date(Math.max(...studentsWithDate.map(s => new Date(s.created_at))));
             for (let d = new Date(minDate.getFullYear(), minDate.getMonth(), 1); d <= maxDate; d.setMonth(d.getMonth() + 1)) {
               const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
               buckets[key] = 0;
             }
-            students.forEach(s => {
+            studentsWithDate.forEach(s => {
               const d = new Date(s.created_at);
               const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
               if (buckets[key] !== undefined) buckets[key]++;
             });
           } else {
-            buckets = {}; // если студентов нет, график пустой
+            buckets = {};
           }
         }
         const trend = Object.entries(buckets).map(([date, count]) => ({ date, count }));
         setStudentTrend(trend);
 
-        // Requests status (approved, pending, rejected)
-        // For demo: count filled/approved/incomplete in new_students and new_supervisors
         const getStatus = (item) => {
           const hasEmptyFields = !item.firstname || !item.lastname || !item.username || !item.department || !item.groups;
           const isAllFilled = !hasEmptyFields;
@@ -235,7 +232,7 @@ const Dashboard = () => {
           if (isAllFilled) return 'Pending';
           return 'Rejected';
         };
-        const allRequests = [...newStudentsRes.data, ...newSupervisorsRes.data];
+        const allRequests = [...newStudents, ...newSupervisors];
         const statusCounts = { Approved: 0, Pending: 0, Rejected: 0 };
         allRequests.forEach(item => {
           statusCounts[getStatus(item)]++;
@@ -246,20 +243,14 @@ const Dashboard = () => {
           { name: 'Rejected', value: statusCounts.Rejected },
         ]);
 
-        // Upcoming milestones (next 3 by deadline)
         const now = new Date();
-        const upcoming = milestonesRes.data
+        const upcoming = milestones
           .filter(m => m.deadline && new Date(m.deadline) > now)
           .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
           .slice(0, 3)
           .map(m => ({ id: m.id, title: m.title, date: m.deadline, status: m.status }));
         setMilestones(upcoming);
 
-        // --- Recent Activity с именами ---
-        const users = usersRes.data;
-        const theses = thesesRes.data;
-        const supervisors = supervisorsRes.data;
-        // Мапы id -> имя/тайтл
         const userIdToName = users.reduce((m, u) => {
           m[u.id] = `${u.first_name || ''} ${u.last_name || ''}`.trim();
           return m;
@@ -272,28 +263,24 @@ const Dashboard = () => {
           m[t.id] = t.title;
           return m;
         }, {});
-        // Последний студент
         let recent = [];
-        if (studentsRes.data.length > 0) {
-          const lastStudent = studentsRes.data[studentsRes.data.length - 1];
+        if (students.length > 0) {
+          const lastStudent = students[students.length - 1];
           const name = userIdToName[lastStudent.user_id] || lastStudent.user_id || lastStudent.id;
           recent.push(`Student ${name} added`);
         }
-        // Последний супервизор
-        if (supervisorsRes.data.length > 0) {
-          const lastSupervisor = supervisorsRes.data[supervisorsRes.data.length - 1];
+        if (supervisors.length > 0) {
+          const lastSupervisor = supervisors[supervisors.length - 1];
           const name = userIdToName[lastSupervisor.user_id] || lastSupervisor.user_id || lastSupervisor.id;
           recent.push(`Supervisor ${name} added`);
         }
-        // Последний milestone
-        if (milestonesRes.data.length > 0) {
-          const lastMilestone = milestonesRes.data[milestonesRes.data.length - 1];
+        if (milestones.length > 0) {
+          const lastMilestone = milestones[milestones.length - 1];
           const thesisTitle = thesisIdToTitle[lastMilestone.thesis_id] || '';
           recent.push(`Milestone "${lastMilestone.title}" (${thesisTitle}) updated`);
         }
-        // Последняя группа
-        if (groupsRes.data.length > 0) {
-          const lastGroup = groupsRes.data[groupsRes.data.length - 1];
+        if (groups.length > 0) {
+          const lastGroup = groups[groups.length - 1];
           recent.push(`Group "${lastGroup.name}" created`);
         }
         setRecentActivity(recent.slice(0, 4));

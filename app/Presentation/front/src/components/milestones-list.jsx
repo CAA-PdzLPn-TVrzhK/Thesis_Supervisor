@@ -1,18 +1,16 @@
-import axios from 'axios';
 import { Table, Input, Select, DatePicker } from 'antd';
 import './index.css';
 import React, { useEffect, useState } from 'react';
 import ControlPanel from './control-panel.jsx';
 import MilestoneProfile from './milestoneProfile.jsx';
 import dayjs from 'dayjs';
+import {
+  milestonesService,
+  thesesService
+} from '@/api/services';
 
 const { Column } = Table;
 const { TextArea } = Input;
-
-const API_URL = 'https://dprwupbzatrqmqpdwcgq.supabase.co/rest/v1/';
-const API_HEADERS = {
-  apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3NzcsImV4cCI6MjA2Njc2MDc3N30.yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc"
-};
 
 export default function MilestonesList({ onBackToMenu }) {
   const [data, setData] = useState([]);
@@ -31,13 +29,10 @@ export default function MilestonesList({ onBackToMenu }) {
     async function fetchAll() {
       try {
         console.log('🔍 Загружаем данные milestones...');
-        const [milestonesData, thesesData] = await Promise.all([
-          axios.get(API_URL + 'milestones', { headers: API_HEADERS }),
-          axios.get(API_URL + 'theses', { headers: API_HEADERS })
+        const [milestones, thesesList] = await Promise.all([
+          milestonesService.getAll(),
+          thesesService.getAll()
         ]);
-        
-        const milestones = milestonesData.data;
-        const thesesList = thesesData.data;
 
         console.log('📊 Полученные milestones:', milestones);
         console.log('📊 Полученные theses:', thesesList);
@@ -186,13 +181,9 @@ export default function MilestonesList({ onBackToMenu }) {
     }
     try {
       await Promise.all(
-        deletedIds.map(id =>
-          axios.delete(`${API_URL}milestones?id=eq.${id}`, { headers: API_HEADERS })
-        )
+        deletedIds.map(id => milestonesService.delete(id))
       );
-      // Обновляем данные с сервера
-      const milestonesResponse = await axios.get(API_URL + 'milestones', { headers: API_HEADERS });
-      const milestones = milestonesResponse.data;
+      const milestones = await milestonesService.getAll();
       const enriched = milestones.map(milestone => ({
         ...milestone,
         thesis_title: thesisIdToTitle[milestone.thesis_id] || '—'

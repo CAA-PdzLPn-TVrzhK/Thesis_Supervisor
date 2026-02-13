@@ -1,15 +1,15 @@
-import axios from 'axios';
 import { Table, Input, Select } from 'antd';
 import './index.css';
 import React, { useEffect, useState } from 'react';
 import ControlPanel from './control-panel.jsx';
+import {
+  newSupervisorsService,
+  groupsService,
+  usersService,
+  supervisorsService
+} from '@/api/services';
 
 const { Column } = Table;
-
-const API_URL = 'https://dprwupbzatrqmqpdwcgq.supabase.co/rest/v1/';
-const API_HEADERS = {
-  apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3NzcsImV4cCI6MjA2Njc2MDc3N30.yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc"
-};
 
 export default function NewSupervisorsList({ onBackToMenu }) {
   const [data, setData] = useState([]);
@@ -62,14 +62,11 @@ export default function NewSupervisorsList({ onBackToMenu }) {
     async function fetchAll() {
       try {
         console.log('🔍 Загружаем данные new_supervisors...');
-        const [newSupervisorsData, groupsData, usersData] = await Promise.all([
-          axios.get(API_URL + 'new_supervisors', { headers: API_HEADERS }),
-          axios.get(API_URL + 'peer_groups', { headers: API_HEADERS }),
-          axios.get(API_URL + 'users', { headers: API_HEADERS })
+        const [newSupervisors, peerGroups, users] = await Promise.all([
+          newSupervisorsService.getAll(),
+          groupsService.getAll(),
+          usersService.getAll()
         ]);
-        const newSupervisors = newSupervisorsData.data;
-        const peerGroups = groupsData.data;
-        const users = usersData.data;
         setUsers(users);
 
         console.log('📊 Полученные данные new_supervisors:', newSupervisors);
@@ -183,14 +180,7 @@ export default function NewSupervisorsList({ onBackToMenu }) {
         approved: false
       };
       
-      const response = await axios.post(
-        `${API_URL}new_supervisors`,
-        emptySupervisor,
-        { headers: API_HEADERS }
-      );
-      
-      // Получаем созданную запись с id от сервера
-      const createdSupervisor = response.data[0] || response.data;
+      const createdSupervisor = await newSupervisorsService.create(emptySupervisor);
       
       // Обогащаем данными для отображения
       const statusInfo = getRecordStatus(createdSupervisor);
@@ -240,23 +230,12 @@ export default function NewSupervisorsList({ onBackToMenu }) {
       // Удаляем из БД только тех, кого нет в display
       const deletedIds = data.map(s => s.id).filter(id => !display.some(d => d.id === id));
       if (deletedIds.length > 0) {
-        await Promise.all(
-          deletedIds.map(id =>
-            axios.delete(`${API_URL}new_supervisors?id=eq.${id}`, { headers: API_HEADERS })
-          )
-        );
+        await newSupervisorsService.deleteMany(deletedIds);
       }
-      // Обновляем изменённые записи
       for (const supervisor of display) {
-        await axios.patch(
-          `${API_URL}new_supervisors?id=eq.${supervisor.id}`,
-          supervisor,
-          { headers: API_HEADERS }
-        );
+        await newSupervisorsService.update(supervisor.id, supervisor);
       }
-      // Обновляем данные с сервера
-      const newSupervisorsResponse = await axios.get(API_URL + 'new_supervisors', { headers: API_HEADERS });
-      const newSupervisors = newSupervisorsResponse.data;
+      const newSupervisors = await newSupervisorsService.getAll();
       setData(newSupervisors);
       setDisplay(newSupervisors);
       setIsEditing(false);
@@ -288,16 +267,9 @@ export default function NewSupervisorsList({ onBackToMenu }) {
       const selectedSupervisors = data.filter(item => selectedRows.includes(item.id));
       
       for (const supervisor of selectedSupervisors) {
-        await axios.patch(
-          `${API_URL}new_supervisors?id=eq.${supervisor.id}`,
-          { approved: true },
-          { headers: API_HEADERS }
-        );
+        await newSupervisorsService.update(supervisor.id, { approved: true });
       }
-
-      // Обновляем данные с сервера
-      const newSupervisorsResponse = await axios.get(API_URL + 'new_supervisors', { headers: API_HEADERS });
-      const newSupervisors = newSupervisorsResponse.data;
+      const newSupervisors = await newSupervisorsService.getAll();
       
       const enriched = newSupervisors.map(supervisor => {
         const statusInfo = getRecordStatus(supervisor);
@@ -331,34 +303,23 @@ export default function NewSupervisorsList({ onBackToMenu }) {
     }
     try {
       // Получаем все группы из Supabase для поиска по имени
-      const groupsRes = await axios.get(API_URL + 'peer_groups', { headers: API_HEADERS });
-      const allGroups = groupsRes.data;
+      const allGroups = await groupsService.getAll();
       console.log('ВСЕ ГРУППЫ:', allGroups);
       for (const supervisor of display.filter(item => selectedRows.includes(item.id))) {
         try {
           console.log('ПЕРЕНОСИМ СУПЕРВИЗОРА:', supervisor);
           // 1. Обновляем пользователя (users) по user_id
-          await axios.patch(
-            `${API_URL}users?id=eq.${supervisor.user_id}`,
-            {
-              first_name: supervisor.firstname,
-              last_name: supervisor.lastname,
-              role: 'supervisor',
-              department: supervisor.departament
-            },
-            { headers: API_HEADERS }
-          );
-          // 2. Создаём запись в supervisors
+          await usersService.update(supervisor.user_id, {
+            first_name: supervisor.firstname,
+            last_name: supervisor.lastname,
+            role: 'supervisor',
+            department: supervisor.departament
+          });
           const supervisorData = {
             user_id: supervisor.user_id,
             department: supervisor.departament
           };
-          const supRes = await axios.post(
-            `${API_URL}supervisors`,
-            supervisorData,
-            { headers: { ...API_HEADERS, Prefer: 'return=representation' } }
-          );
-          const createdSupervisor = Array.isArray(supRes.data) ? supRes.data[0] : supRes.data;
+          const createdSupervisor = await supervisorsService.create(supervisorData);
           console.log('ОТВЕТ ОТ POST /supervisors:', supRes.data, 'createdSupervisor:', createdSupervisor);
           // 3. Назначаем супервизора для выбранных групп по имени
           const groupNames = Array.isArray(supervisor.groups)
@@ -376,11 +337,7 @@ export default function NewSupervisorsList({ onBackToMenu }) {
           console.log('groupsToRemove:', groupsToRemove, 'groupsToAdd:', groupsToAdd);
           for (const groupId of groupsToRemove) {
             try {
-              const patchRes = await axios.patch(
-                `${API_URL}peer_groups?id=eq.${groupId}`,
-                { supervisor_id: null },
-                { headers: API_HEADERS }
-              );
+              await groupsService.update(groupId, { supervisor_id: null });
               console.log(`PATCH (remove) groupId=${groupId}:`, patchRes.data);
             } catch (e) {
               console.error(`Ошибка PATCH (remove) groupId=${groupId}:`, e?.response?.data || e);
@@ -388,18 +345,14 @@ export default function NewSupervisorsList({ onBackToMenu }) {
           }
           for (const groupId of groupsToAdd) {
             try {
-              const patchRes = await axios.patch(
-                `${API_URL}peer_groups?id=eq.${groupId}`,
-                { supervisor_id: createdSupervisor.id },
-                { headers: API_HEADERS }
-              );
-              console.log(`PATCH (add) groupId=${groupId} supervisor_id=${createdSupervisor.id}:`, patchRes.data);
+              await groupsService.update(groupId, { supervisor_id: createdSupervisor.id });
+              console.log(`PATCH (add) groupId=${groupId} supervisor_id=${createdSupervisor.id}`);
             } catch (e) {
               console.error(`Ошибка PATCH (add) groupId=${groupId}:`, e?.response?.data || e);
             }
           }
           // 4. Удаляем из new_supervisors
-          await axios.delete(`${API_URL}new_supervisors?id=eq.${supervisor.id}`, { headers: API_HEADERS });
+          await newSupervisorsService.delete(supervisor.id);
           console.log(`✅ Перенесён супервизор: ${supervisor.firstname} ${supervisor.lastname}`);
         } catch (moveErr) {
           console.error('❌ Ошибка при переносе супервизора:', moveErr, moveErr?.response?.data);
@@ -407,9 +360,9 @@ export default function NewSupervisorsList({ onBackToMenu }) {
         }
       }
       // После всех переносов обновляем данные
-      const newSupervisorsResponse = await axios.get(API_URL + 'new_supervisors', { headers: API_HEADERS });
-      setData(newSupervisorsResponse.data);
-      setDisplay(newSupervisorsResponse.data);
+      const newSupervisors = await newSupervisorsService.getAll();
+      setData(newSupervisors);
+      setDisplay(newSupervisors);
       setIsEditing(false);
       setSelectedRows([]);
     } catch (err) {

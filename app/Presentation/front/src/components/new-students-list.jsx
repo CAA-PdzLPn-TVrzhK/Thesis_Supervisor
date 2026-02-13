@@ -1,15 +1,17 @@
-import axios from 'axios';
 import { Table, Input, Select } from 'antd';
 import './index.css';
 import React, {useEffect, useState} from "react";
 import ControlPanel from "./control-panel.jsx";
+import {
+  newStudentsService,
+  supervisorsService,
+  groupsService,
+  usersService,
+  studentsService,
+  thesesService
+} from '@/api/services';
 
 const { Column } = Table;
-
-const API_URL = 'https://dprwupbzatrqmqpdwcgq.supabase.co/rest/v1/';
-const API_HEADERS = {
-  apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3NzcsImV4cCI6MjA2Njc2MDc3N30.yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc"
-};
 
 export default function NewStudentList({ onBackToMenu }){
     const [data, setData] = useState([]);
@@ -30,16 +32,12 @@ export default function NewStudentList({ onBackToMenu }){
     // Функция для обновления данных после переноса
     const fetchAll = async () => {
         try{
-            const [newStudentsData, supervisorsData, groupsData] = await Promise.all([
-                axios.get(API_URL + 'new_students', {headers: API_HEADERS}),
-                axios.get(API_URL + 'supervisors', {headers: API_HEADERS}),
-                axios.get(API_URL + 'peer_groups', {headers: API_HEADERS}),
+            const [newStudents, supervisors, peerGroups, users] = await Promise.all([
+                newStudentsService.getAll(),
+                supervisorsService.getAll(),
+                groupsService.getAll(),
+                usersService.getAll(),
             ])
-            const newStudents = newStudentsData.data;
-            const supervisors = supervisorsData.data;
-            const peerGroups = groupsData.data;
-            const usersResponse = await axios.get(API_URL + 'users', {headers: API_HEADERS});
-            const users = usersResponse.data;
             setUsers(users);
             // Создаем мапы для быстрого поиска ID по именам
             const supervisorNameToId = {};
@@ -112,23 +110,15 @@ export default function NewStudentList({ onBackToMenu }){
     useEffect(() => {
         async function fetchAll(){
             try{
-                const [newStudentsData, supervisorsData, groupsData] = await Promise.all([
-                    axios.get(API_URL + 'new_students', {headers: API_HEADERS}),
-                    axios.get(API_URL + 'supervisors', {headers: API_HEADERS}),
-                    axios.get(API_URL + 'peer_groups', {headers: API_HEADERS}),
+                const [newStudents, supervisors, peerGroups, users] = await Promise.all([
+                    newStudentsService.getAll(),
+                    supervisorsService.getAll(),
+                    groupsService.getAll(),
+                    usersService.getAll(),
                 ])
 
-                const newStudents = newStudentsData.data;
-                const supervisors = supervisorsData.data;
-                const peerGroups = groupsData.data;
-
-                // Создаем мапы для быстрого поиска ID по именам
                 const supervisorNameToId = {};
                 const groupNameToId = {};
-
-                // Загружаем данные пользователей для супервизоров
-                const usersResponse = await axios.get(API_URL + 'users', {headers: API_HEADERS});
-                const users = usersResponse.data;
 
                 supervisors.forEach(supervisor => {
                     const user = users.find(u => u.id === supervisor.user_id);
@@ -338,27 +328,19 @@ export default function NewStudentList({ onBackToMenu }){
             // Удаляем из БД только тех, кого нет в display
             const deletedIds = data.map(s => s.id).filter(id => !display.some(d => d.id === id));
             if (deletedIds.length > 0) {
-                await Promise.all(
-                    deletedIds.map(id =>
-                        axios.delete(`${API_URL}new_students?id=eq.${id}`, { headers: API_HEADERS })
-                    )
-                );
+                await newStudentsService.deleteMany(deletedIds);
             }
             // Approved: отправляем в students, остальные просто сохраняем
             for (const student of display) {
                 if (student.approved === true || student.status === 'approved') {
                     try {
                         // 1. Обновляем пользователя (users) по user_id
-                        await axios.patch(
-                            `${API_URL}users?id=eq.${student.user_id}`,
-                            {
-                                first_name: student.firstname,
-                                last_name: student.lastname,
-                                role: 'student',
-                                department: student.departament // department, не departament
-                            },
-                            { headers: API_HEADERS }
-                        );
+                        await usersService.update(student.user_id, {
+                            first_name: student.firstname,
+                            last_name: student.lastname,
+                            role: 'student',
+                            department: student.departament
+                        });
                         // 2. Создаём запись в students
                         const supervisorId = supervisorNameToId[student.supervisor];
                         if (!supervisorId) {
@@ -382,12 +364,7 @@ export default function NewStudentList({ onBackToMenu }){
                             points: 0,
                             progress: 0
                         };
-                        const studentRes = await axios.post(
-                            `${API_URL}students`,
-                            studentData,
-                            { headers: API_HEADERS }
-                        );
-                        const createdStudent = Array.isArray(studentRes.data) ? studentRes.data[0] : studentRes.data;
+                        const createdStudent = await studentsService.create(studentData);
                         // 3. Создаём thesis для этого студента (student_id)
                         const today = new Date();
                         const startDate = student.start_date || today.toISOString();
@@ -401,25 +378,15 @@ export default function NewStudentList({ onBackToMenu }){
                             start_date: startDate,
                             end_date: endDate
                         };
-                        await axios.post(
-                            `${API_URL}theses`,
-                            thesisData,
-                            { headers: API_HEADERS }
-                        );
-                        // Удаляем из new_students
-                        await axios.delete(`${API_URL}new_students?id=eq.${student.id}`, { headers: API_HEADERS });
+                        await thesesService.create(thesisData);
+                        await newStudentsService.delete(student.id);
                         console.log(`✅ Перенесён студент: ${student.firstname} ${student.lastname}`);
                     } catch (moveErr) {
                         console.error('❌ Ошибка при переносе студента:', moveErr, moveErr?.response?.data);
                         alert('Ошибка при переносе: ' + (moveErr?.response?.data?.message || moveErr.message));
                     }
                 } else {
-                    // Просто сохраняем изменения в new_students
-                    await axios.patch(
-                        `${API_URL}new_students?id=eq.${student.id}`,
-                        student,
-                        { headers: API_HEADERS }
-                    );
+                    await newStudentsService.update(student.id, student);
                 }
             }
             // После всех переносов явно обновляем данные
@@ -461,15 +428,15 @@ export default function NewStudentList({ onBackToMenu }){
                         departament: student.departament
                     };
 
-                    const userResponse = await axios.put(
-                        `${API_URL}users?telegram_id=eq.${student.telegram_id}`,
-                        userData,
-                        { headers: API_HEADERS }
-                    );
-
-                    // Получаем ID созданного пользователя
-                    const createdUser = Array.isArray(userResponse.data) ? userResponse.data[0] : userResponse.data;
-                    const userId = createdUser.id;
+                    const existingUser = await usersService.getByTelegramId(student.telegram_id);
+                    let userId;
+                    if (existingUser) {
+                        await usersService.update(existingUser.id, userData);
+                        userId = existingUser.id;
+                    } else {
+                        const createdUser = await usersService.create({ ...userData, telegram_id: student.telegram_id });
+                        userId = createdUser.id;
+                    }
 
                     // 2. Создаем thesis для этого студента
                     const supervisorId = supervisorNameToId[student.supervisor];
@@ -486,12 +453,7 @@ export default function NewStudentList({ onBackToMenu }){
                         start_date: student.start_date || null,
                         end_date: student.end_date || null
                     };
-                    const thesisResponse = await axios.post(
-                        `${API_URL}theses`,
-                        thesisData,
-                        { headers: API_HEADERS }
-                    );
-                    const createdThesis = Array.isArray(thesisResponse.data) ? thesisResponse.data[0] : thesisResponse.data;
+                    const createdThesis = await thesesService.create(thesisData);
                     const thesisId = createdThesis.id;
 
                     // 3. Создаем студента в таблице students
@@ -510,11 +472,7 @@ export default function NewStudentList({ onBackToMenu }){
                         points: 0, // начальные значения
                         progress: 0
                     };
-                    await axios.post(
-                        `${API_URL}students`,
-                        studentData,
-                        { headers: API_HEADERS }
-                    );
+                    await studentsService.create(studentData);
 
                     console.log(`✅ Студент ${student.firstname} ${student.lastname} и thesis успешно перенесены`);
                 } catch (studentError) {
@@ -524,11 +482,7 @@ export default function NewStudentList({ onBackToMenu }){
             }
 
             // 4. Удаляем из new_students
-            await Promise.all(
-                selectedRows.map(id =>
-                    axios.delete(`${API_URL}new_students?id=eq.${id}`, {headers: API_HEADERS})
-                )
-            );
+            await newStudentsService.deleteMany(selectedRows);
             
             setDisplay(display.filter(item => !selectedRows.includes(item.id)));
             setIsEditing(false);

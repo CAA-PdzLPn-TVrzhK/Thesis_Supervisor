@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Table, Input, Select, Modal, Form } from 'antd';
 import './index.css';
 import ControlPanel from './control-panel.jsx';
+import {
+  groupsService,
+  supervisorsService,
+  usersService,
+  studentsService
+} from '@/api/services';
 
 const { Column } = Table;
-
-const API_URL = 'https://dprwupbzatrqmqpdwcgq.supabase.co/rest/v1/';
-const API_HEADERS = {
-  apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3NzcsImV4cCI6MjA2Njc2MDc3N30.yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc"
-};
 
 export default function GroupsList({ onBackToMenu }) {
   const [data, setData] = useState([]);
@@ -27,16 +27,12 @@ export default function GroupsList({ onBackToMenu }) {
   // Функция для загрузки всех данных
   const fetchAll = async () => {
     try {
-      const [groupsRes, supervisorsRes, usersRes, studentsRes] = await Promise.all([
-        axios.get(API_URL + 'peer_groups', { headers: API_HEADERS }),
-        axios.get(API_URL + 'supervisors', { headers: API_HEADERS }),
-        axios.get(API_URL + 'users', { headers: API_HEADERS }),
-        axios.get(API_URL + 'students', { headers: API_HEADERS }),
+      const [groups, supervisorsData, users, students] = await Promise.all([
+        groupsService.getAll(),
+        supervisorsService.getAll(),
+        usersService.getAll(),
+        studentsService.getAll(),
       ]);
-      const groups = groupsRes.data;
-      const supervisorsData = supervisorsRes.data;
-      const users = usersRes.data;
-      const students = studentsRes.data;
 
       // Мапа supervisor_id -> user_id
       const supervisorIdToUserId = supervisorsData.reduce((m, sup) => {
@@ -100,13 +96,7 @@ export default function GroupsList({ onBackToMenu }) {
         supervisor_id: values.supervisor_id || null
       };
 
-      const response = await axios.post(
-        `${API_URL}peer_groups`,
-        newGroup,
-        { headers: { ...API_HEADERS, Prefer: 'return=representation' } }
-      );
-
-      const createdGroup = Array.isArray(response.data) ? response.data[0] : response.data;
+      const createdGroup = await groupsService.create(newGroup);
       
       // Обогащаем новую группу данными для отображения
       const supervisorName = values.supervisor_id 
@@ -155,28 +145,19 @@ export default function GroupsList({ onBackToMenu }) {
       // Удаляем из БД только тех, кого нет в display
       const deletedIds = data.map(g => g.id).filter(id => !display.some(d => d.id === id));
       if (deletedIds.length > 0) {
-        await Promise.all(
-          deletedIds.map(id =>
-            axios.delete(`${API_URL}peer_groups?id=eq.${id}`, { headers: API_HEADERS })
-          )
-        );
+        await groupsService.deleteMany(deletedIds);
       }
 
-      // Обновляем изменённые записи
       for (const group of display) {
         const originalGroup = data.find(g => g.id === group.id);
         if (originalGroup && (
           group.name !== originalGroup.name || 
           group.supervisor_id !== originalGroup.supervisor_id
         )) {
-          await axios.patch(
-            `${API_URL}peer_groups?id=eq.${group.id}`,
-            {
-              name: group.name,
-              supervisor_id: group.supervisor_id
-            },
-            { headers: API_HEADERS }
-          );
+          await groupsService.update(group.id, {
+            name: group.name,
+            supervisor_id: group.supervisor_id
+          });
         }
       }
 

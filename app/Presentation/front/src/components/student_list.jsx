@@ -1,16 +1,17 @@
-import axios from 'axios';
 import {Table} from 'antd';
 import './index.css';
 import StudentProfile from "./studentProfile.jsx";
 import React, {useEffect, useState} from "react";
-import ControlPanel from "./control-panel.jsx"
+import ControlPanel from "./control-panel.jsx";
+import {
+  studentsService,
+  usersService,
+  supervisorsService,
+  groupsService,
+  thesesService
+} from '@/api/services';
 
 const { Column } = Table;
-
-const API_URL = 'https://dprwupbzatrqmqpdwcgq.supabase.co/rest/v1/';
-const API_HEADERS = {
-  apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwcnd1cGJ6YXRycW1xcGR3Y2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExODQ3NzcsImV4cCI6MjA2Njc2MDc3N30.yl_E-xLFHTtkm_kx6bOkPenMG7IZx588-jamWhpg3Lc"
-};
 
 export default function StudentList() {
 
@@ -31,73 +32,19 @@ export default function StudentList() {
     useEffect(() => {
         async function fetchAll(){
             try{
-                const [stuData, usrData, supData, grpData, thssData] = await Promise.all([
-                    axios.get(API_URL + 'students', {headers: API_HEADERS}),
-                    axios.get(API_URL + 'users', {headers: API_HEADERS}),
-                    axios.get(API_URL + 'supervisors', {headers: API_HEADERS}),
-                    axios.get(API_URL + 'peer_groups', {headers: API_HEADERS}),
-                    axios.get(API_URL + 'theses', {headers: API_HEADERS}),
+                const [student, users, supervisors, groups, theses] = await Promise.all([
+                    studentsService.getAll(),
+                    usersService.getAll(),
+                    supervisorsService.getAll(),
+                    groupsService.getAll(),
+                    thesesService.getAll(),
                 ])
-
-                const student = stuData.data;
-                const users = usrData.data;
-                const supervisors = supData.data;
-                const groups = grpData.data;
-                const theses = thssData.data;
-
-                const supToUserMap = supervisors.reduce((m, sup) =>{
-                    m[sup.id] = sup.user_id;
-                    return m;
-                }, {})
-
-
-                const stdToNAmeMap = users.filter(u => u.role === 'student').reduce((m, u) => {
-                    m[u.id] = `${u.first_name}`;
-                    return m;
-                }, {})
-
-                const stdToSurnameMap = users.filter(u => u.role == 'student').reduce((m, u) => {
-                    m[u.id] = `${u.last_name}`;
-                    return m;
-                }, {})
 
                 const idToName = users.filter(u => u.role === 'supervisor').reduce((m, u) => {
                     m[u.id] = `${u.first_name} ${u.last_name}`;
                     return m;
-                }, {})
-
-                const grpToStdMap = groups.reduce((m, g) => {
-                    m[g.id] = g.name;
-                    return m;
-                }, {})
-
-                const thssIdToName = theses.reduce((m, t) => {
-                    m[t.id] = t.title;
-                    return m;
-                }, {})
-
-                const IdToTgUs = users.filter(u => u.role === "student").reduce((m, u) =>{
-                    m[u.id] = u.username;
-                    return m;
-                })
-
-                const supIdToName = supervisors.reduce((m, sup) => {
-                    m[sup.id] = idToName[sup.user_id] || '—';
-                    return m;
-                }, {})
-
-
-                const enriched = student.map(st => {
-                    return {
-                      ...st,
-                      studentTgUs: IdToTgUs[st.user_id] || '—',
-                      supervisorName: supIdToName[st.supervisor_id] || '—',
-                      studentName: stdToNAmeMap[st.user_id] || '—',
-                      studentSurname: stdToSurnameMap[st.user_id] || '—',
-                      groupName: grpToStdMap[st.peer_group_id] || '—',
-                      thesisName: thssIdToName[st.thesis_id] || '—',
-                    };
-                });
+                }, {});
+                const enriched = enrichStudents(student, users, supervisors, groups, theses);
 
                 setData(enriched);
                 setDisplay(enriched);
@@ -184,11 +131,7 @@ export default function StudentList() {
 
     const handleDelete = async () => {
         try {
-            await Promise.all(
-                selectedRows.map(id =>
-                    axios.delete(`${API_URL}students?id=eq.${id}`, {headers: API_HEADERS})
-                )
-            );
+            await studentsService.deleteMany(selectedRows);
             setDisplay(display.filter(item => !selectedRows.includes(item.id)));
             setIsEditing(false);
             setSelectedRows([]);
@@ -202,13 +145,8 @@ export default function StudentList() {
             // Удаляем из БД только тех, кого нет в display
             const deletedIds = data.map(s => s.id).filter(id => !display.some(d => d.id === id));
             if (deletedIds.length > 0) {
-                await Promise.all(
-                    deletedIds.map(id =>
-                        axios.delete(`${API_URL}students?id=eq.${id}`, { headers: API_HEADERS })
-                    )
-                );
+                await studentsService.deleteMany(deletedIds);
             }
-            // Обновляем изменённые записи
             for (const student of display) {
                 const originalStudent = data.find(s => s.id === student.id);
                 if (originalStudent && (
@@ -218,83 +156,29 @@ export default function StudentList() {
                     student.department !== originalStudent.department ||
                     student.year !== originalStudent.year
                 )) {
-                    // Обновляем пользователя
-                    await axios.patch(
-                        `${API_URL}users?id=eq.${student.user_id}`,
-                        {
-                            first_name: student.studentName,
-                            last_name: student.studentSurname
-                        },
-                        { headers: API_HEADERS }
-                    );
-                    // Обновляем студента
-                    await axios.patch(
-                        `${API_URL}students?id=eq.${student.id}`,
-                        {
-                            program: student.program,
-                            department: student.department,
-                            year: student.year
-                        },
-                        { headers: API_HEADERS }
-                    );
+                    await usersService.update(student.user_id, {
+                        first_name: student.studentName,
+                        last_name: student.studentSurname
+                    });
+                    await studentsService.update(student.id, {
+                        program: student.program,
+                        department: student.department,
+                        year: student.year
+                    });
                 }
             }
-            // Обновляем данные с сервера
-            const [stuData, usrData, supData, grpData, thssData] = await Promise.all([
-                axios.get(API_URL + 'students', {headers: API_HEADERS}),
-                axios.get(API_URL + 'users', {headers: API_HEADERS}),
-                axios.get(API_URL + 'supervisors', {headers: API_HEADERS}),
-                axios.get(API_URL + 'peer_groups', {headers: API_HEADERS}),
-                axios.get(API_URL + 'theses', {headers: API_HEADERS}),
+            const [student, users, supervisors, groups, theses] = await Promise.all([
+                studentsService.getAll(),
+                usersService.getAll(),
+                supervisorsService.getAll(),
+                groupsService.getAll(),
+                thesesService.getAll(),
             ]);
-            const student = stuData.data;
-            const users = usrData.data;
-            const supervisors = supData.data;
-            const groups = grpData.data;
-            const theses = thssData.data;
-            const supToUserMap = supervisors.reduce((m, sup) =>{
-                m[sup.id] = sup.user_id;
-                return m;
-            }, {});
-            const stdToNAmeMap = users.filter(u => u.role === 'student').reduce((m, u) => {
-                m[u.id] = `${u.first_name}`;
-                return m;
-            }, {});
-            const stdToSurnameMap = users.filter(u => u.role == 'student').reduce((m, u) => {
-                m[u.id] = `${u.last_name}`;
-                return m;
-            }, {});
             const idToName = users.filter(u => u.role === 'supervisor').reduce((m, u) => {
                 m[u.id] = `${u.first_name} ${u.last_name}`;
                 return m;
             }, {});
-            const grpToStdMap = groups.reduce((m, g) => {
-                m[g.id] = g.name;
-                return m;
-            }, {});
-            const thssIdToName = theses.reduce((m, t) => {
-                m[t.id] = t.title;
-                return m;
-            }, {});
-            const IdToTgUs = users.filter(u => u.role === "student").reduce((m, u) =>{
-                m[u.id] = u.username;
-                return m;
-            }, {});
-            const supIdToName = supervisors.reduce((m, sup) => {
-                m[sup.id] = idToName[sup.user_id] || '—';
-                return m;
-            }, {});
-            const enriched = student.map(st => {
-                return {
-                  ...st,
-                  studentTgUs: IdToTgUs[st.user_id] || '—',
-                  supervisorName: supIdToName[st.supervisor_id] || '—',
-                  studentName: stdToNAmeMap[st.user_id] || '—',
-                  studentSurname: stdToSurnameMap[st.user_id] || '—',
-                  groupName: grpToStdMap[st.peer_group_id] || '—',
-                  thesisName: thssIdToName[st.thesis_id] || '—',
-                };
-            });
+            const enriched = enrichStudents(student, users, supervisors, groups, theses);
             setData(enriched);
             setDisplay(enriched);
             setIsEditing(false);

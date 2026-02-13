@@ -1,12 +1,12 @@
 import React, {useState} from "react";
+import { AUTH_PASSWORD } from '@/config/api';
 
 export default function Authorization({ onAuthSuccess }){
     const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
   const handleLogin = () => {
-    const correctPassword = '1234'; // твой пароль
-    if (password === correctPassword) {
+    if (password === AUTH_PASSWORD) {
       onAuthSuccess();
     } else {
       setError('Incorrect password');
